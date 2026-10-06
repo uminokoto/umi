@@ -408,6 +408,30 @@ details.risk.r2 .alertsrc,details.risk.r2 .alertsrc a{color:#fff}
 .top{grid-template-columns:116px 1fr!important}
 .dial{width:116px!important;height:116px!important}
 .big{font-size:42px!important;margin-top:6px!important}
+.modebar{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;background:var(--mist);border-radius:16px;padding:4px;margin-top:-4px}
+.modebar button{display:flex;flex-direction:column;align-items:center;gap:2px;border:none;background:none;border-radius:12px;padding:7px 2px 6px;color:#8B98A5;font-size:10.5px;font-weight:500;cursor:pointer}
+.modebar button .ic{width:20px;height:20px;stroke-width:1.5}
+.modebar button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.modebar button span{white-space:nowrap}
+.poi.boat .ic{background:#5B6B7A;color:#fff}
+.qbar{position:fixed;z-index:2000;top:calc(8px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);width:min(680px,calc(100% - 24px));display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:16px;background:#F2A23A;color:#3A2400;box-shadow:0 12px 30px rgba(0,0,0,.25)}
+.qbar.emerg{background:#D92D2D;color:#fff;animation:qpulse 1.6s ease-in-out infinite}
+@keyframes qpulse{50%{box-shadow:0 0 0 6px rgba(217,45,45,.25),0 12px 30px rgba(0,0,0,.25)}}
+@media (prefers-reduced-motion:reduce){.qbar.emerg{animation:none}}
+.qbar .ic{width:22px;height:22px;flex:none}
+.qbar div{flex:1;min-width:0}.qbar b{display:block;font-size:14px}.qbar span{display:block;font-size:12px;opacity:.9}
+.qbar a{color:inherit;font-weight:700;font-size:12.5px;white-space:nowrap}
+.qbar button{border:none;background:rgba(0,0,0,.15);color:inherit;width:28px;height:28px;border-radius:50%;font-size:16px;flex:none}
+.qdlg{max-width:min(420px,92vw)}
+.qpop{padding:24px;text-align:center;border-top:8px solid #D92D2D}
+.qpop .ic{width:44px;height:44px;color:#D92D2D}
+.qpop h3{margin:8px 0 6px;font-size:20px;color:#B42020}
+.qpop .qact{font-weight:700;font-size:15px;margin:0 0 8px}
+.qpop p{font-size:13px;color:var(--ink);margin:0 0 14px}
+.qpop .btn{display:inline-block;margin:4px;text-decoration:none}
+.acsent{background:var(--aqua-soft);border-radius:10px;padding:8px 10px;color:var(--ink)!important}
+.acrow{display:flex;align-items:center;gap:8px;margin-top:6px;flex-wrap:wrap}
+.acrow div{flex:1;min-width:150px}.acrow b{display:block;font-size:13px}.acrow span{font-size:11.5px;color:var(--sub)}
 .tidechip{display:inline-flex;align-items:center;gap:6px;margin-top:8px;padding:4px 10px 4px 5px;border-radius:999px;background:var(--mist);font-size:12px;font-weight:700;color:var(--ink)}
 .tidechip svg{flex:none}
 .tidechip i{font-style:normal;color:var(--sub);font-size:11px;font-weight:500}
@@ -578,12 +602,15 @@ dialog::backdrop{background:rgba(33,53,71,.3)}
 <aside class="panel" id="panel">
   <div class="grab"></div>
   <header class="ph" id="ph"></header>
+  <div id="modebar"></div>
   <div id="body"></div>
   <div class="fabwrap"><button class="fab" id="fab" hidden><svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span id="fabL"></span></button></div>
 </aside>
 
 <dialog id="dlg"><form class="ed" id="edform" method="dialog"></form></dialog>
 <dialog id="setdlg"><div class="ed" id="setbody"></div></dialog>
+<div class="qbar" id="qbar" hidden></div>
+<dialog id="qdlg" class="qdlg"><div id="qbody"></div></dialog>
 <dialog id="jdlg"><div class="ed" id="jbody"></div></dialog>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
@@ -606,14 +633,20 @@ myLog:"わたしの記録",lv0:"まだ記録なし",lv1:"はじめまして",lv2
 logTitle:"今日の海を記録",logNew:"この場所を保存して記録します",logDate:"日付",logStars:"今日の海はどうだった？",logVis:"透明度",vis_great:"最高",vis_good:"ふつう",vis_poor:"にごり",logSaw:"会えた生き物",
 tg_turtle:"ウミガメ",tg_fish:"熱帯魚",tg_coral:"サンゴ",tg_dolphin:"イルカ",tg_ray:"エイ",tg_jelly:"クラゲ注意",logNote:"メモ",logNotePh:"例：右の岩の先がきれいだった",delVisit:"この記録を削除しますか？",
 poiBtn:"ポイント",poiZoom:"もう少しズームすると、あなたの楽しみ方に合ったスポットが表示されます",pMask:"シュノーケル・ダイビング",pSwim:"遊泳エリア",pBeach:"ビーチ",pSurf:"サーフポイント",pFish:"釣り場",tmove:"潮の動き {x}",tm3:"大",tm2:"中",tm1:"小",airT:"気温 {n}",wFish:"釣り",wTcyc:"潮回り",nextHigh:"次の満潮 {h}時ごろ",nextHighS:"満潮 {h}時",nextLowS:"干潮 {h}時",nextLow:"次の干潮 {h}時ごろ",nextBite:"次の時合 {h}時ごろ（{l}）",wSun:"日の出・日の入り",wMoon:"月",editWidgets:"表示する情報を編集",addLog:"記録",journal:"ログ",close:"閉じる",
-sActs:"あなたの海の楽しみ方",sActsHint:"選んだものに合わせて、必要な情報だけを表示します（複数OK）",act_snorkel:"泳ぐ・シュノーケル",act_dive:"ダイビング",act_fish:"釣り",act_surf:"サーフィン",
+sActs:"表示モード",sActsHint:"モードに合わせて、優先して表示する情報が変わります",act_snorkel:"泳ぐ・シュノーケル",act_dive:"ダイビング",act_fish:"釣り",act_surf:"サーフィン",
 sWidgets:"表示する情報と順番",w_cond:"風とコンディション",w_wave:"波",w_water:"水温",w_rain:"雨",w_tcyc:"潮回り（大潮・小潮など）",w_sun:"日の出・日の入り",w_moon:"月",w_tide:"潮の満ち引き",w_hourly:"時間ごと",w_links:"他のサイト",wReset:"楽しみ方に合わせた初期設定に戻す",
 total:"合計",addLogHere:"「{n}」の記録をつける",lt_all:"すべて",lt_swim:"泳いだ・潜った",lt_dive:"潜った",lt_fish:"釣れた",lt_surf:"波乗り",
 sz_knee:"ひざ",sz_waist:"腰",sz_chest:"胸",sz_head:"頭",sz_over:"頭オーバー",cr_empty:"空いてた",cr_normal:"ふつう",cr_busy:"混んでた",
 catchN:"{n}匹",maxLen:"最大 {n}cm",depthN:"最大 {n}m",noLogs:"まだ記録がありません。海に行ったら記録してみよう",
 logStarsF:"今日の釣りはどうだった？",logStarsS:"今日の波はどうだった？",depth:"最大水深",catch:"釣れた数",maxL:"最大サイズ",sizeL:"波のサイズ",crowdL:"混み具合",logCaught:"釣れた魚",
 addTag:"生き物を追加（例：ニモ）",addTagF:"魚を追加（例：タマン）",addTagS:"タグを追加（例：ボードを新調）",
-tg_shark:"サメ",tg_nudi:"ウミウシ",tg_octopus:"タコ",tg_aji:"アジ",tg_saba:"サバ",tg_mebaru:"メバル",tg_kasago:"カサゴ",tg_ika:"イカ",tg_seabass:"シーバス",tg_bonito:"カツオ",logTime:"時間",tm_swim:"泳いだ・潜った時間",tm_fish:"釣りをした時間",tm_surf:"波に乗った時間",depthOpt:"潜った深さ（任意）",editTags:"編集",doneEdit:"完了",restoreTags:"消した候補を戻す（{n}件）",settings:"設定",rainT:"雨",rainS:"降水確率",sLook:"見た目",sAccent:"メインカラー",sBase:"ベースカラー",sCustom:"好きな色を選ぶ",sClear:"パネルの透け具合",sOpaque:"しっかり",sCalm:"地図の風の線を動かさない（酔いやすい人向け）",sSee:"地図が透ける",snapNote:"波と風は約{k}km沖の海のデータです",sLang:"言語",sUnits:"単位",uWind:"風",uWave:"波",uTemp:"気温",sModel:"天気予報のデータ",sModelNote:"波と潮位は、どれを選んでも共通の波浪モデルを使います。",done:"完了",srcNow:"予報：{m}",units:"風 m/s・波 m",legOff:"オフ",legCross:"サイド",legOn:"オン",days:["今日","明日","明後日"],hour:"{h}時",
+tg_shark:"サメ",tg_nudi:"ウミウシ",tg_octopus:"タコ",tg_aji:"アジ",tg_saba:"サバ",tg_mebaru:"メバル",tg_kasago:"カサゴ",tg_ika:"イカ",tg_seabass:"シーバス",tg_bonito:"カツオ",logTime:"時間",tm_swim:"泳いだ・潜った時間",tm_fish:"釣りをした時間",tm_surf:"波に乗った時間",depthOpt:"潜った深さ（任意）",editTags:"編集",doneEdit:"完了",restoreTags:"消した候補を戻す（{n}件）",md_dive:"ダイビング・シュノーケル",md_surf:"サーフィン",md_fish:"釣り",md_boat:"ボート・マリン",md_storm:"台風・一般気象",mds_dive:"潜る",mds_surf:"サーフ",mds_fish:"釣り",mds_boat:"ボート",mds_storm:"気象",
+swell:"うねり",current:"潮流・海流",toDir:"{d}へ流れる",clar:"透明度(推定)",cl_good:"良い",cl_ok:"ふつう",cl_poor:"にごり",bite:"次の時合",gustL:"最大瞬間風速",rainMm:"雨量",tcL:"台風まで",none:"なし",pBoat:"マリーナ・港",retry:"もう一度読み込む",notFoundEnter:"候補がありません。Enterでさらに詳しく検索します",acTitle:"アカウント・同期（任意）",acNotSet:"ログイン機能はまだ設定されていません（管理者がSupabaseを設定すると使えます）。記録はこの端末に保存されています。",acErr:"ログイン機能に接続できませんでした",
+acWhy:"ログインすると、スポットと記録がクラウドに保存され、機種変更や別の端末でも同じデータが使えます。パスワードは不要です。",acSend:"ログインメールを送る",acSent:"ログインメールを送りました。このブラウザのまま、メール内のリンクを開いてください（別のアプリやブラウザで開くとログインできません）。",
+acVerify:"確認",acBadMail:"メールアドレスを確認してください",acBadCode:"コードが正しくないか、期限切れです",acSyncing:"同期中…",acSyncErr:"同期に失敗しました。通信状態を確認してください",acSynced:"同期済み",acSyncNow:"今すぐ同期",acOut:"ログアウト",acOutQ:"ログアウトしますか？（この端末の記録は残ります）",
+ts_MajorWarning:"大津波警報",ts_Warning:"津波警報",ts_Watch:"津波注意報",tsAreas:"対象地域：{a}",tsActE:"すぐに海から離れ、高い場所へ避難してください",tsActW:"海に入らず、海岸から離れてください",
+eqT:"震度{s}の地震（{p}）",eqB:"マグニチュード{m}・このポイントから約{k}km",eqTs_Warning:"津波警報が出ています。",eqTs_Watch:"津波注意報が出ています。",eqTs_Checking:"津波の有無を調査中です。",eqTs_Unknown:"津波の情報は不明です。",eqAct:"揺れや津波の情報に注意し、海から離れてください",
+eqGT:"M{m}の地震が発生",eqGB:"{p}・このポイントから約{k}km",details:"詳しく",settings:"設定",rainT:"雨",rainS:"降水確率",sLook:"見た目",sAccent:"メインカラー",sBase:"ベースカラー",sCustom:"好きな色を選ぶ",sClear:"パネルの透け具合",sOpaque:"しっかり",sCalm:"地図の風の線を動かさない（酔いやすい人向け）",sSee:"地図が透ける",snapNote:"波と風は約{k}km沖の海のデータです",sLang:"言語",sUnits:"単位",uWind:"風",uWave:"波",uTemp:"気温",sModel:"天気予報のデータ",sModelNote:"波と潮位は、どれを選んでも共通の波浪モデルを使います。",done:"完了",srcNow:"予報：{m}",units:"風 m/s・波 m",legOff:"オフ",legCross:"サイド",legOn:"オン",days:["今日","明日","明後日"],hour:"{h}時",
  noWave:"この地点は波のデータがありません。陸地や湾の奥なら、少し沖をタップしてみてください。",
  lWindy:"Windy",lTide:"潮見表",lCam:"カメラ",lWn:"ウェザーニュース",lYahoo:"Yahoo天気",lMap:"地図",
  qTide:"潮見表",qCam:"ライブカメラ",qWx:"天気",
@@ -642,14 +675,20 @@ myLog:"My swims",lv0:"No swims yet",lv1:"First visit",lv2:"Regular",lv3:"Home be
 logTitle:"Log today's sea",logNew:"This spot will be saved with your log",logDate:"Date",logStars:"How was the sea?",logVis:"Visibility",vis_great:"Crystal",vis_good:"OK",vis_poor:"Murky",logSaw:"What did you see?",
 tg_turtle:"Turtle",tg_fish:"Tropical fish",tg_coral:"Coral",tg_dolphin:"Dolphin",tg_ray:"Ray",tg_jelly:"Jellyfish!",logNote:"Note",logNotePh:"e.g. clear water past the right rocks",delVisit:"Delete this entry?",
 poiBtn:"Spots",poiZoom:"Zoom in to see spots for your activities",pMask:"Snorkel / dive",pSwim:"Swimming area",pBeach:"Beach",pSurf:"Surf spot",pFish:"Fishing spot",tmove:"tidal range {x}",tm3:"large",tm2:"medium",tm1:"small",airT:"Air {n}",wFish:"Fishing",wTcyc:"Tide cycle",nextHigh:"Next high ~{h}:00",nextHighS:"High {h}:00",nextLowS:"Low {h}:00",nextLow:"Next low ~{h}:00",nextBite:"Next bite window ~{h}:00 ({l})",wSun:"Sunrise & sunset",wMoon:"Moon",editWidgets:"Edit what's shown",addLog:"Log",journal:"Log",close:"Close",
-sActs:"How you enjoy the sea",sActsHint:"We'll show only what you need (pick any)",act_snorkel:"Swim / snorkel",act_dive:"Diving",act_fish:"Fishing",act_surf:"Surfing",
+sActs:"Mode",sActsHint:"Each mode puts different data first",act_snorkel:"Swim / snorkel",act_dive:"Diving",act_fish:"Fishing",act_surf:"Surfing",
 sWidgets:"What's shown, and in what order",w_cond:"Wind & conditions",w_wave:"Waves",w_water:"Water temp",w_rain:"Rain",w_tcyc:"Tide cycle",w_sun:"Sunrise & sunset",w_moon:"Moon",w_tide:"Tide",w_hourly:"Hourly",w_links:"Other sites",wReset:"Reset to match my activities",
 total:"total",addLogHere:"Log at “{n}”",lt_all:"All",lt_swim:"Swim / dive",lt_dive:"Dive",lt_fish:"Catch",lt_surf:"Surf",
 sz_knee:"Knee",sz_waist:"Waist",sz_chest:"Chest",sz_head:"Head",sz_over:"Overhead",cr_empty:"Empty",cr_normal:"OK",cr_busy:"Crowded",
 catchN:"{n} caught",maxLen:"max {n} cm",depthN:"max {n} m",noLogs:"No logs yet. Log your next day at the sea!",
 logStarsF:"How was the fishing?",logStarsS:"How were the waves?",depth:"Max depth",catch:"Fish caught",maxL:"Biggest",sizeL:"Wave size",crowdL:"Crowd",logCaught:"Fish caught",
 addTag:"Add a creature (e.g. clownfish)",addTagF:"Add a fish",addTagS:"Add a tag (e.g. new board)",
-tg_shark:"Shark",tg_nudi:"Nudibranch",tg_octopus:"Octopus",tg_aji:"Horse mackerel",tg_saba:"Mackerel",tg_mebaru:"Rockfish",tg_kasago:"Scorpionfish",tg_ika:"Squid",tg_seabass:"Sea bass",tg_bonito:"Bonito",logTime:"Time",tm_swim:"Time in the water",tm_fish:"Fishing time",tm_surf:"Surf session",depthOpt:"Depth (optional)",editTags:"Edit",doneEdit:"Done",restoreTags:"Restore removed ({n})",settings:"Settings",rainT:"Rain",rainS:"Chance of rain",sLook:"Look",sAccent:"Main color",sBase:"Base color",sCustom:"Pick any color",sClear:"Panel transparency",sOpaque:"Solid",sCalm:"Don't animate wind lines (motion-sensitive)",sSee:"See the map",snapNote:"Waves & wind from the sea about {k} km out",sLang:"Language",sUnits:"Units",uWind:"Wind",uWave:"Waves",uTemp:"Temp",sModel:"Forecast source",sModelNote:"Waves and tides use the same ocean model whichever you choose.",done:"Done",srcNow:"Forecast: {m}",units:"Wind m/s · Waves m",legOff:"Off",legCross:"Cross",legOn:"On",days:["Today","Tomorrow","Day after"],hour:"{h}:00",
+tg_shark:"Shark",tg_nudi:"Nudibranch",tg_octopus:"Octopus",tg_aji:"Horse mackerel",tg_saba:"Mackerel",tg_mebaru:"Rockfish",tg_kasago:"Scorpionfish",tg_ika:"Squid",tg_seabass:"Sea bass",tg_bonito:"Bonito",logTime:"Time",tm_swim:"Time in the water",tm_fish:"Fishing time",tm_surf:"Surf session",depthOpt:"Depth (optional)",editTags:"Edit",doneEdit:"Done",restoreTags:"Restore removed ({n})",md_dive:"Diving & snorkeling",md_surf:"Surfing",md_fish:"Fishing",md_boat:"Boating",md_storm:"Storms & weather",mds_dive:"Dive",mds_surf:"Surf",mds_fish:"Fish",mds_boat:"Boat",mds_storm:"Weather",
+swell:"Swell",current:"Current",toDir:"flowing {d}",clar:"Visibility (est.)",cl_good:"good",cl_ok:"fair",cl_poor:"murky",bite:"Next bite",gustL:"Gusts",rainMm:"Rain",tcL:"Nearest cyclone",none:"none",pBoat:"Marina / harbour",retry:"Try again",notFoundEnter:"No matches yet. Press Enter for a deeper search",acTitle:"Account & sync (optional)",acNotSet:"Sign-in isn't set up yet (the site owner can enable it with Supabase). Your logs are saved on this device.",acErr:"Couldn't reach the sign-in service",
+acWhy:"Sign in to keep your spots and logs in the cloud and use them on any device. No password needed.",acSend:"Email me a sign-in link",acSent:"Sign-in email sent. Open the link in this same browser (opening it in another app or browser won't work).",
+acVerify:"Verify",acBadMail:"Please check the email address",acBadCode:"That code is wrong or expired",acSyncing:"Syncing…",acSyncErr:"Sync failed. Check your connection",acSynced:"Synced",acSyncNow:"Sync now",acOut:"Sign out",acOutQ:"Sign out? (Data on this device stays)",
+ts_MajorWarning:"Major tsunami warning",ts_Warning:"Tsunami warning",ts_Watch:"Tsunami advisory",tsAreas:"Areas: {a}",tsActE:"Leave the water now and move to high ground",tsActW:"Stay out of the water and away from the shore",
+eqT:"Earthquake, intensity {s} ({p})",eqB:"Magnitude {m}, about {k} km from this spot",eqTs_Warning:"A tsunami warning is in effect.",eqTs_Watch:"A tsunami advisory is in effect.",eqTs_Checking:"Tsunami risk is being assessed.",eqTs_Unknown:"Tsunami status unknown.",eqAct:"Watch for updates and stay away from the sea",
+eqGT:"M{m} earthquake",eqGB:"{p}, about {k} km from this spot",details:"Details",settings:"Settings",rainT:"Rain",rainS:"Chance of rain",sLook:"Look",sAccent:"Main color",sBase:"Base color",sCustom:"Pick any color",sClear:"Panel transparency",sOpaque:"Solid",sCalm:"Don't animate wind lines (motion-sensitive)",sSee:"See the map",snapNote:"Waves & wind from the sea about {k} km out",sLang:"Language",sUnits:"Units",uWind:"Wind",uWave:"Waves",uTemp:"Temp",sModel:"Forecast source",sModelNote:"Waves and tides use the same ocean model whichever you choose.",done:"Done",srcNow:"Forecast: {m}",units:"Wind m/s · Waves m",legOff:"Off",legCross:"Cross",legOn:"On",days:["Today","Tomorrow","Day after"],hour:"{h}:00",
  noWave:"No wave data at this point. If it's land or deep in a bay, tap a little further out.",
  lWindy:"Windy",lTide:"Tides",lCam:"Webcam",lWn:"Surf report",lYahoo:"Weather",lMap:"Map",
  qTide:"tide table",qCam:"live webcam",qWx:"surf report",
@@ -678,14 +717,20 @@ myLog:"Mis baños",lv0:"Aún sin registros",lv1:"Primera visita",lv2:"Habitual",
 logTitle:"Registrar el día",logNew:"Este lugar se guardará con tu registro",logDate:"Fecha",logStars:"¿Qué tal el mar?",logVis:"Visibilidad",vis_great:"Cristalina",vis_good:"Normal",vis_poor:"Turbia",logSaw:"¿Qué viste?",
 tg_turtle:"Tortuga",tg_fish:"Peces tropicales",tg_coral:"Coral",tg_dolphin:"Delfín",tg_ray:"Raya",tg_jelly:"¡Medusas!",logNote:"Nota",logNotePh:"p. ej. agua clara tras las rocas",delVisit:"¿Eliminar este registro?",
 poiBtn:"Spots",poiZoom:"Acerca el mapa para ver spots según tus actividades",pMask:"Snorkel / buceo",pSwim:"Zona de baño",pBeach:"Playa",pSurf:"Spot de surf",pFish:"Zona de pesca",tmove:"marea {x}",tm3:"grande",tm2:"media",tm1:"pequeña",airT:"Aire {n}",wFish:"Pesca",wTcyc:"Ciclo de marea",nextHigh:"Próx. pleamar ~{h}h",nextHighS:"Pleamar {h}h",nextLowS:"Bajamar {h}h",nextLow:"Próx. bajamar ~{h}h",nextBite:"Próxima picada ~{h}h ({l})",wSun:"Amanecer y atardecer",wMoon:"Luna",editWidgets:"Editar lo que se muestra",addLog:"Registrar",journal:"Bitácora",close:"Cerrar",
-sActs:"Cómo disfrutas el mar",sActsHint:"Mostramos solo lo que necesitas (elige varios)",act_snorkel:"Nadar / snorkel",act_dive:"Buceo",act_fish:"Pesca",act_surf:"Surf",
+sActs:"Modo",sActsHint:"Cada modo prioriza datos distintos",act_snorkel:"Nadar / snorkel",act_dive:"Buceo",act_fish:"Pesca",act_surf:"Surf",
 sWidgets:"Qué se muestra y en qué orden",w_cond:"Viento y condiciones",w_wave:"Olas",w_water:"Temp. del agua",w_rain:"Lluvia",w_tcyc:"Ciclo de marea",w_sun:"Amanecer y atardecer",w_moon:"Luna",w_tide:"Marea",w_hourly:"Por horas",w_links:"Otras webs",wReset:"Volver a lo recomendado",
 total:"total",addLogHere:"Registrar en «{n}»",lt_all:"Todo",lt_swim:"Nadar / bucear",lt_dive:"Buceo",lt_fish:"Pesca",lt_surf:"Surf",
 sz_knee:"Rodilla",sz_waist:"Cintura",sz_chest:"Pecho",sz_head:"Cabeza",sz_over:"Más alto",cr_empty:"Vacío",cr_normal:"Normal",cr_busy:"Lleno",
 catchN:"{n} capturas",maxLen:"máx. {n} cm",depthN:"máx. {n} m",noLogs:"Aún no hay registros. ¡Anota tu próximo día de mar!",
 logStarsF:"¿Qué tal la pesca?",logStarsS:"¿Qué tal las olas?",depth:"Profundidad máx.",catch:"Capturas",maxL:"Mayor",sizeL:"Tamaño de ola",crowdL:"Gente",logCaught:"Peces",
 addTag:"Añadir criatura",addTagF:"Añadir pez",addTagS:"Añadir etiqueta",
-tg_shark:"Tiburón",tg_nudi:"Nudibranquio",tg_octopus:"Pulpo",tg_aji:"Jurel",tg_saba:"Caballa",tg_mebaru:"Gallineta",tg_kasago:"Escorpina",tg_ika:"Calamar",tg_seabass:"Lubina",tg_bonito:"Bonito",logTime:"Hora",tm_swim:"Hora en el agua",tm_fish:"Hora de pesca",tm_surf:"Sesión de surf",depthOpt:"Profundidad (opcional)",editTags:"Editar",doneEdit:"Listo",restoreTags:"Restaurar eliminados ({n})",settings:"Ajustes",rainT:"Lluvia",rainS:"Probabilidad",sLook:"Aspecto",sAccent:"Color principal",sBase:"Color de fondo",sCustom:"Elegir color",sClear:"Transparencia del panel",sOpaque:"Sólido",sCalm:"No animar las líneas de viento",sSee:"Ver el mapa",snapNote:"Olas y viento del mar a unos {k} km",sLang:"Idioma",sUnits:"Unidades",uWind:"Viento",uWave:"Olas",uTemp:"Temp.",sModel:"Fuente del pronóstico",sModelNote:"Las olas y mareas usan el mismo modelo oceánico elijas el que elijas.",done:"Listo",srcNow:"Pronóstico: {m}",units:"Viento m/s · Olas m",legOff:"Off",legCross:"Cruz.",legOn:"On",days:["Hoy","Mañana","Pasado"],hour:"{h}h",
+tg_shark:"Tiburón",tg_nudi:"Nudibranquio",tg_octopus:"Pulpo",tg_aji:"Jurel",tg_saba:"Caballa",tg_mebaru:"Gallineta",tg_kasago:"Escorpina",tg_ika:"Calamar",tg_seabass:"Lubina",tg_bonito:"Bonito",logTime:"Hora",tm_swim:"Hora en el agua",tm_fish:"Hora de pesca",tm_surf:"Sesión de surf",depthOpt:"Profundidad (opcional)",editTags:"Editar",doneEdit:"Listo",restoreTags:"Restaurar eliminados ({n})",md_dive:"Buceo y snorkel",md_surf:"Surf",md_fish:"Pesca",md_boat:"Náutica",md_storm:"Tormentas y tiempo",mds_dive:"Buceo",mds_surf:"Surf",mds_fish:"Pesca",mds_boat:"Barco",mds_storm:"Tiempo",
+swell:"Mar de fondo",current:"Corriente",toDir:"hacia el {d}",clar:"Visibilidad (est.)",cl_good:"buena",cl_ok:"normal",cl_poor:"turbia",bite:"Próx. picada",gustL:"Ráfagas",rainMm:"Lluvia",tcL:"Ciclón más cercano",none:"ninguno",pBoat:"Puerto deportivo",retry:"Reintentar",notFoundEnter:"Sin resultados. Pulsa Enter para buscar más",acTitle:"Cuenta y sincronización (opcional)",acNotSet:"El inicio de sesión aún no está configurado. Tus registros se guardan en este dispositivo.",acErr:"No se pudo conectar con el inicio de sesión",
+acWhy:"Inicia sesión para guardar spots y registros en la nube y usarlos en cualquier dispositivo. Sin contraseña.",acSend:"Enviarme un enlace",acSent:"Correo enviado. Abre el enlace en este mismo navegador.",
+acVerify:"Verificar",acBadMail:"Revisa la dirección de correo",acBadCode:"Código incorrecto o caducado",acSyncing:"Sincronizando…",acSyncErr:"Error al sincronizar",acSynced:"Sincronizado",acSyncNow:"Sincronizar",acOut:"Cerrar sesión",acOutQ:"¿Cerrar sesión? (Los datos del dispositivo se mantienen)",
+ts_MajorWarning:"Alerta de tsunami mayor",ts_Warning:"Alerta de tsunami",ts_Watch:"Aviso de tsunami",tsAreas:"Zonas: {a}",tsActE:"Sal del agua ya y sube a un lugar alto",tsActW:"No entres al agua y aléjate de la costa",
+eqT:"Terremoto, intensidad {s} ({p})",eqB:"Magnitud {m}, a unos {k} km",eqTs_Warning:"Hay alerta de tsunami.",eqTs_Watch:"Hay aviso de tsunami.",eqTs_Checking:"Se evalúa el riesgo de tsunami.",eqTs_Unknown:"Estado de tsunami desconocido.",eqAct:"Atento a las noticias y aléjate del mar",
+eqGT:"Terremoto M{m}",eqGB:"{p}, a unos {k} km",details:"Detalles",settings:"Ajustes",rainT:"Lluvia",rainS:"Probabilidad",sLook:"Aspecto",sAccent:"Color principal",sBase:"Color de fondo",sCustom:"Elegir color",sClear:"Transparencia del panel",sOpaque:"Sólido",sCalm:"No animar las líneas de viento",sSee:"Ver el mapa",snapNote:"Olas y viento del mar a unos {k} km",sLang:"Idioma",sUnits:"Unidades",uWind:"Viento",uWave:"Olas",uTemp:"Temp.",sModel:"Fuente del pronóstico",sModelNote:"Las olas y mareas usan el mismo modelo oceánico elijas el que elijas.",done:"Listo",srcNow:"Pronóstico: {m}",units:"Viento m/s · Olas m",legOff:"Off",legCross:"Cruz.",legOn:"On",days:["Hoy","Mañana","Pasado"],hour:"{h}h",
  noWave:"Sin datos de olas en este punto. Si es tierra o el fondo de una bahía, toca un poco mar adentro.",
  lWindy:"Windy",lTide:"Mareas",lCam:"Webcam",lWn:"Parte surf",lYahoo:"Tiempo",lMap:"Mapa",
  qTide:"tabla de mareas",qCam:"webcam en directo",qWx:"parte de surf",
@@ -698,16 +743,34 @@ tg_shark:"Tiburón",tg_nudi:"Nudibranquio",tg_octopus:"Pulpo",tg_aji:"Jurel",tg_
  wx:{clear:"Despejado",mostly:"Casi despejado",partly:"Parcialmente nuboso",cloudy:"Nublado",fog:"Niebla",drizzle:"Llovizna",rain:"Lluvia",heavy:"Lluvia fuerte",snow:"Nieve",showers:"Chubascos",storm:"Tormenta"},date:(m,d)=>`${d}/${m}`
 }};
 
+/* ============ 設定（Supabaseを使う場合だけ入力） ============
+   Supabase の Project Settings → API にある値を貼り付けてください。
+   anon key は公開しても安全な鍵です（データはRLSで本人しか読めません）。
+   service_role key は絶対にここへ入れないでください。 */
+const SUPABASE_URL = "";
+const SUPABASE_ANON_KEY = "";   // sb_publishable_... でも eyJ...（anon）でもOK
+/* ========================================================== */
 (function(){
 /* ---------- state & i18n ---------- */
 const KEY="umi-check-v1";
 const DEFAULT=[{id:"s1",name:"鵠沼",lat:35.3175,lon:139.4710,face:180,faceMode:"manual",tide:"",cam:"",wn:"",yahoo:""}];
 let state={v:2,spots:DEFAULT,cur:"s1",lang:null,wind:true,units:null,model:"best_match",theme:"a",colors:{accent:"#0096C7",base:"#FFFFFF"},poi:true,layer:"wind",clear:0,acts:["snorkel"],widgets:null,customTags:{},hiddenTags:{}};
-try{const s=JSON.parse(localStorage.getItem(KEY)||"null");if(s&&Array.isArray(s.spots))state=Object.assign(state,s);}catch(e){}
+try{const s=JSON.parse(localStorage.getItem(KEY)||"null");if(s&&Array.isArray(s.spots))state=Object.assign(state,s);}
+catch(e){try{const b=JSON.parse(localStorage.getItem(KEY+"-bak")||"null");if(b&&Array.isArray(b.spots))state.spots=b.spots;}catch(_){}}
+try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist();}catch(e){}
 if((state.v||1)<3){state.widgets=null;state.v=3;}
 if(!state.lang){const nl=(navigator.language||"en").slice(0,2);state.lang=I18N[nl]?nl:"en";}
 if(!state.units){const loc=navigator.language||"";state.units=/-US$|-LR$|-MM$/.test(loc)?{wind:"mph",wave:"ft",temp:"f"}:/-GB$/.test(loc)?{wind:"mph",wave:"m",temp:"c"}:{wind:"ms",wave:"m",temp:"c"};}
-const save=()=>{try{localStorage.setItem(KEY,JSON.stringify({v:state.v,spots:state.spots,cur:state.cur==="temp"?(state.spots[0]?.id||null):state.cur,lang:state.lang,wind:state.wind,units:state.units,model:state.model,theme:state.theme,colors:state.colors,pclear:state.pclear,calm:state.calm,poi:state.poi,acts:state.acts,layer:state.layer,widgets:state.widgets,customTags:state.customTags,hiddenTags:state.hiddenTags}))}catch(e){}};
+const clean=o=>JSON.parse(JSON.stringify(o,(k,v)=>k.startsWith("_")?undefined:v));
+let saveErr=false;
+const save=()=>{
+  try{
+    const data={v:state.v,spots:clean(state.spots),cur:state.cur==="temp"?(state.spots[0]?.id||null):state.cur,lang:state.lang,wind:state.wind,units:state.units,model:state.model,theme:state.theme,colors:state.colors,pclear:state.pclear,calm:state.calm,poi:state.poi,acts:state.acts,mode:state.mode,layer:state.layer,widgets:state.widgets,customTags:state.customTags,hiddenTags:state.hiddenTags,tomb:state.tomb,seenQ:state.seenQ};
+    localStorage.setItem(KEY,JSON.stringify(data));
+    try{localStorage.setItem(KEY+"-bak",JSON.stringify({t:Date.now(),spots:data.spots}));}catch(e){}
+    saveErr=false; setTimeout(()=>{try{Cloud.queue();}catch(e){}},0);
+  }catch(e){ if(!saveErr){saveErr=true;console.error("save failed",e);} }
+};
 const t=(k,vars)=>{let s=(I18N[state.lang]||I18N.en)[k]??I18N.en[k]??k;if(typeof s==="string"&&vars)for(const v in vars)s=s.replace(`{${v}}`,vars[v]);return s;};
 let temp=null, dayIdx=0, cache={}, nowCache={}, faceCache={};
 
@@ -770,6 +833,9 @@ const P={
  sunrise:'<path d="M4 18h16M7 14.5a5 5 0 0 1 10 0M12 4v4M9.5 6.5L12 4l2.5 2.5"/>',
  umbrella:'<path d="M3 12a9 9 0 0 1 18 0z"/><path d="M12 12v6.5a2 2 0 0 1-4 0"/><path d="M12 3v0"/>',
  plus:'<path d="M12 5v14M5 12h14"/>',
+ surf:'<path d="M5 19c3-1 10-8 13-14 1-2 0-2-1-1C12 8 6 14 5 19z"/><path d="M9 15l3 3M2 21c2.5 0 2.5-1.5 5-1.5S9.5 21 12 21s2.5-1.5 5-1.5 2.5 1.5 5 1.5"/>',
+ boat:'<path d="M12 3v13M12 4l7 10h-7M12 7l-5 7h5"/><path d="M3 17h18l-2 3H5z"/>',
+ current:'<path d="M3 8c3 0 3-2 6-2s3 2 6 2 3-2 6-2M3 13c3 0 3-2 6-2s3 2 6 2 3-2 6-2"/><path d="M14 18h7M18 15l3 3-3 3"/>',
  clock:'<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
  fish:'<path d="M2.5 12c2.5-3.5 7-5 11-3.2L18 5.5v13l-4.5-3.3C9.5 17 5 15.5 2.5 12z"/><path d="M7.3 11.4h.01"/>',
  moon:'<path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/>',
@@ -828,10 +894,14 @@ const ACTS=["snorkel","dive","fish","surf"];
 const CANON=["cond","wave","water","rain","tcyc","sun","moon","tide","hourly","links"];
 const PRESET={snorkel:["cond","tide","hourly","links"],dive:["cond","tide","hourly","links"],fish:["cond","tide","moon","hourly","links"],surf:["cond","tide","hourly","links"]};
 const SIZE={cond:"m",tide:"m",hourly:"m",links:"m"};
-const presetWidgets=()=>{const out=[];(state.acts.length?state.acts:["snorkel"]).forEach(a=>PRESET[a].forEach(w=>{if(!out.includes(w))out.push(w);}));return out;};
+const MODES=["dive","surf","fish","boat","storm"];
+const MODE_IC={dive:"mask",surf:"surf",fish:"fish",boat:"boat",storm:"tc"};
+const PRESET2={dive:["cond","tide","hourly","links"],surf:["cond","tide","hourly","links"],fish:["cond","tide","moon","hourly","links"],boat:["cond","hourly","tide","links"],storm:["cond","hourly","links"]};
+if(!state.mode){const a0=(state.acts||[])[0];state.mode=a0==="surf"?"surf":a0==="fish"?"fish":"dive";}
+const presetWidgets=()=>PRESET2[state.mode]||PRESET2.dive;
 const visibleWidgets=()=>state.widgets?state.widgets.map(w=>w==="fish"?"tcyc":w):presetWidgets();
-const fishOn=()=>state.acts.includes("fish");
-const LOGTYPES={snorkel:"swim",dive:"swim",fish:"fish",surf:"surf"};
+const fishOn=()=>state.mode==="fish";
+const LOGTYPES={snorkel:"swim",dive:"swim",fish:"fish",surf:"surf",boat:"swim",storm:"swim"};
 const normType=x=>x==="dive"?"swim":(x||"swim");
 const TAGSETS={swim:["turtle","fish","coral","dolphin","ray","shark","nudi","octopus","jelly"],
   fish:["aji","saba","mebaru","kasago","ika","seabass","bonito"],surf:[]};
@@ -920,7 +990,8 @@ function pinAt(s,u){
   const [k]=windKind(wd,f.face,f.mode==="coast"?null:f.mode); s._kind=k;
   s._m.setIcon(pinIcon(k+s._sel,`<i></i>${esc(s.name)}${s._lvb}<em>${wh!=null?`<span>${ic("wave")}${hv(wh)}${hu()}</span>`:""}<span>${ic("wind")}${wv(ws,0)}${wu()}</span></em>`));
 }
-function pinsAt(u){state.spots.forEach(s=>pinAt(s,u));renderSpots();}
+let lastKinds="";
+function pinsAt(u){state.spots.forEach(s=>pinAt(s,u));const k=state.spots.map(s=>s._kind).join();if(k!==lastKinds){lastKinds=k;renderSpots();}}
 async function loadNow(s){
   const k=`${dLat(s)},${dLon(s)},${state.model}`;
   if(nowCache[k]&&Date.now()-nowCache[k].t<15*60e3) return nowCache[k].d;
@@ -941,7 +1012,7 @@ const Wind={
     this.canvas=L.DomUtil.create("canvas","windcanvas",map.getPanes().overlayPane);
     this.ctx=this.canvas.getContext("2d");
     map.on("movestart zoomstart",()=>this.stop(true));
-    map.on("moveend",()=>{clearTimeout(this.timer);this.timer=setTimeout(()=>this.reset(),250);});
+    map.on("moveend",()=>{clearTimeout(this.timer);this.timer=setTimeout(()=>this.reset(),450);});
     window.addEventListener("resize",()=>{clearTimeout(this.timer);this.timer=setTimeout(()=>this.reset(),300);});
     document.addEventListener("visibilitychange",()=>{if(document.hidden)this.stop();else if(state.layer!=="none"&&this.grid)this.start();});
     this.reset();
@@ -1058,7 +1129,8 @@ const POI={layer:null,timer:0,key:"",
     if(map.getZoom()<10){this.layer.clearLayers();this.key="";showHint(t("poiZoom"));return;}
     const b=map.getBounds(),bb=[b.getSouth(),b.getWest(),b.getNorth(),b.getEast()].map(x=>x.toFixed(2)).join(","),key=bb;
     if(key===this.key) return; this.key=key;
-    const A=new Set(state.acts), parts=[];
+    const A=new Set(state.mode==="dive"?["snorkel","dive"]:[state.mode]), parts=[];
+    if(A.has("boat")) parts.push(`nwr["leisure"="marina"](${bb});nwr["leisure"="slipway"](${bb});nwr["harbour"="yes"](${bb});`);
     if(A.has("snorkel")) parts.push(`nwr["natural"="beach"](${bb});nwr["leisure"="swimming_area"](${bb});nwr["sport"~"snorkeling|swimming|free_diving"](${bb});nwr["name"~"シュノーケル|snorkel",i](${bb});`);
     if(A.has("dive")) parts.push(`nwr["sport"="scuba_diving"](${bb});nwr["shop"="scuba_diving"](${bb});nwr["name"~"ダイビング|dive point|dive site",i](${bb});`);
     if(A.has("surf")) parts.push(`nwr["sport"="surfing"](${bb});nwr["name"~"サーフ|surf",i]["natural"~"beach|bay|cape"](${bb});nwr["name"~"サーフポイント|surf break|surf spot",i](${bb});`);
@@ -1071,16 +1143,130 @@ const POI={layer:null,timer:0,key:"",
       (r.elements||[]).forEach(e=>{
         const lat=e.lat??e.center?.lat,lon=e.lon??e.center?.lon; if(lat==null) return;
         const tg=e.tags||{}, nmr=tg.name||"";
-        const kind=(tg.sport==="surfing"||/サーフ|surf/i.test(nmr))?"surf":(tg.leisure==="fishing"||tg.man_made==="pier"||/釣|fishing/i.test(nmr))?"fish":
+        const kind=(tg.leisure==="marina"||tg.leisure==="slipway"||tg.harbour==="yes")?"boat":(tg.sport==="surfing"||/サーフ|surf/i.test(nmr))?"surf":(tg.leisure==="fishing"||tg.man_made==="pier"||/釣|fishing/i.test(nmr))?"fish":
           (/scuba|snorkel|free_diving/.test(tg.sport||"")||tg.shop==="scuba_diving"||/シュノーケル|ダイビング|snorkel|dive/i.test(nmr))?"mask":tg.leisure==="swimming_area"?"swim":"beach";
-        const nm=tg["name:"+state.lang]||tg.name||t({mask:"pMask",swim:"pSwim",beach:"pBeach",surf:"pSurf",fish:"pFish"}[kind]);
-        const mk=L.marker([lat,lon],{icon:L.divIcon({className:"",html:`<div class="poi ${kind}">${ic(kind==="surf"?"wave":kind)}<span>${esc(nm)}</span></div>`,iconSize:[0,0]})}).addTo(this.layer);
+        const nm=tg["name:"+state.lang]||tg.name||t({mask:"pMask",swim:"pSwim",beach:"pBeach",surf:"pSurf",fish:"pFish",boat:"pBoat"}[kind]);
+        const mk=L.marker([lat,lon],{icon:L.divIcon({className:"",html:`<div class="poi ${kind}">${ic(kind==="surf"?"surf":kind)}<span>${esc(nm)}</span></div>`,iconSize:[0,0]})}).addTo(this.layer);
         mk.on("click",ev=>{L.DomEvent.stopPropagation(ev);pickPlace(lat,lon,nm,false);});
       });
     }catch(e){this.key="";}
   }};
 function showHint(txt){const h=$("hint");h.textContent=txt;h.hidden=false;clearTimeout(showHint.t);showHint.t=setTimeout(()=>{h.hidden=true;},3500);}
 $("poiBtn").onclick=()=>{state.poi=!state.poi;save();applyChrome();POI.key="";POI.load();if(state.poi&&map&&map.getZoom()<10)showHint(t("poiZoom"));};
+
+/* ---------- account & sync (Supabase Auth, magic link / OTP) ---------- */
+const loadScript=src=>new Promise((ok,ng)=>{const e=document.createElement("script");e.src=src;e.onload=ok;e.onerror=ng;document.head.appendChild(e);});
+const Cloud={client:null,user:null,status:"",timer:0,busy:false,
+  on(){return !!(SUPABASE_URL&&SUPABASE_ANON_KEY);},
+  async init(){
+    if(!this.on()) return;
+    try{
+      await loadScript("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js");
+      this.client=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,flowType:"pkce",storageKey:"umi-check-auth"}});
+      const {data}=await this.client.auth.getSession(); this.user=data.session?.user||null;
+      this.client.auth.onAuthStateChange((ev,ses)=>{const was=this.user?.id;this.user=ses?.user||null;if(this.user&&this.user.id!==was)this.pull();renderAccount();});
+      if(/[?&](code|token_hash|error)=|#access_token=/.test(location.href)) history.replaceState(null,"",location.pathname);
+      if(this.user) await this.pull();
+    }catch(e){console.error("auth init",e);this.status="err";}
+    renderAccount();
+  },
+  async sendLink(email){return this.client.auth.signInWithOtp({email,options:{emailRedirectTo:location.origin+location.pathname,shouldCreateUser:true}});},
+  async verify(email,token){return this.client.auth.verifyOtp({email,token,type:"email"});},
+  async signOut(){await this.client.auth.signOut();this.user=null;renderAccount();},
+  queue(){if(!this.user||!this.client)return;clearTimeout(this.timer);this.timer=setTimeout(()=>this.push(),1500);},
+  async push(){
+    if(!this.user||this.busy) return; this.busy=true; this.status="sync"; renderAccount();
+    try{
+      const uid=this.user.id, now=new Date().toISOString();
+      const spots=state.spots.map(sp=>{const d=clean(sp);delete d.visits;return {user_id:uid,id:sp.id,data:d,updated_at:now};});
+      const logs=state.spots.flatMap(sp=>(sp.visits||[]).map(v=>({user_id:uid,id:v.id,spot_id:sp.id,data:clean(v),updated_at:now})));
+      if(spots.length){const {error}=await this.client.from("spots").upsert(spots,{onConflict:"user_id,id"});if(error)throw error;}
+      for(let k=0;k<logs.length;k+=200){const {error}=await this.client.from("logs").upsert(logs.slice(k,k+200),{onConflict:"user_id,id"});if(error)throw error;}
+      const tb=state.tomb||{spots:[],logs:[]};
+      if(tb.logs.length){const {error}=await this.client.from("logs").delete().in("id",tb.logs);if(error)throw error;}
+      if(tb.spots.length){const {error}=await this.client.from("spots").delete().in("id",tb.spots);if(error)throw error;}
+      if(tb.logs.length||tb.spots.length){state.tomb={spots:[],logs:[]};localStorage.setItem(KEY,JSON.stringify({...JSON.parse(localStorage.getItem(KEY)||"{}"),tomb:state.tomb}));}
+      this.status="ok";
+    }catch(e){console.error("sync",e);this.status="err";}
+    this.busy=false; renderAccount();
+  },
+  async pull(){
+    if(!this.user) return; this.status="sync"; renderAccount();
+    try{
+      const [a,b]=await Promise.all([this.client.from("spots").select("id,data"),this.client.from("logs").select("id,spot_id,data")]);
+      if(a.error) throw a.error; if(b.error) throw b.error;
+      const tb=state.tomb||{spots:[],logs:[]};
+      a.data.forEach(r=>{if(tb.spots.includes(r.id))return;if(!state.spots.find(x=>x.id===r.id))state.spots.push({...r.data,id:r.id,visits:[]});});
+      b.data.forEach(r=>{if(tb.logs.includes(r.id))return;const sp=state.spots.find(x=>x.id===r.spot_id);if(!sp)return;sp.visits=sp.visits||[];if(!sp.visits.find(v=>v.id===r.id))sp.visits.push({...r.data,id:r.id});});
+      save(); drawSpots(); renderSpots(); this.status="ok";
+      await this.push();
+    }catch(e){console.error("pull",e);this.status="err";}
+    renderAccount();
+  }};
+let pendingEmail="";
+function renderAccount(){
+  const el=$("acct"); if(!el) return;
+  if(!Cloud.on()){el.innerHTML=`<p class="hint2">${esc(t("acNotSet"))}</p>`;return;}
+  if(!Cloud.client){el.innerHTML=`<p class="hint2">${esc(Cloud.status==="err"?t("acErr"):t("loading"))}</p>`;return;}
+  if(Cloud.user){
+    el.innerHTML=`<div class="acrow"><div><b>${esc(Cloud.user.email||"")}</b><span>${esc(t(Cloud.status==="sync"?"acSyncing":Cloud.status==="err"?"acSyncErr":"acSynced"))}</span></div>
+      <button type="button" class="btn" id="acSync">${esc(t("acSyncNow"))}</button><button type="button" class="btn danger" id="acOut">${esc(t("acOut"))}</button></div>`;
+    $("acSync").onclick=()=>Cloud.pull(); $("acOut").onclick=()=>{if(confirm(t("acOutQ")))Cloud.signOut();};
+    return;
+  }
+  el.innerHTML=`<p class="hint2">${esc(t("acWhy"))}</p>
+    <div class="addtag"><input id="acEmail" type="email" autocomplete="email" placeholder="you@example.com" value="${esc(pendingEmail)}"><button type="button" id="acSend">${esc(t("acSend"))}</button></div>
+    ${pendingEmail?`<p class="hint2 acsent">${esc(t("acSent"))}</p>`:""}
+    <p class="hint2" id="acMsg"></p>`;
+  $("acSend").onclick=async()=>{const em=$("acEmail").value.trim();if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)){$("acMsg").textContent=t("acBadMail");return;}
+    $("acSend").disabled=true;const {error}=await Cloud.sendLink(em);$("acSend").disabled=false;if(error){$("acMsg").textContent=t("acErr")+" ("+error.message+")";return;}pendingEmail=em;renderAccount();};
+  const v=$("acVerify"); if(v) v.onclick=async()=>{const {error}=await Cloud.verify(pendingEmail,$("acCode").value.trim());if(error){$("acMsg").textContent=t("acBadCode");return;}pendingEmail="";};
+}
+
+/* ---------- earthquakes & tsunami ---------- */
+const Quake={list:[],timer:0,
+  start(){this.poll();this.timer=setInterval(()=>{if(!document.hidden)this.poll();},60000);document.addEventListener("visibilitychange",()=>{if(!document.hidden)this.poll();});},
+  inJP(s){return s&&s.lat>20&&s.lat<46.5&&s.lon>122&&s.lon<154;},
+  async poll(){
+    const s=spot(); if(!s) return;
+    const out=[], now=Date.now(), jst=x=>Date.parse(String(x).replace(/\//g,"-").replace(" ","T").replace(/\.\d+$/,"")+"+09:00");
+    if(this.inJP(s)){
+      try{
+        const r=await fetchT("https://api.p2pquake.net/v2/history?codes=551&codes=552&limit=20",10000).then(r=>r.json());
+        (r||[]).forEach(e=>{
+          if(e.code===552&&!e.cancelled){const tm=jst(e.issue?.time||e.time);if(now-tm>12*36e5)return;
+            const ar=e.areas||[],g=ar.some(a=>a.grade==="MajorWarning")?"MajorWarning":ar.some(a=>a.grade==="Warning")?"Warning":ar.some(a=>a.grade==="Watch")?"Watch":null;if(!g)return;
+            out.push({id:"t"+(e.id||tm),lv:g==="Watch"?"warn":"emerg",title:t("ts_"+g),body:t("tsAreas",{a:ar.filter(a=>a.grade).slice(0,8).map(a=>a.name).join("、")}),act:t(g==="Watch"?"tsActW":"tsActE"),url:"https://www.jma.go.jp/bosai/map.html#contents=tsunami"});}
+          if(e.code===551){const q=e.earthquake||{},tm=jst(q.time||e.time);if(now-tm>3*36e5)return;const h=q.hypocenter||{},dist=h.latitude>-200?km(s.lat,s.lon,h.latitude,h.longitude):9999;
+            const ts=q.domesticTsunami; if((q.maxScale||0)<40&&!(ts==="Warning"||ts==="Watch"))return; if(dist>600&&!(ts==="Warning"||ts==="Watch"))return;
+            out.push({id:"q"+(e.id||tm),lv:ts==="Warning"?"emerg":"warn",title:t("eqT",{s:scaleName(q.maxScale),p:h.name||""}),body:t("eqB",{m:h.magnitude>0?h.magnitude:"?",k:dist<9999?Math.round(dist):"?"})+(ts&&ts!=="None"&&ts!=="NonEffective"?" "+t("eqTs_"+ts):""),act:t(ts==="Warning"?"tsActE":"eqAct"),url:"https://www.jma.go.jp/bosai/map.html#contents=earthquake_map"});}
+        });
+      }catch(e){}
+    }
+    try{
+      const r=await fetchT("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_day.geojson",10000).then(r=>r.json());
+      (r.features||[]).forEach(f=>{const p=f.properties||{},c=f.geometry?.coordinates||[];if(now-p.time>6*36e5)return;const dist=km(s.lat,s.lon,c[1],c[0]);
+        if(this.inJP(s)&&dist<1500) return;
+        if(p.mag>=7&&p.tsunami===1&&dist<1500) out.push({id:"u"+f.id,lv:"emerg",title:t("eqGT",{m:p.mag.toFixed(1)}),body:t("eqGB",{p:p.place||"",k:Math.round(dist)}),act:t("tsActE"),url:"https://www.tsunami.gov/"});
+        else if(p.mag>=6&&dist<1000) out.push({id:"u"+f.id,lv:"warn",title:t("eqGT",{m:p.mag.toFixed(1)}),body:t("eqGB",{p:p.place||"",k:Math.round(dist)}),act:t("eqAct"),url:p.url||"https://earthquake.usgs.gov/"});
+      });
+    }catch(e){}
+    this.list=out; this.render();
+  },
+  render(){
+    const bar=$("qbar"), L=this.list.filter(x=>!(state.qHide||[]).includes(x.id));
+    if(!L.length){bar.hidden=true;}else{const x=L.find(z=>z.lv==="emerg")||L[0];
+      bar.className="qbar "+x.lv; bar.hidden=false;
+      bar.innerHTML=`${ic("alert")}<div><b>${esc(x.title)}</b><span>${esc(x.act)}</span></div><a href="${x.url}" target="_blank" rel="noopener">${esc(t("details"))}</a><button type="button" aria-label="close" id="qX">×</button>`;
+      $("qX").onclick=()=>{state.qHide=[...(state.qHide||[]),...L.map(z=>z.id)];this.render();};}
+    const em=this.list.find(x=>x.lv==="emerg"&&!(state.seenQ||[]).includes(x.id));
+    if(em){state.seenQ=[...(state.seenQ||[]),em.id].slice(-50);save();
+      $("qbody").innerHTML=`<div class="qpop">${ic("alert")}<h3>${esc(em.title)}</h3><p class="qact">${esc(em.act)}</p><p>${esc(em.body)}</p>
+        <a class="btn primary" href="${em.url}" target="_blank" rel="noopener">${esc(t("details"))}</a><button type="button" class="btn" id="qOk">${esc(t("close"))}</button></div>`;
+      $("qOk").onclick=()=>$("qdlg").close(); if(!$("qdlg").open) $("qdlg").showModal();}
+    if(CTX){CTX.qk=this.list;renderWidgets("keepTide");}
+  }};
+const scaleName=v=>({10:"1",20:"2",30:"3",40:"4",45:"5弱",50:"5強",55:"6弱",60:"6強",70:"7"}[v]||"?");
 
 /* ---------- typhoons & official alerts ---------- */
 let tcList=null;
@@ -1128,9 +1314,12 @@ async function snapToSea(lat,lon){
   return {lat,lon,dist:0};
 }
 async function pickPlace(lat,lon,name,fly){
+  lat=+lat; lon=((+lon+540)%360)-180;
+  if(!isFinite(lat)||!isFinite(lon)) return;
   if(fly!==false) focus(lat,lon,13);
-  const p=await snapToSea(lat,lon);
-  setTemp(lat,lon,name,p);
+  setTemp(lat,lon,name,null);
+  let p=null; try{p=await snapToSea(lat,lon);}catch(e){}
+  if(p&&p.dist>0&&temp&&temp.lat===+lat.toFixed(4)&&temp.lon===+lon.toFixed(4)){temp.dlat=p.lat;temp.dlon=p.lon;temp.snap=p.dist;renderAll(true);}
 }
 function setTemp(lat,lon,name,p){
   temp={id:"temp",temp:true,name:name||t("picked"),custom:!!name,lat:+(+lat).toFixed(4),lon:+(+lon).toFixed(4),face:null,faceMode:"auto"};
@@ -1139,27 +1328,46 @@ function setTemp(lat,lon,name,p){
   drawTemp(); drawSpots(); renderAll();
 }
 const dLat=s=>s.dlat??s.lat, dLon=s=>s.dlon??s.lon;
-let sTimer;
-$("q").addEventListener("input",()=>{clearTimeout(sTimer);sTimer=setTimeout(search,700);});
-$("searchForm").addEventListener("submit",e=>{e.preventDefault();search();});
-async function search(){
-  const q=$("q").value.trim(), box=$("results");
+let sTimer, sSeq=0;
+const gcache=new Map();
+$("q").addEventListener("input",()=>{clearTimeout(sTimer);const q=$("q").value.trim();if(q.length<2){$("results").hidden=true;return;}sTimer=setTimeout(()=>search(false),450);});
+$("searchForm").addEventListener("submit",e=>{e.preventDefault();clearTimeout(sTimer);search(true);});
+$("q").addEventListener("keydown",e=>{if(e.key==="Escape"){$("results").hidden=true;$("q").blur();}});
+async function geoOM(q){
+  const name=q.split(",")[0].trim(), cc=(q.split(",")[1]||"").trim().toLowerCase();
+  const langs=[...new Set([state.lang,"en"])], out=[];
+  for(const lg of langs){
+    const r=await fetchT(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(name)}&count=8&language=${lg}`,8000).then(r=>r.json()).catch(()=>({}));
+    (r.results||[]).forEach(p=>{if(cc&&!(String(p.country||"").toLowerCase().includes(cc)||String(p.country_code||"").toLowerCase()===cc))return;out.push({name:p.name,sub:[p.admin1,p.country].filter(Boolean).join(", "),lat:p.latitude,lon:p.longitude,pop:p.population||0});});
+    if(out.length) break;
+  }
+  return out;
+}
+async function geoPhoton(q){
+  const lg=["en","de","fr","it"].includes(state.lang)?state.lang:"en";
+  const r=await fetchT(`https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&limit=8&lang=${lg}`,8000).then(r=>r.json()).catch(()=>({}));
+  return (r.features||[]).map(f=>{const p=f.properties||{};return {name:p.name||p.city||q,sub:[p.city&&p.city!==p.name?p.city:"",p.state,p.country].filter(Boolean).join(", "),lat:f.geometry.coordinates[1],lon:f.geometry.coordinates[0]};});
+}
+async function geoNominatim(q){
+  const r=await fetchT(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=jsonv2&limit=8&accept-language=${state.lang},en`,9000).then(r=>r.json()).catch(()=>[]);
+  return (r||[]).map(p=>{const parts=String(p.display_name||"").split(",").map(x=>x.trim());return {name:p.name||parts[0],sub:parts.slice(1,4).join(", "),lat:+p.lat,lon:+p.lon};});
+}
+async function search(full){
+  const q=$("q").value.trim(), box=$("results"), my=++sSeq;
   if(q.length<2){box.hidden=true;return;}
-  try{
-    let list=[];
-    try{
-      const r=await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=jsonv2&limit=8&accept-language=${state.lang}`).then(r=>r.json());
-      list=r.map(p=>{const parts=String(p.display_name||"").split(",").map(x=>x.trim());return {name:p.name||parts[0],sub:parts.slice(1,4).join(", "),lat:+p.lat,lon:+p.lon};});
-    }catch(e){}
-    if(!list.length){
-      const r=await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=6&language=${state.lang}`).then(r=>r.json());
-      list=(r.results||[]).map(p=>({name:p.name,sub:[p.admin1,p.country].filter(Boolean).join(", "),lat:p.latitude,lon:p.longitude}));
-    }
-    if(q!==$("q").value.trim()) return;
-    box.innerHTML=list.length?list.map((p,i)=>`<button type="button" data-i="${i}">${esc(p.name)}<small>${esc(p.sub)}</small></button>`).join(""):`<button type="button" disabled>${esc(t("notFound"))}</button>`;
-    box.hidden=false;
-    box.querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>{const p=list[+b.dataset.i];box.hidden=true;$("q").blur();$("q").value="";pickPlace(p.lat,p.lon,p.name);});
-  }catch(e){box.hidden=true;}
+  const key=(full?"F:":"A:")+state.lang+":"+q.toLowerCase();
+  let list=gcache.get(key);
+  if(!list){
+    box.innerHTML=`<button type="button" disabled>${esc(t("loading"))}</button>`; box.hidden=false;
+    const parts=await Promise.all([geoOM(q),geoPhoton(q),full?geoNominatim(q):Promise.resolve([])]);
+    const seen=new Set(); list=[];
+    [...parts[2],...parts[0],...parts[1]].forEach(p=>{if(!isFinite(p.lat)||!isFinite(p.lon))return;const k=p.lat.toFixed(2)+","+p.lon.toFixed(2);if(seen.has(k))return;seen.add(k);list.push(p);});
+    list=list.slice(0,8); gcache.set(key,list);
+  }
+  if(my!==sSeq) return;
+  box.innerHTML=list.length?list.map((p,i)=>`<button type="button" data-i="${i}">${esc(p.name)}<small>${esc(p.sub)}</small></button>`).join(""):`<button type="button" disabled>${esc(t(full?"notFound":"notFoundEnter"))}</button>`;
+  box.hidden=false;
+  box.querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>{const p=list[+b.dataset.i];box.hidden=true;$("q").blur();$("q").value="";pickPlace(p.lat,p.lon,p.name);});
 }
 $("locBtn").onclick=()=>{
   if(!navigator.geolocation||!map) return;
@@ -1186,7 +1394,7 @@ function renderSettings(focus){ if(focus) renderSettings.focus=focus;
   const U=state.units, seg=(k,opts)=>`<div class="seg">${opts.map(([v,l])=>`<button type="button" data-k="${k}" data-v="${v}" aria-pressed="${(k==="lang"?state.lang:U[k])===v}">${l}</button>`).join("")}</div>`;
   $("setbody").innerHTML=`<div class="dhead"><h3>${esc(t("settings"))}</h3><button type="button" class="xbtn" id="setX">${esc(t("done"))}</button></div>
     <div class="setsec"><h4>${esc(t("sActs"))}</h4><p class="hint2" style="margin-top:2px">${esc(t("sActsHint"))}</p>
-      <div class="actpick">${ACTS.map(a=>`<button type="button" data-act="${a}" aria-pressed="${state.acts.includes(a)}">${ic(a==="fish"?"fish":a==="surf"?"wave":a==="dive"?"mask":"swim")}${esc(t("act_"+a))}</button>`).join("")}</div></div>
+      <div class="actpick">${MODES.map(a=>`<button type="button" data-act="${a}" aria-pressed="${state.mode===a}">${ic(MODE_IC[a])}${esc(t("md_"+a))}</button>`).join("")}</div></div>
     <div class="setsec" id="wsec"><h4>${esc(t("sWidgets"))}</h4>
       <div class="wlist">${(()=>{const vis=visibleWidgets(),order=[...vis,...CANON.filter(k=>!vis.includes(k))];return order.map((k,j)=>`<div class="wrow ${vis.includes(k)?"":"off"}"><label class="sw2"><input type="checkbox" data-wt="${k}" ${vis.includes(k)?"checked":""}><span></span></label><b>${esc(t("w_"+k))}</b>${vis.includes(k)?`<button type="button" data-up="${k}" aria-label="up">↑</button><button type="button" data-dn="${k}" aria-label="down">↓</button>`:""}</div>`).join("")})()}</div>
       ${state.widgets?`<button type="button" class="linkbtn" id="wReset">${esc(t("wReset"))}</button>`:""}</div>
@@ -1200,6 +1408,7 @@ function renderSettings(focus){ if(focus) renderSettings.focus=focus;
       <input type="range" class="range" id="clearR" min="0" max="100" step="5" value="${state.pclear??65}">
       <div class="rlab"><span>${esc(t("sOpaque"))}</span><span>${esc(t("sSee"))}</span></div>
       <div class="wrow" style="border-radius:14px;margin-top:10px;box-shadow:inset 0 0 0 1px var(--line)"><label class="sw2"><input type="checkbox" id="calmC" ${state.calm?"checked":""}><span></span></label><b>${esc(t("sCalm"))}</b></div></div>
+    <div class="setsec"><h4>${esc(t("acTitle"))}</h4><div id="acct"></div></div>
     <div class="setsec"><h4>${esc(t("sLang"))}</h4>${seg("lang",[["ja","日本語"],["en","English"],["es","Español"]])}</div>
     <div class="setsec"><h4>${esc(t("sUnits"))}</h4>
       <div class="unitrow"><span>${esc(t("uWind"))}</span>${seg("wind",[["ms","m/s"],["kmh","km/h"],["kn","kt"],["mph","mph"]])}</div>
@@ -1225,9 +1434,9 @@ function renderSettings(focus){ if(focus) renderSettings.focus=focus;
   $("clearR").addEventListener("input",e=>{state.pclear=+e.target.value;$("clv").textContent=state.pclear+"%";applyLook();});
   $("clearR").addEventListener("change",()=>save());
   $("calmC").onchange=e=>{state.calm=e.target.checked;save();Wind.stop(true);Wind.reset();};
-  $("setX").onclick=()=>$("setdlg").close();
+  $("setX").onclick=()=>$("setdlg").close(); renderAccount();
   const rer=()=>{save();renderAll(true);renderSettings();};
-  $("setbody").querySelectorAll("[data-act]").forEach(b=>b.onclick=()=>{const a=b.dataset.act;state.acts=state.acts.includes(a)?state.acts.filter(x=>x!==a):[...state.acts,a];if(!state.acts.length)state.acts=[a];state.widgets=null;POI.key="";POI.load();rer();});
+  $("setbody").querySelectorAll("[data-act]").forEach(b=>b.onclick=()=>{setMode(b.dataset.act);renderSettings();});
   $("setbody").querySelectorAll("[data-wt]").forEach(b=>b.onchange=()=>{let v=[...visibleWidgets()];const k=b.dataset.wt;v=b.checked?[...v,k]:v.filter(x=>x!==k);state.widgets=v;rer();});
   const mv=(k,dlt)=>{const v=[...visibleWidgets()],j=v.indexOf(k),n=j+dlt;if(n<0||n>=v.length)return;[v[j],v[n]]=[v[n],v[j]];state.widgets=v;rer();};
   $("setbody").querySelectorAll("[data-up]").forEach(b=>b.onclick=()=>mv(b.dataset.up,-1));
@@ -1260,16 +1469,28 @@ function renderSpots(){
 }
 
 /* ---------- forecast ---------- */
+const fetchT=(u,ms=15000)=>{const c=new AbortController(),tm=setTimeout(()=>c.abort(),ms);return fetch(u,{signal:c.signal}).finally(()=>clearTimeout(tm));};
+const inflight={};
 async function load(s,past){
+  const ik=`${dLat(s)},${dLon(s)},${state.model}${past?",past":""}`;
+  if(inflight[ik]) return inflight[ik];
+  inflight[ik]=load_(s,past).finally(()=>{delete inflight[ik];});
+  return inflight[ik];
+}
+async function load_(s,past){
   const k=`${dLat(s)},${dLon(s)},${state.model}${past?",past":""}`;
   if(cache[k]&&Date.now()-cache[k].t<15*60e3) return cache[k].d;
   const b0=`latitude=${dLat(s)}&longitude=${dLon(s)}&timezone=auto&`, b=b0+(past?"past_days=10&forecast_days=1":"forecast_days=14"), bm=b0+(past?"past_days=10&forecast_days=1":"forecast_days=8");
   const [w,m]=await Promise.all([
-    fetch(`https://api.open-meteo.com/v1/forecast?${b}&hourly=temperature_2m,weather_code,precipitation_probability,wind_speed_10m,wind_direction_10m,wind_gusts_10m&daily=sunrise,sunset&wind_speed_unit=ms${mq()}`).then(r=>{if(!r.ok)throw 0;return r.json()}),
-    fetch(`https://marine-api.open-meteo.com/v1/marine?${bm}&hourly=wave_height,wave_direction,wave_period,swell_wave_direction,sea_level_height_msl,sea_surface_temperature`).then(r=>r.ok?r.json():null).catch(()=>null)
+    (async()=>{const hv_="&hourly=temperature_2m,weather_code,precipitation_probability,precipitation,wind_speed_10m,wind_direction_10m,wind_gusts_10m&daily=sunrise,sunset&wind_speed_unit=ms";
+      for(const u of [`${b}${hv_}${mq()}`,`${b0}forecast_days=7${hv_}`]){try{const r=await fetchT(`https://api.open-meteo.com/v1/forecast?${u}`);if(r.ok){const j=await r.json();if(j&&j.hourly)return j;}}catch(e){}}
+      throw new Error("forecast unavailable");})(),
+    (async()=>{const mv="&hourly=wave_height,wave_direction,wave_period,swell_wave_height,swell_wave_period,swell_wave_direction,sea_level_height_msl,sea_surface_temperature,ocean_current_velocity,ocean_current_direction";
+      for(const u of [`${bm}${mv}`,`${bm}&hourly=wave_height,wave_direction,wave_period,swell_wave_direction,sea_level_height_msl,sea_surface_temperature`]){try{const r=await fetchT(`https://marine-api.open-meteo.com/v1/marine?${u}`);if(r.ok)return await r.json();}catch(e){}}
+      return null;})()
   ]);
   const T=w.hourly.time, n=T.length, src=(m&&m.hourly)||{}, pos=new Map((src.time||[]).map((x,j)=>[x,j])), mh={time:T};
-  ["wave_height","wave_direction","wave_period","swell_wave_direction","sea_level_height_msl","sea_surface_temperature"].forEach(x=>{const a=src[x];mh[x]=T.map(tt=>{const j=pos.get(tt);return a&&j!=null?a[j]:null;});});
+  ["wave_height","wave_direction","wave_period","swell_wave_height","swell_wave_period","swell_wave_direction","sea_level_height_msl","sea_surface_temperature","ocean_current_velocity","ocean_current_direction"].forEach(x=>{const a=src[x];mh[x]=T.map(tt=>{const j=pos.get(tt);return a&&j!=null?a[j]:null;});});
   const d={w,m:{hourly:mh},off:w.utc_offset_seconds||0,hasWave:mh.wave_height.some(v=>v!=null)};
   cache[k]={t:Date.now(),d}; return d;
 }
@@ -1309,10 +1530,20 @@ function dialSvg(F,windFrom,windSpd,waveFrom){
     <circle cx="${c}" cy="${c}" r="2.5" style="fill:var(--ink)"/></svg>`;
 }
 
+function setMode(m){
+  if(!MODES.includes(m)) return; state.mode=m; state.widgets=null;
+  if(m==="storm"&&state.layer==="none"){state.layer="wind";}
+  save(); applyChrome(); POI.key=""; POI.load(); Wind.reset(); renderAll(true);
+}
+function modeBar(){
+  return `<div class="modebar" role="tablist">${MODES.map(m=>`<button type="button" role="tab" data-md="${m}" aria-pressed="${state.mode===m}" title="${esc(t("md_"+m))}">${ic(MODE_IC[m])}<span>${esc(t("mds_"+m))}</span></button>`).join("")}</div>`;
+}
 function renderHeader(s){
   $("ph").innerHTML=`<div><h1>${esc(s.name)}</h1><small>${s.snap>0.3?esc(t("snapNote",{k:s.snap<1?s.snap.toFixed(1):Math.round(s.snap)})):`${(+s.lat).toFixed(3)}°, ${(+s.lon).toFixed(3)}°`}</small></div>`+
     (s.temp?`<button class="act save" id="pact">${ic("star")}${esc(t("save"))}</button>`:`<button class="iconb" id="pact" aria-label="${esc(t("edit"))}" title="${esc(t("spotSettings"))}">${ic("more")}</button>`);
   $("fab").hidden=false; $("fab").onclick=()=>openLog(spot()); $("fabL").textContent=t("addLog");
+  $("ph").insertAdjacentHTML("afterend","");
+  const mb=$("modebar"); mb.innerHTML=modeBar(); mb.querySelectorAll("[data-md]").forEach(b=>b.onclick=()=>setMode(b.dataset.md));
   $("pact").onclick=()=>s.temp?openEditor({...temp,id:"s"+Date.now(),name:temp.custom?temp.name:"",faceMode:"auto",tide:"",cam:"",wn:"",yahoo:""},true):openEditor(s);
 }
 function linksHtml(s){
@@ -1384,7 +1615,7 @@ function hourlyHtml(d,day,s,F,sel){
   return `<div class="strip" id="strip">${idx.map(i=>{
     const [k]=windKind(W.wind_direction_10m[i],F.face,F.mode==="coast"?null:F.mode), col=k==="none"?css("--ink"):css(`--${k}`);
     return `<div class="h ${i===nowI?"now":""}" data-hi="${i}"><span class="t">${+T[i].slice(11,13)}:00</span><span class="e">${ic(wxOf(W.weather_code[i])[0])}</span>
-      <span class="w">${arrowSvg(W.wind_direction_10m[i],col)}${wv(W.wind_speed_10m[i],0)}</span>${d.hasWave?`<span class="vv">${hv(M.wave_height[i])}</span>`:""}</div>`}).join("")}</div>
+      <span class="w">${arrowSvg(W.wind_direction_10m[i],col)}${wv(W.wind_speed_10m[i],0)}</span>${state.mode==="storm"?`<span class="vv">${W.precipitation?.[i]!=null?W.precipitation[i].toFixed(1):"–"}</span>`:d.hasWave?`<span class="vv">${hv(M.wave_height[i])}</span>`:""}</div>`}).join("")}</div>
     <div class="legend">${F.face!=null?`<span><i style="background:var(--off)"></i>${esc(t("legOff"))}</span><span><i style="background:var(--cross)"></i>${esc(t("legCross"))}</span><span><i style="background:var(--on)"></i>${esc(t("legOn"))}</span>`:""}<span style="margin-left:auto">${esc(t("unitsLbl",{w:wu(),h:hu()}))}</span></div>`;
 }
 function selfAlerts(d){
@@ -1469,14 +1700,14 @@ function renderJournal(){
   $("jX").onclick=()=>$("jdlg").close();
   const ja=$("jAdd"); if(ja) ja.onclick=()=>{$("jdlg").close();openLog(spot());};
   $("jbody").querySelectorAll("[data-jf]").forEach(b=>b.onclick=()=>{jFilter=b.dataset.jf;renderJournal();});
-  $("jbody").querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{if(!confirm(t("delVisit")))return;const [sid,vid]=b.dataset.del.split("|"),sp=state.spots.find(x=>x.id===sid);if(sp){sp.visits=(sp.visits||[]).filter(v=>v.id!==vid);save();drawSpots();renderJournal();}});
+  $("jbody").querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{if(!confirm(t("delVisit")))return;const [sid,vid]=b.dataset.del.split("|"),sp=state.spots.find(x=>x.id===sid);if(sp){sp.visits=(sp.visits||[]).filter(v=>v.id!==vid);state.tomb=state.tomb||{spots:[],logs:[]};state.tomb.logs.push(vid);save();drawSpots();renderJournal();}});
 }
 const tagLabel=g=>g.startsWith("c:")?g.slice(2):t("tg_"+g);
 $("jBtn").onclick=openJournal;
 function openLog(s){
   if(!s) return;
   const f=$("edform");
-  let type=LOGTYPES[state.acts[0]]||"swim", stars=0, vis="", size="", crowd="", tags=new Set(), editTags=false;
+  let type=LOGTYPES[state.mode]||"swim", stars=0, vis="", size="", crowd="", tags=new Set(), editTags=false;
   const val=n=>f.elements[n]?f.elements[n].value:"";
   const draw=()=>{
     const keep={name:val("name"),d:val("d"),tm:val("tm"),tm2:val("tm2"),note:val("note"),count:val("count"),len:val("len"),depth:val("depth")};
@@ -1529,6 +1760,32 @@ function openLog(s){
   $("dlg").showModal();
 }
 
+const ktOf=v=>v==null?null:v/1.852;
+function curTxt(M,i){const v=ktOf(M.ocean_current_velocity[i]),d=M.ocean_current_direction[i];return v==null?null:[v.toFixed(1),d];}
+function clarity(d,i,kc){
+  const W=d.w.hourly,M=d.m.hourly,h=M.wave_height[i]; if(h==null) return null;
+  let sc=h>=1.5?2:h>=0.8?1:0, rain=0; for(let j=Math.max(0,i-36);j<=i;j++) rain+=W.precipitation?.[j]||0;
+  sc+=rain>=20?2:rain>=5?1:0; if(kc==="on"&&(W.wind_speed_10m[i]||0)>=6) sc+=1;
+  return sc<=1?"good":sc<=3?"ok":"poor";
+}
+function bx(icn,label,val,unit,sub,cls){return `<div class="hs ${cls||""}"><span class="hl">${icn}${esc(label)}</span><b class="${/[^\d.\-–]/.test(String(val))&&!unit?"jp":""}">${val}${unit?`<small>${unit}</small>`:""}</b><em>${sub||""}</em></div>`;}
+function modeStats(d,i,F,o){
+  const W=d.w.hourly,M=d.m.hourly,m=state.mode,cur=curTxt(M,i);
+  const swH=M.swell_wave_height[i]??o.wh, swP=M.swell_wave_period[i]??o.wp;
+  const B={
+    wave:()=>bx(ic("wave"),t("wave"),o.wh!=null?hv(o.wh):"–",o.wh!=null?hu():"",o.wh!=null?`${f0(o.wp)}s · ${esc(dirName(o.wvd))}`:esc(t("noData")),"hs-w"),
+    swell:()=>bx(ic("wave"),t("swell"),swH!=null?hv(swH):"–",swH!=null?hu():"",swH!=null?`${f0(swP)}s · ${esc(dirName(o.wvd))}`:esc(t("noData")),"hs-w"),
+    tide:()=>bx(moonIcon(Date.parse(W.time[i].slice(0,10)+"T12:00:00"),14),t("wTcyc"),esc(t("tn_"+o.tn)),"",o.nextTide?esc(t(o.nextTide[1]==="fHigh"?"nextHighS":"nextLowS",{h:o.nextTide[0]})):esc(t("tmove",{x:t("tm"+tideStars(o.tn))}))),
+    water:()=>{const c=clarity(d,i,o.kc);return bx(ic("thermo"),t("water"),tv(o.sst),tu(),c?`${esc(t("clar"))} ${esc(t("cl_"+c))}`:esc(t("airT",{n:tv(W.temperature_2m[i])+"°"})));},
+    cur:()=>bx(ic("current"),t("current"),cur?cur[0]:"–",cur?"kt":"",cur?esc(t("toDir",{d:dirName(cur[1])})):esc(t("noData"))),
+    bite:()=>bx(ic("fish"),t("bite"),o.nextWin?`${Math.max(0,o.nextWin[0])}:00`:"–","",o.nextWin?esc(t(o.nextWin[1])):""),
+    gust:()=>bx(ic("wind"),t("gustL"),wv(o.gu,0),wu(),esc(t("windFrom",{d:dirName(W.wind_direction_10m[i])}))),
+    rain:()=>bx(ic("umbrella"),t("rainMm"),W.precipitation?.[i]!=null?W.precipitation[i].toFixed(1):"–","mm",`${esc(t("rainS"))} ${W.precipitation_probability[i]??"–"}%`),
+    tc:()=>{const c=(CTX.tcs||[]).map(x=>({...x,dist:km(CTX.s.lat,CTX.s.lon,x.lat,x.lon)})).sort((a,b)=>a.dist-b.dist)[0];return bx(ic("tc"),t("tcL"),c?`${Math.round(c.dist/10)*10}`:esc(t("none")),c?"km":"",c?esc(c.name):"");}
+  };
+  const L={dive:["swell","water","cur"],surf:["wave","swell","tide"],fish:["tide","cur","bite"],boat:["wave","cur","gust"],storm:["rain","gust","tc"]}[m]||["wave","tide","water"];
+  return L.map(k=>B[k]()).join("");
+}
 let reqId=0, CTX=null, selIdx=null, selSpot=null;
 const WCOL=[[0,"#CFF1F7"],[2,"#8FDCEC"],[4,"#38B9DA"],[6,"#FFD166"],[9,"#FF8C61"],[12,"#E5506A"],[16,"#9B5DE5"]];
 const HCOL=[[0,"#E8F6FB"],[.5,"#B3E1F2"],[1,"#6CC3E8"],[2,"#2A93D0"],[3,"#0D5C9C"]];
@@ -1604,7 +1861,7 @@ function renderWidgets(mode){
   const nextWin=wins.find(([a])=>a+2>nowH), nextTide=exH.find(([k])=>k>nowH);
   const nf=Moon.next(Date.now()-864e5,true), mAge=Moon.age(dayMs), pk=phaseKey(mAge);
   const at=i===nowI?"":`<span class="atlbl">${ic("clock")}${t("date")(+mo,+da)} ${hhmm}</span>`;
-  const [rl,rwhy]=riskAt(d,i), AL=CTX.al||[], alv=AL.some(x=>x[3]==="danger")?2:AL.length?1:0, lvl=Math.max(rl,alv);
+  const [rl,rwhy]=riskAt(d,i), AL=[...(CTX.qk||[]).map(q=>["alert",q.title+"："+q.act,false,"danger"]),...(CTX.al||[])], alv=AL.some(x=>x[3]==="danger")?2:AL.length?1:0, lvl=Math.max(rl,alv);
   const head=rl?`<b>${esc(t(rl===2?"rDanger":"rCaution"))}</b><span>${esc(rwhy.join("・"))}</span>`:`<b>${esc(t("rCaution"))}</b><span>${esc(AL[0]?(AL[0][2]?AL[0][1].replace(/<[^>]+>/g,""):AL[0][1]):"")}</span>`;
   const risk=lvl?`<details class="risk r${lvl}"><summary>${ic("alert")}${head}${AL.length?`<i class="rn">${AL.length}</i>`:""}<em class="achev">⌄</em></summary>
     <div class="alist">${AL.map(([k,txt,raw,lv])=>`<div class="alert ${k==="tc"?"tc":""} ${lv||""}">${ic(k==="tc"?"tc":"alert")}<span>${raw?txt:esc(txt)}</span></div>`).join("")}
@@ -1615,11 +1872,7 @@ function renderWidgets(mode){
         <div class="big">${wv(ws)}<small>${wu()}</small></div>
         <div class="vsub">${esc(t("windFrom",{d:dirName(wd)}))}<span class="sep"></span>${esc(t("gust",{n:wv(gu,0)+" "+wu()}))}</div>
         ${facenote?`<div class="facenote">${esc(facenote)}</div>`:""}</div></div>
-      <div class="hstats">
-        <div class="hs hs-w"><span class="hl">${ic("wave")}${esc(t("wave"))}</span><b>${wh!=null?hv(wh):"–"}<small>${hu()}</small></b><em>${wh!=null?`${f0(wp)}s · ${esc(dirName(wvd))}`:esc(t("noData"))}</em></div>
-        <div class="hs"><span class="hl">${moonIcon(dayMs,14)}${esc(t("wTcyc"))}</span><b class="jp">${esc(t("tn_"+tn))}</b><em>${nextTide?esc(t(nextTide[1]==="fHigh"?"nextHighS":"nextLowS",{h:nextTide[0]})):esc(t("tmove",{x:t("tm"+tideStars(tn))}))}</em></div>
-        <div class="hs"><span class="hl">${ic("thermo")}${esc(t("water"))}</span><b>${tv(sst)}<small>${tu()}</small></b><em>${esc(t("airT",{n:tv(W.temperature_2m[i])+"°"}))}</em></div>
-      </div>
+      <div class="hstats">${modeStats(d,i,F,{wh,wp,wvd,sst,tn,nextTide,nextWin,gu,ws,kc})}</div>
       <div class="hfoot"><span>${ic("sunrise")}${sr||"–"}<i>–</i>${ic("sunset")}${ss||"–"}</span>${fishOn()&&nextWin?`<span class="bite">${ic("fish")}${esc(t("nextBite",{h:Math.max(0,nextWin[0]),l:t(nextWin[1])}))}</span>`:`<span>${moonIcon(dayMs,13)}${esc(t("ph_"+pk))}</span>`}</div></div>`,
     wave:`<div class="wg wave"><div class="lb">${ic("wave")}${esc(t("wave"))}</div><div class="v">${wh!=null?hv(wh):"–"}<small>${hu()}</small></div><div class="s">${wh!=null?esc(t("period",{n:f0(wp)})):esc(t("noData"))}${wh!=null&&wvd!=null?`<br>${esc(t("swellFrom",{d:dirName(wvd)}))}`:""}</div></div>`,
     water:`<div class="wg"><div class="lb">${ic("thermo")}${esc(t("water"))}</div><div class="v">${tv(sst)}<small>${tu()}</small></div><div class="s">${esc(t("airT",{n:tv(W.temperature_2m[i])+tu()}))}</div></div>`,
@@ -1658,8 +1911,8 @@ async function renderAll(quiet){
   try{
     const [d,F,tcs,nws]=await Promise.all([load(s),faceOf(s),loadTC(),loadNWS(s)]); if(my!==reqId)return;
     const key=s.id+"|"+s.lat+","+s.lon;
-    if(selSpot!==key||selIdx==null||selIdx>=d.w.hourly.time.length){selIdx=nowIndex(d.w.hourly.time,d.off);selSpot=key;}
-    CTX={s,d,F,al:[]};
+    if(selSpot!==key||selIdx==null||selIdx>=d.w.hourly.time.length){const changed=selSpot!==key;selIdx=nowIndex(d.w.hourly.time,d.off);selSpot=key;if(changed&&Quake.timer){Quake.list=[];setTimeout(()=>Quake.poll(),300);}}
+    CTX={s,d,F,al:[],tcs};
     const al=selfAlerts(d);
     nws.forEach(h=>al.unshift(["alert",h,false,"danger"]));
     tcs.map(c=>({...c,dist:km(s.lat,s.lon,c.lat,c.lon)})).filter(c=>c.dist<1500).sort((a,b)=>a.dist-b.dist)
@@ -1678,7 +1931,8 @@ async function renderAll(quiet){
   }catch(e){
     if(my!==reqId)return;
     console.error(e);
-    $("body").innerHTML=`<div class="msg"><b>${esc(t("failT"))}</b>${esc(t("failB"))}</div>${linksHtml(s)}`;
+    $("body").innerHTML=`<div class="msg"><b>${esc(t("failT"))}</b>${esc(t("failB"))}<br><button class="btn primary" id="retryB" style="margin-top:8px">${esc(t("retry"))}</button></div>${linksHtml(s)}`;
+    $("retryB").onclick=()=>{Object.keys(cache).forEach(k=>delete cache[k]);renderAll();};
   }
 }
 
@@ -1703,7 +1957,7 @@ function openEditor(s,fromTemp){
       <span style="display:flex;gap:8px"><button type="button" class="btn" id="cancelBtn">${esc(t("cancel"))}</button><button type="submit" class="btn primary">${esc(t("save"))}</button></span></div>`;
   f.querySelector("#cancelBtn").onclick=()=>$("dlg").close();
   const del=f.querySelector("#delBtn");
-  if(del) del.onclick=()=>{if(!confirm(t("confirmDel",{n:s.name})))return;state.spots=state.spots.filter(x=>x.id!==s.id);state.cur=state.spots[0]?.id||(temp?"temp":null);save();$("dlg").close();drawSpots();renderAll();};
+  if(del) del.onclick=()=>{if(!confirm(t("confirmDel",{n:s.name})))return;state.tomb=state.tomb||{spots:[],logs:[]};state.tomb.spots.push(s.id);(s.visits||[]).forEach(v=>state.tomb.logs.push(v.id));state.spots=state.spots.filter(x=>x.id!==s.id);state.cur=state.spots[0]?.id||(temp?"temp":null);save();$("dlg").close();drawSpots();renderAll();};
   f.onsubmit=e=>{
     e.preventDefault();
     const E=f.elements, lat=+s.lat, lon=+s.lon;
@@ -1720,6 +1974,7 @@ function openEditor(s,fromTemp){
 
 applyLook();
 applyChrome(); initMap(); drawSpots(); renderAll();
+Cloud.init(); setTimeout(()=>Quake.start(),1500);
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)renderAll(true)});
 })();
 </script>
