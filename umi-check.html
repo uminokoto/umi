@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>海チェック</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#E6F0EE; --panel:#F6FAF9; --ink:#12343B; --sub:#4E6B70; --line:#C9DAD8;
+  --sea:#1F6F8B; --sea-soft:#CFE4EA; --land:#D9CDB4; --buoy:#E8A200;
+  --off:#1B8A5A; --cross:#C98A00; --on:#C2462E;
+  --num:"Barlow Condensed","Arial Narrow",sans-serif;
+  --jp:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0C2328; --panel:#123138; --ink:#E4F0EE; --sub:#93AFB2; --line:#24474E;
+    --sea:#5BB3CF; --sea-soft:#1A4450; --land:#4A4433; --buoy:#F2B705;
+    --off:#46C08A; --cross:#E0AA2E; --on:#E8735C;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0C2328; --panel:#123138; --ink:#E4F0EE; --sub:#93AFB2; --line:#24474E;
+  --sea:#5BB3CF; --sea-soft:#1A4450; --land:#4A4433; --buoy:#F2B705;
+  --off:#46C08A; --cross:#E0AA2E; --on:#E8735C;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--jp);font-size:15px;line-height:1.6;-webkit-text-size-adjust:100%}
+.wrap{max-width:720px;margin:0 auto;padding:14px 16px 40px}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--sea);outline-offset:2px}
+
+/* spot bar */
+.spots{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;align-items:center;scrollbar-width:none}
+.spots::-webkit-scrollbar{display:none}
+.chip{flex:none;border:1px solid var(--line);background:transparent;border-radius:999px;padding:6px 14px;font-weight:500;white-space:nowrap}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chip.ghost{color:var(--sub)}
+
+/* hero */
+.hero{margin-top:14px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;align-items:center}
+.dial{width:100%;max-width:280px;justify-self:center}
+.read{display:flex;flex-direction:column;gap:10px}
+.verdict{font-weight:700;font-size:20px;line-height:1.3}
+.verdict small{display:block;font-weight:400;font-size:13px;color:var(--sub)}
+.stat{display:flex;align-items:baseline;gap:6px}
+.stat b{font-family:var(--num);font-weight:600;font-size:44px;line-height:1}
+.stat span{color:var(--sub);font-size:13px}
+.stat em{font-style:normal;font-family:var(--num);font-size:20px;font-weight:500}
+.wx{font-size:14px;color:var(--sub)}
+.wx strong{color:var(--ink);font-weight:500}
+@media (max-width:460px){.hero{grid-template-columns:1fr}.dial{max-width:230px}.stat b{font-size:40px}}
+
+/* sections */
+section{margin-top:22px}
+h2{font-size:15px;font-weight:700;margin:0 0 8px;display:flex;justify-content:space-between;align-items:baseline}
+h2 span{font-weight:400;font-size:12px;color:var(--sub)}
+
+.links{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.links a{display:block;text-decoration:none;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 8px;text-align:center;font-weight:500;font-size:14px}
+.links a i{display:block;font-style:normal;font-size:20px;line-height:1.2}
+.links a.custom{border-color:var(--sea)}
+@media (max-width:380px){.links{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+.days{display:flex;gap:4px;margin-bottom:8px}
+.days button{border:none;background:transparent;padding:4px 10px;border-radius:6px;color:var(--sub);font-weight:500}
+.days button[aria-pressed="true"]{background:var(--sea-soft);color:var(--ink)}
+
+.tidebox{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 10px 6px}
+.tidebox svg{display:block;width:100%;height:auto}
+.tides{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px;margin-top:4px;color:var(--sub)}
+.tides b{font-family:var(--num);font-size:17px;color:var(--ink);font-weight:600}
+
+.scroller{overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px}
+table{border-collapse:collapse;font-size:13px;white-space:nowrap}
+th,td{padding:6px 8px;text-align:center;border-bottom:1px solid var(--line)}
+th{position:sticky;left:0;background:var(--panel);text-align:left;font-weight:500;color:var(--sub);z-index:1}
+tr:last-child td,tr:last-child th{border-bottom:none}
+td.now{background:var(--sea-soft)}
+td .n{font-family:var(--num);font-size:16px;font-weight:600}
+.k{display:inline-block;font-size:11px;font-weight:700;padding:0 5px;border-radius:4px;color:#fff}
+.k.off{background:var(--off)}.k.cross{background:var(--cross)}.k.on{background:var(--on)}
+.arrow{display:inline-block;width:16px;height:16px;vertical-align:-3px}
+
+.note{font-size:12px;color:var(--sub);margin-top:8px}
+.msg{background:var(--panel);border:1px dashed var(--line);border-radius:12px;padding:14px;font-size:14px}
+.msg b{display:block;margin-bottom:4px}
+
+/* editor */
+dialog{border:none;border-radius:16px;padding:0;max-width:min(520px,94vw);width:100%;background:var(--panel);color:var(--ink)}
+dialog::backdrop{background:rgba(0,0,0,.4)}
+.ed{padding:18px}
+.ed h3{margin:0 0 12px;font-size:17px}
+.ed label{display:block;font-size:13px;color:var(--sub);margin-top:10px}
+.ed input,.ed select{width:100%;margin-top:3px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ed .hint{font-size:12px;color:var(--sub);margin-top:4px}
+.ed details{margin-top:12px}
+.ed summary{cursor:pointer;font-weight:500}
+.btns{display:flex;gap:8px;justify-content:space-between;margin-top:16px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:transparent;border-radius:8px;padding:8px 14px}
+.btn.primary{background:var(--ink);color:var(--bg);border-color:var(--ink);font-weight:700}
+.btn.danger{color:var(--on);border-color:transparent}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="spots" id="spots" aria-label="スポット"></nav>
+
+  <div class="hero" id="hero"></div>
+
+  <section>
+    <h2>他のサイトで見る <span id="linkhint"></span></h2>
+    <div class="links" id="links"></div>
+  </section>
+
+  <section id="dataSec">
+    <div class="days" id="days"></div>
+    <h2>潮位 <span>モデル予測・目安</span></h2>
+    <div class="tidebox" id="tide"></div>
+    <h2 style="margin-top:18px">時間ごと <span>風はm/s・波はm</span></h2>
+    <div class="scroller" id="hourly"></div>
+    <p class="note">データ：Open-Meteo（波・風・天気・潮位の予測モデル）。潮位は沿岸の地形を細かく反映しないため、正確な時刻は潮見表で確認してください。</p>
+  </section>
+</div>
+
+<dialog id="dlg"><form class="ed" id="edform" method="dialog"></form></dialog>
+
+<script>
+(function(){
+const DIRS=[["北",0],["北東",45],["東",90],["南東",135],["南",180],["南西",225],["西",270],["北西",315]];
+const DEFAULT=[{id:"s1",name:"鵠沼",lat:35.3175,lon:139.4710,face:180,tide:"",cam:"",wn:"",yahoo:""}];
+const KEY="umi-check-v1";
+let state={spots:DEFAULT,cur:"s1"};
+try{const s=JSON.parse(localStorage.getItem(KEY)||"null");if(s&&Array.isArray(s.spots)&&s.spots.length)state=s;}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}};
+let dayIdx=0, cache={};
+
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const spot=()=>state.spots.find(s=>s.id===state.cur)||state.spots[0];
+const dirName=d=>["北","北北東","北東","東北東","東","東南東","南東","南南東","南","南南西","南西","西南西","西","西北西","北西","北北西"][Math.round(((d%360)+360)%360/22.5)%16];
+function windKind(windFrom,face){
+  let diff=Math.abs(((windFrom-face)%360+540)%360-180); // 0 = wind from sea (onshore)
+  if(diff<=50) return ["on","オンショア"];
+  if(diff>=130) return ["off","オフショア"];
+  return ["cross","サイド"];
+}
+const WX={0:["☀️","快晴"],1:["🌤","晴れ"],2:["⛅","晴れ時々曇り"],3:["☁️","曇り"],45:["🌫","霧"],48:["🌫","霧"],51:["🌦","霧雨"],53:["🌦","霧雨"],55:["🌦","霧雨"],61:["🌧","小雨"],63:["🌧","雨"],65:["🌧","強い雨"],66:["🌧","着氷性の雨"],67:["🌧","着氷性の雨"],71:["🌨","小雪"],73:["🌨","雪"],75:["🌨","大雪"],77:["🌨","雪"],80:["🌦","にわか雨"],81:["🌧","にわか雨"],82:["⛈","激しいにわか雨"],85:["🌨","にわか雪"],86:["🌨","にわか雪"],95:["⛈","雷雨"],96:["⛈","雷雨"],99:["⛈","雷雨"]};
+const wx=c=>WX[c]||["・","—"];
+const arrowSvg=(from,color)=>`<svg class="arrow" viewBox="0 0 16 16" aria-hidden="true"><g transform="rotate(${from+180} 8 8)"><path d="M8 1 L12 9 L8.8 7.6 L8.8 15 L7.2 15 L7.2 7.6 L4 9 Z" fill="${color||'currentColor'}"/></g></svg>`;
+
+/* ---------- spots ---------- */
+function renderSpots(){
+  $("spots").innerHTML=state.spots.map(s=>`<button class="chip" aria-pressed="${s.id===state.cur}" data-id="${esc(s.id)}">${esc(s.name)}</button>`).join("")
+    +`<button class="chip ghost" id="editBtn">編集</button><button class="chip ghost" id="addBtn">＋ 追加</button>`;
+  $("spots").querySelectorAll("[data-id]").forEach(b=>b.onclick=()=>{state.cur=b.dataset.id;save();dayIdx=0;renderAll();});
+  $("editBtn").onclick=()=>openEditor(spot());
+  $("addBtn").onclick=()=>openEditor(null);
+}
+
+/* ---------- links ---------- */
+function renderLinks(){
+  const s=spot(), q=encodeURIComponent(s.name);
+  const L=[
+    ["🌬","Windy",`https://www.windy.com/?waves,${s.lat},${s.lon},11`,false],
+    ["🌊","潮見表",s.tide||`https://www.google.com/search?q=${q}+%E6%BD%AE%E8%A6%8B%E8%A1%A8`,!!s.tide],
+    ["📹","ライブカメラ",s.cam||`https://www.google.com/search?q=${q}+%E3%83%A9%E3%82%A4%E3%83%96%E3%82%AB%E3%83%A1%E3%83%A9`,!!s.cam],
+    ["🏄","ウェザーニュース",s.wn||"https://weathernews.jp/surf/",!!s.wn],
+    ["🌤","Yahoo天気",s.yahoo||`https://search.yahoo.co.jp/search?p=${q}+%E5%A4%A9%E6%B0%97`,!!s.yahoo],
+    ["🗺","地図",`https://www.google.com/maps?q=${s.lat},${s.lon}`,false]
+  ];
+  $("links").innerHTML=L.map(([i,t,u,c])=>`<a href="${esc(u)}" target="_blank" rel="noopener" class="${c?'custom':''}"><i>${i}</i>${t}</a>`).join("");
+  const unset=!s.tide||!s.cam;
+  $("linkhint").textContent=unset?"「編集」でページを登録すると直接開けます":"";
+}
+
+/* ---------- data ---------- */
+async function load(s){
+  const k=`${s.lat},${s.lon}`;
+  if(cache[k]&&Date.now()-cache[k].t<15*60e3) return cache[k].d;
+  const base=`latitude=${s.lat}&longitude=${s.lon}&timezone=Asia%2FTokyo&forecast_days=3`;
+  const [w,m]=await Promise.all([
+    fetch(`https://api.open-meteo.com/v1/forecast?${base}&hourly=temperature_2m,weather_code,precipitation_probability,wind_speed_10m,wind_direction_10m,wind_gusts_10m&daily=sunrise,sunset&wind_speed_unit=ms`).then(r=>{if(!r.ok)throw 0;return r.json()}),
+    fetch(`https://marine-api.open-meteo.com/v1/marine?${base}&hourly=wave_height,wave_direction,wave_period,swell_wave_height,swell_wave_period,swell_wave_direction,sea_level_height_msl,sea_surface_temperature`).then(r=>{if(!r.ok)throw 0;return r.json()})
+  ]);
+  const d={w,m}; cache[k]={t:Date.now(),d}; return d;
+}
+
+function nowIndex(times){
+  const n=new Date(); const pad=x=>String(x).padStart(2,"0");
+  const key=`${n.getFullYear()}-${pad(n.getMonth()+1)}-${pad(n.getDate())}T${pad(n.getHours())}:00`;
+  const i=times.indexOf(key); return i<0?0:i;
+}
+
+function dialSvg(face,windFrom,windSpd,waveFrom){
+  const c=100,r=78;
+  // sea half: semicircle centered on face direction
+  const pt=(deg,rad)=>{const a=(deg-90)*Math.PI/180;return [c+rad*Math.cos(a),c+rad*Math.sin(a)]};
+  const [x1,y1]=pt(face-90,r),[x2,y2]=pt(face+90,r);
+  const ticks=DIRS.map(([n,d])=>{const [x,y]=pt(d,r+13);return `<text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="central" font-size="${d%90?9:12}" fill="var(--sub)" font-weight="${d===0?700:400}">${n}</text>`}).join("");
+  const [kc]=windKind(windFrom,face);
+  const col=`var(--${kc})`;
+  const [wx0,wy0]=pt(windFrom,r-4),[wx1,wy1]=pt(windFrom+180,r-30);
+  const ah=(()=>{const a=(windFrom+180-90)*Math.PI/180;const b=a+Math.PI;const L=12;return `${wx1},${wy1} ${wx1+L*Math.cos(b+0.45)},${wy1+L*Math.sin(b+0.45)} ${wx1+L*Math.cos(b-0.45)},${wy1+L*Math.sin(b-0.45)}`})();
+  const [vx,vy]=pt(waveFrom,r+1);
+  return `<svg class="dial" viewBox="0 0 200 200" role="img" aria-label="風向き：${dirName(windFrom)}から ${windSpd.toFixed(1)}m/s">
+    <circle cx="${c}" cy="${c}" r="${r}" fill="var(--land)"/>
+    <path d="M${x1},${y1} A${r},${r} 0 0 1 ${x2},${y2} Z" fill="var(--sea-soft)"/>
+    <path d="M${x1},${y1} A${r},${r} 0 0 1 ${x2},${y2}" fill="none" stroke="var(--sea)" stroke-width="3"/>
+    <line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="var(--sub)" stroke-width="1" stroke-dasharray="3 3"/>
+    ${(()=>{const [lx,ly]=pt(face,r*0.55);const [gx,gy]=pt(face+180,r*0.55);return `<text x="${lx}" y="${ly}" text-anchor="middle" font-size="10" fill="var(--sea)">海</text><text x="${gx}" y="${gy}" text-anchor="middle" font-size="10" fill="var(--sub)">陸</text>`})()}
+    ${ticks}
+    <line x1="${wx0}" y1="${wy0}" x2="${wx1}" y2="${wy1}" stroke="${col}" stroke-width="6" stroke-linecap="round"/>
+    <polygon points="${ah}" fill="${col}"/>
+    <circle cx="${vx}" cy="${vy}" r="6" fill="var(--sea)" stroke="var(--panel)" stroke-width="2"><title>うねりの来る方向</title></circle>
+    <text x="${c}" y="${c+4}" text-anchor="middle" font-family="var(--num)" font-size="30" font-weight="700" fill="var(--ink)">${windSpd.toFixed(1)}</text>
+    <text x="${c}" y="${c+18}" text-anchor="middle" font-size="9" fill="var(--sub)">m/s</text>
+  </svg>`;
+}
+
+function renderHero(d,s){
+  const W=d.w.hourly,M=d.m.hourly,i=nowIndex(W.time);
+  const ws=W.wind_speed_10m[i],wd=W.wind_direction_10m[i],gu=W.wind_gusts_10m[i];
+  const wh=M.wave_height[i],wp=M.wave_period[i],wvd=M.swell_wave_direction?.[i]??M.wave_direction[i];
+  const [kc,kn]=windKind(wd,s.face);
+  const [ic,wn]=wx(W.weather_code[i]);
+  const sst=M.sea_surface_temperature?.[i];
+  const sr=d.w.daily.sunrise[0].slice(11),ss=d.w.daily.sunset[0].slice(11);
+  $("hero").innerHTML=dialSvg(s.face,wd,ws,wvd)+`
+    <div class="read">
+      <div class="verdict" style="color:var(--${kc})">${kn}<small>${dirName(wd)}の風 ${ws.toFixed(1)}m/s（最大 ${gu.toFixed(0)}m/s）</small></div>
+      <div class="stat"><b>${wh!=null?wh.toFixed(1):"–"}</b><span>m</span><em>${wp!=null?wp.toFixed(0):"–"}</em><span>秒</span></div>
+      <div class="wx">${dirName(wvd)}からのうねり</div>
+      <div class="wx"><strong>${ic} ${wn}　${W.temperature_2m[i].toFixed(0)}℃</strong>　雨 ${W.precipitation_probability[i]??"–"}%<br>${sst!=null?`水温 ${sst.toFixed(0)}℃　`:""}日の出 ${sr}　日の入 ${ss}</div>
+    </div>`;
+}
+
+function renderDays(d){
+  const days=[...new Set(d.w.hourly.time.map(t=>t.slice(0,10)))];
+  const lab=["今日","明日","明後日"];
+  $("days").innerHTML=days.map((t,i)=>{const dt=new Date(t+"T00:00");return `<button aria-pressed="${i===dayIdx}" data-i="${i}">${lab[i]||""} ${dt.getMonth()+1}/${dt.getDate()}</button>`}).join("");
+  $("days").querySelectorAll("button").forEach(b=>b.onclick=()=>{dayIdx=+b.dataset.i;renderAll(true)});
+  return days[dayIdx];
+}
+
+function renderTide(d,day){
+  const M=d.m.hourly,T=M.time;
+  const idx=T.map((t,i)=>t.startsWith(day)?i:-1).filter(i=>i>=0);
+  const v=idx.map(i=>M.sea_level_height_msl?.[i]);
+  if(!v.length||v.some(x=>x==null)){$("tide").innerHTML=`<div class="note">この地点は潮位データがありません。潮見表ボタンから確認してください。</div>`;return;}
+  const w=600,h=140,p=18,mn=Math.min(...v),mx=Math.max(...v),rg=(mx-mn)||1;
+  const X=i=>p+i*(w-2*p)/23,Y=y=>p+(1-(y-mn)/rg)*(h-2*p-14);
+  const line=v.map((y,i)=>`${i?"L":"M"}${X(i).toFixed(1)},${Y(y).toFixed(1)}`).join("");
+  // extrema using neighbours from whole series
+  const ex=[];
+  idx.forEach((gi,k)=>{const a=M.sea_level_height_msl[gi-1],b=M.sea_level_height_msl[gi],c=M.sea_level_height_msl[gi+1];if(a==null||c==null)return;if(b>a&&b>=c)ex.push(["満潮",k,b]);if(b<a&&b<=c)ex.push(["干潮",k,b]);});
+  const nowI=nowIndex(T),nk=idx.indexOf(nowI);
+  const hrs=[0,6,12,18].map(hh=>`<text x="${X(hh)}" y="${h-2}" font-size="11" fill="var(--sub)" text-anchor="middle">${hh}時</text>`).join("");
+  $("tide").innerHTML=`<svg viewBox="0 0 ${w} ${h}" role="img" aria-label="潮位グラフ">
+    <path d="${line} L${X(23)},${h-16} L${X(0)},${h-16} Z" fill="var(--sea-soft)"/>
+    <path d="${line}" fill="none" stroke="var(--sea)" stroke-width="2.5"/>
+    ${nk>=0?`<line x1="${X(nk)}" x2="${X(nk)}" y1="${p-6}" y2="${h-16}" stroke="var(--buoy)" stroke-width="2"/><text x="${X(nk)}" y="${p-8}" font-size="10" fill="var(--buoy)" text-anchor="middle">いま</text>`:""}
+    ${ex.map(([n,k,y])=>`<circle cx="${X(k)}" cy="${Y(y)}" r="4" fill="var(--panel)" stroke="var(--sea)" stroke-width="2"/>`).join("")}
+    ${hrs}</svg>
+    <div class="tides">${ex.length?ex.map(([n,k,y])=>`<span>${n} <b>${String(k).padStart(2,"0")}:00頃</b></span>`).join(""):"<span>この日は満潮・干潮の山がはっきりしません</span>"}</div>`;
+}
+
+function renderHourly(d,day,s){
+  const W=d.w.hourly,M=d.m.hourly,T=W.time,nowI=nowIndex(T);
+  const idx=T.map((t,i)=>t.startsWith(day)&&+t.slice(11,13)>=4&&+t.slice(11,13)<=20?i:-1).filter(i=>i>=0);
+  const cell=(i,html)=>`<td class="${i===nowI?'now':''}">${html}</td>`;
+  const row=(label,f)=>`<tr><th>${label}</th>${idx.map(i=>cell(i,f(i))).join("")}</tr>`;
+  $("hourly").innerHTML=`<table>
+    ${row("時刻",i=>`<b>${+T[i].slice(11,13)}時</b>`)}
+    ${row("天気",i=>wx(W.weather_code[i])[0])}
+    ${row("気温",i=>`${W.temperature_2m[i].toFixed(0)}°`)}
+    ${row("雨",i=>`${W.precipitation_probability[i]??"–"}%`)}
+    ${row("風",i=>{const [k]=windKind(W.wind_direction_10m[i],s.face);return `${arrowSvg(W.wind_direction_10m[i],`var(--${k})`)} <span class="n">${W.wind_speed_10m[i].toFixed(0)}</span>`})}
+    ${row("風向",i=>{const [k,n]=windKind(W.wind_direction_10m[i],s.face);return `<span class="k ${k}">${n.replace("ショア","")}</span>`})}
+    ${row("波高",i=>`<span class="n">${M.wave_height[i]!=null?M.wave_height[i].toFixed(1):"–"}</span>`)}
+    ${row("周期",i=>`${M.wave_period[i]!=null?M.wave_period[i].toFixed(0):"–"}秒`)}
+  </table>`;
+  const cur=$("hourly").querySelector("td.now");
+  if(cur) $("hourly").scrollLeft=Math.max(0,cur.offsetLeft-90);
+}
+
+let reqId=0;
+async function renderAll(skipFetch){
+  renderSpots(); renderLinks();
+  const s=spot(), my=++reqId;
+  if(!skipFetch){$("hero").innerHTML=`<div class="msg" style="grid-column:1/-1">読み込み中…</div>`;}
+  try{
+    const d=await load(s); if(my!==reqId)return;
+    $("dataSec").hidden=false;
+    renderHero(d,s);
+    const day=renderDays(d);
+    renderTide(d,day); renderHourly(d,day,s);
+  }catch(e){
+    if(my!==reqId)return;
+    $("dataSec").hidden=true;
+    $("hero").innerHTML=`<div class="msg" style="grid-column:1/-1"><b>ここでは予報データを取得できません</b>このページの置き場所が外部サイトへの通信を許可していないためです。下のボタンから各サイトを開けます。波・風・潮位をこの画面にまとめて表示するには、ファイル版を自分のサイト（GitHub Pagesなど）に置いて開いてください。電波が弱い場合は、少し待ってから再読み込みしてください。</div>`;
+  }
+}
+
+/* ---------- editor ---------- */
+function openEditor(s){
+  const isNew=!s; s=s||{id:"s"+Date.now(),name:"",lat:"",lon:"",face:180,tide:"",cam:"",wn:"",yahoo:""};
+  const f=$("edform");
+  f.innerHTML=`<h3>${isNew?"スポットを追加":"スポットを編集"}</h3>
+    <label>名前<input name="name" required value="${esc(s.name)}" placeholder="例：鵠沼、一宮"></label>
+    <div class="row2"><label>緯度<input name="lat" required inputmode="decimal" value="${esc(s.lat)}" placeholder="35.3175"></label>
+    <label>経度<input name="lon" required inputmode="decimal" value="${esc(s.lon)}" placeholder="139.4710"></label></div>
+    <p class="hint">Googleマップでビーチを長押しすると、上に緯度・経度が出ます。それをコピーして貼り付けてください（「35.3175, 139.4710」の形で緯度欄に貼ってもOK）。</p>
+    <label>海はどっちの方角？<select name="face">${DIRS.map(([n,d])=>`<option value="${d}" ${+s.face===d?"selected":""}>${n}</option>`).join("")}</select></label>
+    <p class="hint">浜に立って海を見たときの方角です。オフショア・オンショアの判定に使います。</p>
+    <details ${isNew?"":"open"}><summary>よく見るページを登録（任意）</summary>
+      <label>潮見表のURL<input name="tide" type="url" value="${esc(s.tide)}" placeholder="https://..."></label>
+      <label>ライブカメラのURL<input name="cam" type="url" value="${esc(s.cam)}" placeholder="https://..."></label>
+      <label>ウェザーニュースのURL<input name="wn" type="url" value="${esc(s.wn)}" placeholder="https://weathernews.jp/..."></label>
+      <label>Yahoo天気のURL<input name="yahoo" type="url" value="${esc(s.yahoo)}" placeholder="https://weather.yahoo.co.jp/..."></label>
+      <p class="hint">いつも見ているページをブラウザで開き、アドレスをコピーして貼ってください。空欄なら検索結果が開きます。</p>
+    </details>
+    <div class="btns">
+      ${!isNew&&state.spots.length>1?`<button type="button" class="btn danger" id="delBtn">削除</button>`:"<span></span>"}
+      <span style="display:flex;gap:8px"><button type="button" class="btn" id="cancelBtn">キャンセル</button><button type="submit" class="btn primary">保存</button></span>
+    </div>`;
+  const latIn=f.elements.lat;
+  latIn.addEventListener("input",()=>{const m=latIn.value.match(/(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)/);if(m){latIn.value=m[1];f.elements.lon.value=m[2];}});
+  f.querySelector("#cancelBtn").onclick=()=>$("dlg").close();
+  const del=f.querySelector("#delBtn");
+  if(del) del.onclick=()=>{if(!confirm(`「${s.name}」を削除しますか？`))return;state.spots=state.spots.filter(x=>x.id!==s.id);state.cur=state.spots[0].id;save();$("dlg").close();renderAll();};
+  f.onsubmit=e=>{
+    e.preventDefault();
+    const E=f.elements, lat=parseFloat(E.lat.value), lon=parseFloat(E.lon.value);
+    if(!E.name.value.trim()||isNaN(lat)||isNaN(lon)){alert("名前・緯度・経度を入れてください");return;}
+    const n={id:s.id,name:E.name.value.trim(),lat,lon,face:+E.face.value,tide:E.tide.value.trim(),cam:E.cam.value.trim(),wn:E.wn.value.trim(),yahoo:E.yahoo.value.trim()};
+    if(isNew) state.spots.push(n); else state.spots=state.spots.map(x=>x.id===s.id?n:x);
+    state.cur=n.id; save(); $("dlg").close(); dayIdx=0; renderAll();
+  };
+  $("dlg").showModal();
+}
+
+renderAll();
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)renderAll(true)});
+})();
+</script>
+</body>
+</html>
