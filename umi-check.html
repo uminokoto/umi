@@ -1156,7 +1156,7 @@ const Wind={
       const px=x*st+st/2,py=y*st+st/2,o=(y*cw+x)*4;let v;
       if(wave){v=this.atH(px,py);if(v==null){img.data[o+3]=0;continue;}}else{const [u,w]=this.at(px,py);v=Math.hypot(u,w);}
       const col=scaleCol(wave?HCOL:WCOL,v),[r,gg,b]=col.startsWith("#")?[1,3,5].map(q=>parseInt(col.substr(q,2),16)):rgb(col);
-      img.data[o]=r;img.data[o+1]=gg;img.data[o+2]=b;img.data[o+3]=wave?170:120;
+      img.data[o]=r;img.data[o+1]=gg;img.data[o+2]=b;img.data[o+3]=wave?175:185;
     }
     ox.putImageData(img,0,0); c.imageSmoothingEnabled=true; c.drawImage(off,0,0,cw*st,ch*st);
   },
@@ -1185,7 +1185,7 @@ const Wind={
     if(!inside){
       if(busyAPI||dailyLimit){ if(!G) return; }
       else{
-        const ph=(N-S)*0.5,pw=(E-Wl)*0.5, cols=6, rows=5;
+        const ph=(N-S)*0.5,pw=(E-Wl)*0.5, cols=isMobile()?8:11, rows=isMobile()?11:8;
         const A={S:Math.max(-84,S-ph),N:Math.min(84,N+ph),W:Wl-pw,E:E+pw,z,model:state.model,cols,rows};
         const lats=[],lons=[];
         for(let j=0;j<rows;j++)for(let i=0;i<cols;i++){const la=A.N-(A.N-A.S)*j/(rows-1),lo=A.W+(A.E-A.W)*i/(cols-1);lats.push(la.toFixed(2));lons.push((((lo+540)%360)-180).toFixed(2));}
@@ -1227,7 +1227,7 @@ const Wind={
   start(){
     if(this.raf||!this.grid) return;
     if(matchMedia("(prefers-reduced-motion: reduce)").matches||state.calm) return;
-    const cols=["rgba(20,45,65,.38)","rgba(20,45,65,.48)","rgba(20,45,65,.58)","rgba(20,45,65,.68)","rgba(20,45,65,.78)"];
+    const cols=["rgba(255,255,255,.6)","rgba(255,255,255,.72)","rgba(255,255,255,.82)","rgba(255,255,255,.9)","rgba(255,255,255,.97)"];
     let last=0;
     const step=(ts)=>{
       if(ts-last<32){this.raf=requestAnimationFrame(step);return;} last=ts;
@@ -1237,7 +1237,7 @@ const Wind={
       const paths=cols.map(()=>new Path2D());
       for(const p of this.parts){
         const [u,v]=this.at(p.x,p.y), s=Math.hypot(u,v), nx=p.x+u*0.16, ny=p.y-v*0.16;
-        const ci=s<3?0:s<6?1:s<9?2:s<13?3:4;
+        const ci=s<4?0:s<8?1:s<12?2:s<18?3:4;
         paths[ci].moveTo(p.x,p.y); paths[ci].lineTo(nx,ny);
         p.x=nx;p.y=ny;p.age++;
         if(p.age>p.max||p.x<0||p.y<0||p.x>this.w||p.y>this.h) Object.assign(p,this.spawn(false));
@@ -1643,7 +1643,7 @@ function applyChrome(){
   $("windLegend").hidden=state.layer==="none";
   $("windLegend").querySelector(".bar").style.background=state.layer==="wave"?`linear-gradient(90deg,${HCOL.map(x=>x[1]).join(",")})`:`linear-gradient(90deg,${WCOL.map(x=>x[1]).join(",")})`;
   $("setLbl").textContent=t("settings"); $("jLbl").textContent=t("journal"); $("poiLbl").textContent=t("poiBtn"); $("poiBtn").setAttribute("aria-pressed",!!state.poi); $("poiState").textContent=t(state.poi?"on":"off");
-  $("legendSc").innerHTML=state.layer==="wave"?[0,1,2].map(v=>`<span>${hv(v)}</span>`).join("")+`<span>${hv(3)}+ ${hu()}</span>`:[0,4,8,12].map(v=>`<span>${wv(v,0)}</span>`).join("")+`<span>${wv(16,0)}+ ${wu()}</span>`;
+  $("legendSc").innerHTML=state.layer==="wave"?[0,1,2].map(v=>`<span>${hv(v)}</span>`).join("")+`<span>${hv(3)}+ ${hu()}</span>`:[0,5,10,15,20].map(v=>`<span>${wv(v,0)}</span>`).join("")+`<span>${wv(25,0)}+ ${wu()}</span>`;
 }
 
 function renderSpots(){
@@ -2022,7 +2022,7 @@ function modeStats(d,i,F,o){
 }
 let retryN=0, retryT=0;
 let reqId=0, CTX=null, selIdx=null, selSpot=null;
-const WCOL=[[0,"#CFF1F7"],[2,"#8FDCEC"],[4,"#38B9DA"],[6,"#FFD166"],[9,"#FF8C61"],[12,"#E5506A"],[16,"#9B5DE5"]];
+const WCOL=[[0,"#5B6FB5"],[3,"#3E6FA8"],[5,"#3B93AA"],[7,"#3E9A78"],[9,"#4DA64D"],[11,"#8FA83E"],[13,"#C9A33A"],[15,"#D27F34"],[18,"#C9523E"],[21,"#A8344F"],[25,"#8E3B85"],[30,"#6A3F9E"]];
 const HCOL=[[0,"#E8F6FB"],[.5,"#B3E1F2"],[1,"#6CC3E8"],[2,"#2A93D0"],[3,"#0D5C9C"]];
 function scaleCol(S,v){if(v==null||isNaN(v))return "#EEF1F3";for(let k=1;k<S.length;k++){if(v<=S[k][0]){const [a,ca]=S[k-1],[b,cb]=S[k],f=(v-a)/(b-a),h=x=>parseInt(x,16),A=[1,3,5].map(o=>h(ca.substr(o,2))),B=[1,3,5].map(o=>h(cb.substr(o,2)));return `rgb(${A.map((x,q)=>Math.round(x+(B[q]-x)*f)).join(",")})`;}}return S[S.length-1][1];}
 const HW=10;
