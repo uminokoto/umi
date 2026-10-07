@@ -460,12 +460,15 @@ details.risk.r2 .alertsrc,details.risk.r2 .alertsrc a{color:#fff}
 @media (max-width:760px){
   .panel{height:var(--sh,52vh);max-height:none!important;transition:height .28s cubic-bezier(.2,.8,.2,1);overflow-y:auto}
   .panel.drag{transition:none}
-  .panel[data-sheet="c"]{--sh:212px;overflow:hidden}
+  .panel[data-sheet="c"]{--sh:178px;overflow:hidden}
   .panel[data-sheet="h"]{--sh:min(55dvh,calc(100dvh - var(--top,180px)))}
   .panel[data-sheet="f"]{--sh:calc(100dvh - var(--top,180px))}
   .panel[data-sheet="c"] #modebar,.panel[data-sheet="c"] .ph small{display:none}
-  .grab{padding:6px 0 4px;margin:-8px 0 0;cursor:grab;touch-action:none}
-  .grab i{display:block;width:44px;height:5px;border-radius:3px;background:var(--faint);margin:0 auto}
+  .grab{display:flex!important;align-items:center;justify-content:center;width:64px!important;height:26px!important;margin:-6px auto 0!important;padding:0;border:none;border-radius:999px;background:var(--mist)!important;color:var(--sub);cursor:pointer;touch-action:none}
+  .grab .ic{width:22px;height:22px;stroke-width:2.2;transition:transform .25s}
+  .grab.open .ic{transform:rotate(180deg)}
+  .panel[data-sheet="c"] .ph{display:none}
+  .panel[data-sheet="c"] .mini{margin-top:2px}
   .ph,.mini{touch-action:none}
   .ph h1{font-size:20px}
   .mini{display:flex;align-items:center;gap:10px;flex-wrap:nowrap;overflow:hidden;font-size:12px;color:var(--sub);font-family:var(--num);margin-top:-6px}
@@ -562,7 +565,7 @@ details.risk.r2 .alertsrc,details.risk.r2 .alertsrc a{color:#fff}
 .tcpin{transform:translate(-50%,-50%);display:flex;align-items:center;gap:4px;background:#62508A;color:#fff;border-radius:999px;padding:3px 10px 3px 6px;font-size:11px;font-weight:600;white-space:nowrap;box-shadow:0 4px 10px rgba(0,0,0,.2)}
 .tcpin .ic{width:16px;height:16px}
 
-dialog{border:none;border-radius:26px;padding:0;max-height:88vh;overflow:auto;overscroll-behavior:contain;max-width:min(440px,94vw);width:100%;color:var(--ink);background:var(--base);box-shadow:var(--shadow)}
+dialog{border:none;border-radius:26px;padding:0;max-height:88vh;max-height:calc(100dvh - 32px);overflow:auto;overscroll-behavior:contain;max-width:min(440px,94vw);width:100%;color:var(--ink);background:var(--base);box-shadow:var(--shadow)}
 dialog::backdrop{background:rgba(33,53,71,.3)}
 .ed{padding:22px}
 .ed h3{margin:0 0 4px;font-size:19px;font-weight:700;font-family:"Hiragino Sans","Noto Sans JP",var(--serif)}
@@ -661,7 +664,7 @@ dialog::backdrop{background:rgba(33,53,71,.3)}
 <div class="windlegend" id="windLegend"><div class="bar"></div><div class="sc" id="legendSc"></div></div>
 
 <aside class="panel" id="panel">
-  <div class="grab" id="grab"><i></i></div>
+  <button type="button" class="grab" id="grab" aria-label="toggle"><svg class="ic" viewBox="0 0 24 24"><path d="M6 15l6-6 6 6"/></svg></button>
   <header class="ph" id="ph"></header>
   <div class="mini" id="mini"></div>
   <div id="modebar"></div>
@@ -1153,7 +1156,7 @@ const Wind={
       const px=x*st+st/2,py=y*st+st/2,o=(y*cw+x)*4;let v;
       if(wave){v=this.atH(px,py);if(v==null){img.data[o+3]=0;continue;}}else{const [u,w]=this.at(px,py);v=Math.hypot(u,w);}
       const col=scaleCol(wave?HCOL:WCOL,v),[r,gg,b]=col.startsWith("#")?[1,3,5].map(q=>parseInt(col.substr(q,2),16)):rgb(col);
-      img.data[o]=r;img.data[o+1]=gg;img.data[o+2]=b;img.data[o+3]=wave?190:150;
+      img.data[o]=r;img.data[o+1]=gg;img.data[o+2]=b;img.data[o+3]=wave?170:120;
     }
     ox.putImageData(img,0,0); c.imageSmoothingEnabled=true; c.drawImage(off,0,0,cw*st,ch*st);
   },
@@ -1224,7 +1227,7 @@ const Wind={
   start(){
     if(this.raf||!this.grid) return;
     if(matchMedia("(prefers-reduced-motion: reduce)").matches||state.calm) return;
-    const cols=["rgba(255,255,255,.55)","rgba(255,255,255,.7)","rgba(255,255,255,.8)","rgba(255,255,255,.9)","rgba(255,255,255,.95)"];
+    const cols=["rgba(20,45,65,.38)","rgba(20,45,65,.48)","rgba(20,45,65,.58)","rgba(20,45,65,.68)","rgba(20,45,65,.78)"];
     let last=0;
     const step=(ts)=>{
       if(ts-last<32){this.raf=requestAnimationFrame(step);return;} last=ts;
@@ -1415,10 +1418,57 @@ async function loadTC(){
     const r=await fetch(`https://www.gdacs.org/gdacsapi/api/events/geteventlist/SEARCH?eventlist=TC&fromdate=${d(from)}&todate=${d(to)}&alertlevel=Green;Orange;Red`).then(r=>r.json());
     tcList=(r.features||[]).filter(f=>String(f.properties?.iscurrent).toLowerCase()==="true"&&f.geometry?.type==="Point").map(f=>({
       name:f.properties.eventname||f.properties.name||"TC",lat:f.geometry.coordinates[1],lon:f.geometry.coordinates[0],
-      level:f.properties.alertlevel,url:f.properties.url?.report||"https://www.gdacs.org/"}));
+      level:f.properties.alertlevel,url:f.properties.url?.report||"https://www.gdacs.org/",geo:f.properties.url?.geometry||null,track:null}));
   }catch(e){tcList=[];}
-  if(map){tcLayer.clearLayers();tcList.forEach(c=>L.marker([c.lat,c.lon],{icon:L.divIcon({className:"",html:`<div class="tcpin">${ic("tc")}${esc(c.name)}</div>`,iconSize:[0,0]}),interactive:false}).addTo(tcLayer));}
+  if(map){tcLayer.clearLayers();tcList.forEach(c=>{c.mk=L.marker([c.lat,c.lon],{icon:L.divIcon({className:"",html:`<div class="tcpin">${ic("tc")}${esc(c.name)}</div>`,iconSize:[0,0]}),interactive:false}).addTo(tcLayer);});}
+  loadTracks();
   return tcList;
+}
+/* typhoon forecast track (GDACS geometry) */
+function parseWhen(v){
+  if(v==null) return NaN; const s_=String(v).trim(); let m;
+  if((m=s_.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})[ T](\d{1,2}):(\d{2})/))) return Date.UTC(+m[3],+m[2]-1,+m[1],+m[4],+m[5]);
+  if((m=s_.match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})/))) return Date.UTC(+m[1],+m[2]-1,+m[3],+m[4],+m[5]);
+  if((m=s_.match(/^(\d{1,2})\/(\d{1,2}) (\d{1,2}):(\d{2})/))){const y=new Date().getUTCFullYear();return Date.UTC(y,+m[2]-1,+m[1],+m[3],+m[4]);}
+  return NaN;
+}
+async function loadTracks(){
+  const ref=spot(), near=tcList.filter(c=>c.geo&&(!ref||km(ref.lat,ref.lon,c.lat,c.lon)<3500)).slice(0,3);
+  for(const c of near){
+    if(c.track) continue;
+    try{
+      const k="umi-tc:"+c.geo; let g=null;
+      try{const v=JSON.parse(sessionStorage.getItem(k)||"null");if(v&&Date.now()-v.t<3*36e5)g=v.g;}catch(e){}
+      if(!g){const r=await fetchT(c.geo,15000);if(!r.ok)continue;g=await r.json();try{sessionStorage.setItem(k,JSON.stringify({t:Date.now(),g}));}catch(e){}}
+      const pts=[];
+      (g.features||[]).forEach(f=>{
+        if(f.geometry?.type!=="Point") return; const p=f.properties||{};
+        let tm=NaN; for(const key of Object.keys(p)){if(/date|time/i.test(key)){const v=parseWhen(p[key]);if(isFinite(v)){tm=v;break;}}}
+        if(!isFinite(tm)) return;
+        pts.push({t:tm,lat:f.geometry.coordinates[1],lon:f.geometry.coordinates[0]});
+      });
+      const by=new Map(); pts.forEach(p=>by.set(p.t,p)); const tr=[...by.values()].sort((a,b)=>a.t-b.t);
+      if(tr.length<2) continue;
+      c.track=tr;
+      const now=Date.now(), past=tr.filter(p=>p.t<=now).map(p=>[p.lat,p.lon]), fut=tr.filter(p=>p.t>=now).map(p=>[p.lat,p.lon]);
+      if(past.length&&fut.length) fut.unshift(past[past.length-1]);
+      if(past.length>1) L.polyline(past,{color:"#62508A",weight:2,opacity:.7,interactive:false}).addTo(tcLayer);
+      if(fut.length>1) L.polyline(fut,{color:"#62508A",weight:2,opacity:.8,dashArray:"5 6",interactive:false}).addTo(tcLayer);
+    }catch(e){}
+  }
+  tcAt(curUTC);
+}
+function tcAt(u){
+  if(!tcList) return; const tm=u?Date.parse(u+":00Z"):Date.now();
+  tcList.forEach(c=>{
+    if(!c.mk) return; const tr=c.track; let lat=c.lat,lon=c.lon,gone=false;
+    if(tr){
+      if(tm<=tr[0].t){lat=tr[0].lat;lon=tr[0].lon;}
+      else if(tm>=tr[tr.length-1].t){lat=tr[tr.length-1].lat;lon=tr[tr.length-1].lon;gone=tm-tr[tr.length-1].t>12*36e5;}
+      else for(let k=1;k<tr.length;k++){if(tm<=tr[k].t){const a=tr[k-1],b=tr[k],f=(tm-a.t)/(b.t-a.t);lat=a.lat+(b.lat-a.lat)*f;lon=a.lon+(b.lon-a.lon)*f;break;}}
+    }
+    c.mk.setLatLng([lat,lon]); const el=c.mk.getElement&&c.mk.getElement(); if(el) el.style.opacity=gone?".35":"1";
+  });
 }
 const km=(a,b,c,d)=>{const R=6371,r=Math.PI/180,x=Math.sin((c-a)*r/2)**2+Math.cos(a*r)*Math.cos(c*r)*Math.sin((d-b)*r/2)**2;return 2*R*Math.asin(Math.sqrt(x));};
 async function loadNWS(s){
@@ -1688,12 +1738,12 @@ function modeBar(){
 }
 function renderHeader(s){
   $("ph").innerHTML=`<div><h1>${esc(s.name)}</h1><small>${s.snap>0.3?esc(t("snapNote",{k:s.snap<1?s.snap.toFixed(1):Math.round(s.snap)})):`${(+s.lat).toFixed(3)}°, ${(+s.lon).toFixed(3)}°`}</small></div>`+
-    `<button class="sheetb" id="sheetBtn" type="button"></button>`+
+
     (s.temp?`<button class="act save" id="pact">${ic("star")}${esc(t("save"))}</button>`:`<button class="iconb" id="pact" aria-label="${esc(t("edit"))}" title="${esc(t("spotSettings"))}">${ic("more")}</button>`);
   $("fab").hidden=true;
   $("ph").insertAdjacentHTML("afterend","");
   const mb=$("modebar"); mb.innerHTML=modeBar(); mb.querySelectorAll("[data-md]").forEach(b=>b.onclick=()=>setMode(b.dataset.md));
-  $("sheetBtn").onclick=()=>setSheet(sheet==="c"?"h":"c"); updSheetBtn();
+
   $("pact").onclick=()=>s.temp?openEditor({...temp,id:"s"+Date.now(),name:temp.custom?temp.name:"",faceMode:"auto",tide:"",cam:"",wn:"",yahoo:""},true):openEditor(s);
 }
 function linksHtml(s){
@@ -2020,15 +2070,14 @@ function setSel(j,from){
   placeHandle();
   const sameDay=prevDay===T[j].slice(0,10);
   cancelAnimationFrame(rafW); rafW=requestAnimationFrame(()=>renderWidgets(from==="tide"||(sameDay&&TIDE&&TIDE.set)?"keepTide":""));
-  curUTC=utcKey(T[j],CTX.d.off);
+  curUTC=utcKey(T[j],CTX.d.off); tcAt(curUTC);
   Wind.setTime&&Wind.setTime(curUTC); pinsAt(curUTC);
 }
 const utcKey=(k,off)=>new Date(Date.parse(k+":00Z")-off*1000).toISOString().slice(0,13)+":00";
 
 let sheet="h";
 function topLimit(){const tb=document.querySelector(".topbar");return tb?Math.round(tb.getBoundingClientRect().bottom+10):180;}
-function updSheetBtn(){const b=$("sheetBtn");if(!b)return;const open=sheet!=="c";
-  b.innerHTML=`<svg class="ic" viewBox="0 0 24 24"><path d="${open?"M6 9l6 6 6-6":"M6 15l6-6 6 6"}"/></svg><span>${esc(t(open?"sheetClose":"sheetOpen"))}</span>`;b.setAttribute("aria-expanded",open);}
+function updSheetBtn(){const b=$("grab");if(!b)return;const open=sheet!=="c";b.classList.toggle("open",open);b.setAttribute("aria-expanded",open);b.setAttribute("aria-label",t(open?"sheetClose":"sheetOpen"));}
 function setSheet(v){sheet=v;const p=$("panel");p.style.setProperty("--top",topLimit()+"px");p.dataset.sheet=v;if(v==="c")p.scrollTop=0;updSheetBtn();}
 function bindSheet(){
   const p=$("panel"),g=$("grab"); let y0=null,h0=0,moved=false;
@@ -2037,7 +2086,7 @@ function bindSheet(){
   const start=e=>{if(!isMobile())return;y0=e.clientY;h0=p.getBoundingClientRect().height;moved=false;p.classList.add("drag");};
   const move=e=>{if(y0==null)return;const dy=y0-e.clientY;if(Math.abs(dy)>6)moved=true;if(moved)p.style.height=Math.max(150,Math.min(maxH(),h0+dy))+"px";};
   const end=()=>{if(y0==null)return;p.classList.remove("drag");if(moved)snap(p.getBoundingClientRect().height);else setSheet(sheet==="c"?"h":"c");y0=null;};
-  [g,$("ph"),$("mini")].forEach(el=>el.addEventListener("pointerdown",e=>{if(e.target.closest("button"))return;start(e);el.setPointerCapture(e.pointerId);}));
+  [g,$("ph"),$("mini")].forEach(el=>el.addEventListener("pointerdown",e=>{const bt=e.target.closest("button");if(bt&&bt!==g)return;start(e);el.setPointerCapture(e.pointerId);}));
   [g,$("ph"),$("mini")].forEach(el=>{el.addEventListener("pointermove",move);el.addEventListener("pointerup",end);el.addEventListener("pointercancel",end);});
   map&&map.on("dragstart",()=>{if(isMobile()&&sheet!=="c")setSheet("c");});
   setSheet(isMobile()?"c":"h");
@@ -2132,7 +2181,7 @@ async function renderAll(quiet){
     $("tlhost").innerHTML=isMobile()?"":timelineHtml(d);
     TIDE=null;
     bindTimeline(); renderWidgets();
-    curUTC=utcKey(d.w.hourly.time[selIdx],d.off); Wind.setTime&&Wind.setTime(curUTC); pinsAt(curUTC);
+    curUTC=utcKey(d.w.hourly.time[selIdx],d.off); Wind.setTime&&Wind.setTime(curUTC); pinsAt(curUTC); tcAt(curUTC);
     const nI=nowIndex(d.w.hourly.time,d.off);
     if(s.temp&&tempMarker) tempMarker.setIcon(pinIcon("temp",`${esc(s.name)}<em>${d.hasWave?`<span>${ic("wave")}${hv(d.m.hourly.wave_height[nI])}${hu()}</span>`:""}<span>${ic("wind")}${wv(d.w.hourly.wind_speed_10m[nI],0)}${wu()}</span></em>`));
   }catch(e){
