@@ -8,7 +8,7 @@
 <title>Umi Check</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 /* minimal Leaflet base (works even if the Leaflet stylesheet is blocked) */
 .leaflet-pane,.leaflet-tile,.leaflet-marker-icon,.leaflet-marker-shadow,.leaflet-tile-container,.leaflet-pane>svg,.leaflet-pane>canvas,.leaflet-zoom-box,.leaflet-image-layer,.leaflet-layer{position:absolute;left:0;top:0}
@@ -38,9 +38,9 @@
   --ink:#0B2E3D; --sub:#6F8A96; --faint:#CFE0E6; --line:color-mix(in srgb,var(--aqua) 11%,#F2F2F2); --card:#FFFFFF; --glass:rgba(255,255,255,.96); --mist:color-mix(in srgb,var(--aqua) 5%,var(--base));
   --aqua:#0096C7; --base:#FFFFFF; --dialbg:#FFFFFF; --cardbg:#FFFFFF; --land-fill:#DDF0D2; --sea-fill2:#C4E9F8; --sea-edge:#1DA1D8; --sand:#F3E6C8; --tick:color-mix(in srgb,var(--ink) 16%,white); --sea-wash:color-mix(in srgb,var(--aqua) 12%,white); --aqua-soft:color-mix(in srgb,var(--aqua) 15%,white); --sea-fill:color-mix(in srgb,var(--aqua) 32%,white); --sea-open:color-mix(in srgb,var(--aqua) 18%,white); --peach:#FBE3D4; --sand:#F6EADB; --coral:#EE8C7A; --lilac:#ECE7F7;
   --off:#00C49A; --cross:#FFB703; --on:#FF5A5F; --none:#B5B9C2;
-  --serif:"Outfit","Zen Kaku Gothic New",sans-serif;
-  --num:"Outfit","Zen Kaku Gothic New",sans-serif;
-  --jp:"Outfit","Zen Kaku Gothic New","Hiragino Sans","Hiragino Kaku Gothic ProN",sans-serif;
+  --serif:"Outfit","Hiragino Sans","Noto Sans JP",sans-serif;
+  --num:"Outfit","Hiragino Sans","Noto Sans JP",sans-serif;
+  --jp:"Outfit","Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic UI","Meiryo",sans-serif;
   --shadow:0 14px 40px rgba(33,53,71,.13);
 }
 *,*::before,*::after{box-sizing:border-box}
@@ -239,7 +239,7 @@ dialog .ed{background:var(--base)}
 .ph{display:flex;align-items:flex-start;gap:8px;padding:0 4px}
 .ph > div{margin-right:auto;min-width:0}
 .ph .act.swam{background:var(--aqua);color:#fff}
-.ph h1{margin:0;font-size:26px;font-weight:700;line-height:1.2;font-family:"Zen Kaku Gothic New",var(--serif)}
+.ph h1{margin:0;font-size:26px;font-weight:700;line-height:1.2;font-family:"Hiragino Sans","Noto Sans JP",var(--serif)}
 .ph small{display:block;color:var(--sub);font-size:12px;margin-top:3px}
 .ph .act{display:flex;align-items:center;gap:5px;border:none;border-radius:999px;padding:7px 13px;background:var(--card);box-shadow:0 2px 8px rgba(33,53,71,.06);font-weight:500;font-size:13px;white-space:nowrap}
 .ph .act .ic{width:15px;height:15px}
@@ -441,6 +441,35 @@ details.risk.r2 .alertsrc,details.risk.r2 .alertsrc a{color:#fff}
 .stale{font-size:11px;color:#8A5A00;background:#FFF4E0;border-radius:10px;padding:5px 10px}
 .acbtn{margin-left:auto}.acbtn.on{color:var(--aqua)}
 .acbtn + .jbtn{margin-left:0}
+.menuwrap{position:relative;margin-left:auto;flex:none}
+.menu{position:absolute;right:0;top:calc(100% + 8px);min-width:200px;background:var(--card);border-radius:16px;box-shadow:var(--shadow);padding:6px;z-index:900}
+.menu button{display:flex;align-items:center;gap:10px;width:100%;border:none;background:none;border-radius:10px;padding:11px 12px;font-size:14px;font-weight:500;text-align:left;color:var(--ink)}
+.menu button:hover{background:var(--mist)}
+.menu .ic{color:var(--aqua)}
+.mini{display:none}
+.panel > *{flex-shrink:0}
+@media (max-width:760px){
+  .panel{height:var(--sh,52vh);max-height:none!important;transition:height .28s cubic-bezier(.2,.8,.2,1);overflow-y:auto}
+  .panel.drag{transition:none}
+  .panel[data-sheet="c"]{--sh:212px;overflow:hidden}
+  .panel[data-sheet="h"]{--sh:52vh}
+  .panel[data-sheet="f"]{--sh:calc(100vh - 80px)}
+  .panel[data-sheet="c"] #modebar,.panel[data-sheet="c"] .ph small{display:none}
+  .grab{padding:6px 0 4px;margin:-8px 0 0;cursor:grab;touch-action:none}
+  .grab i{display:block;width:44px;height:5px;border-radius:3px;background:var(--faint);margin:0 auto}
+  .ph,.mini{touch-action:none}
+  .ph h1{font-size:20px}
+  .mini{display:flex;align-items:center;gap:10px;flex-wrap:nowrap;overflow:hidden;font-size:12px;color:var(--sub);font-family:var(--num);margin-top:-6px}
+  .mini span{display:inline-flex;align-items:center;gap:3px;white-space:nowrap}
+  .mini b{color:var(--ink);font-weight:500;font-size:15px}
+  .mini .ic{width:15px;height:15px;color:var(--aqua)}
+  .mini .mk{font-family:var(--jp);font-weight:700;color:var(--ink);font-size:12px}
+  .mini .mk i{width:8px;height:8px;border-radius:50%;background:var(--k)}
+  .mini .mt{font-family:var(--jp);font-weight:700;color:var(--ink)}
+  .panel .wtl{top:-8px}
+  .fabwrap{display:none}
+  .panel[data-sheet="f"] .fabwrap,.panel[data-sheet="h"] .fabwrap{display:flex}
+}
 .tidechip{display:inline-flex;align-items:center;gap:6px;margin-top:8px;padding:4px 10px 4px 5px;border-radius:999px;background:var(--mist);font-size:12px;font-weight:700;color:var(--ink)}
 .tidechip svg{flex:none}
 .tidechip i{font-style:normal;color:var(--sub);font-size:11px;font-weight:500}
@@ -454,7 +483,7 @@ details.risk.r2 .alertsrc,details.risk.r2 .alertsrc a{color:#fff}
 .big small{font-size:13px;font-weight:400;color:var(--sub);margin-left:4px;letter-spacing:0}
 .vsub .sep{display:inline-block;width:3px;height:3px;border-radius:50%;background:var(--faint);margin:0 7px;vertical-align:middle}
 .verdict{display:inline-flex;align-items:center;gap:8px;font-weight:500;font-size:21px;font-family:var(--num)}
-:lang(ja) .verdict{font-family:"Zen Kaku Gothic New",var(--serif);font-size:20px;font-weight:700}
+:lang(ja) .verdict{font-family:"Hiragino Sans","Noto Sans JP",var(--serif);font-size:20px;font-weight:700}
 .verdict i{width:10px;height:10px;border-radius:50%;box-shadow:0 0 0 2px rgba(255,255,255,.9)}
 .vsub{color:var(--sub);font-size:12.5px;margin-top:6px;line-height:1.5}
 .facenote{font-size:11px;color:var(--sub);margin-top:6px;line-height:1.45}
@@ -518,7 +547,7 @@ details.risk.r2 .alertsrc,details.risk.r2 .alertsrc a{color:#fff}
 dialog{border:none;border-radius:26px;padding:0;max-height:88vh;overflow:auto;overscroll-behavior:contain;max-width:min(440px,94vw);width:100%;color:var(--ink);background:var(--base);box-shadow:var(--shadow)}
 dialog::backdrop{background:rgba(33,53,71,.3)}
 .ed{padding:22px}
-.ed h3{margin:0 0 4px;font-size:19px;font-weight:700;font-family:"Zen Kaku Gothic New",var(--serif)}
+.ed h3{margin:0 0 4px;font-size:19px;font-weight:700;font-family:"Hiragino Sans","Noto Sans JP",var(--serif)}
 .ed .where{font-size:12px;color:var(--sub);margin:0 0 6px}
 .ed label{display:block;font-size:12px;color:var(--sub);margin-top:12px}
 .ed input,.ed select{width:100%;margin-top:4px;padding:11px 13px;border:none;border-radius:12px;background:var(--card);box-shadow:inset 0 0 0 1px var(--line)}
@@ -598,9 +627,12 @@ dialog::backdrop{background:rgba(33,53,71,.3)}
     </form>
     <div class="layerseg" id="layerSeg"><button data-ly="wind"><svg class="ic" viewBox="0 0 24 24"><path d="M3 8h10a3 3 0 1 0-3-3M3 12h15a3 3 0 1 1-3 3M3 16h7"/></svg><span data-lyl="wind"></span></button><button data-ly="wave"><svg class="ic" viewBox="0 0 24 24"><path d="M2 14c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2M2 19c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2"/></svg><span data-lyl="wave"></span></button><button data-ly="none"><span data-lyl="none"></span></button></div>
     <button class="toggle" id="poiBtn" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.4"/></svg><span id="poiLbl"></span></button>
-    <button class="toggle acbtn" id="acBtn"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg><span id="acLbl"></span></button>
-    <button class="toggle jbtn" id="jBtn"><svg class="ic" viewBox="0 0 24 24"><path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5z"/><path d="M5 19.5A1.5 1.5 0 0 0 6.5 21H19v-3M9 7h6M9 10.5h4"/></svg><span id="jLbl"></span></button>
-    <button class="toggle gear" id="setBtn" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span id="setLbl"></span></button>
+    <div class="menuwrap"><button class="toggle acbtn" id="acBtn" aria-haspopup="menu"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg><span id="acLbl"></span></button>
+      <div class="menu" id="menu" hidden role="menu">
+        <button type="button" id="mAcct" role="menuitem"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg><span id="mAcctL"></span></button>
+        <button type="button" id="jBtn" role="menuitem"><svg class="ic" viewBox="0 0 24 24"><path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5z"/><path d="M5 19.5A1.5 1.5 0 0 0 6.5 21H19v-3M9 7h6M9 10.5h4"/></svg><span id="jLbl"></span></button>
+        <button type="button" id="setBtn" role="menuitem"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span id="setLbl"></span></button>
+      </div></div>
   </div>
   <div class="results" id="results" hidden></div>
   <nav class="spots" id="spots"></nav>
@@ -610,8 +642,9 @@ dialog::backdrop{background:rgba(33,53,71,.3)}
 <div class="windlegend" id="windLegend"><div class="bar"></div><div class="sc" id="legendSc"></div></div>
 
 <aside class="panel" id="panel">
-  <div class="grab"></div>
+  <div class="grab" id="grab"><i></i></div>
   <header class="ph" id="ph"></header>
+  <div class="mini" id="mini"></div>
   <div id="modebar"></div>
   <div id="body"></div>
   <div class="fabwrap"><button class="fab" id="fab" hidden><svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span id="fabL"></span></button></div>
@@ -651,8 +684,8 @@ sz_knee:"ひざ",sz_waist:"腰",sz_chest:"胸",sz_head:"頭",sz_over:"頭オー�
 catchN:"{n}匹",maxLen:"最大 {n}cm",depthN:"最大 {n}m",noLogs:"まだ記録がありません。海に行ったら記録してみよう",
 logStarsF:"今日の釣りはどうだった？",logStarsS:"今日の波はどうだった？",depth:"最大水深",catch:"釣れた数",maxL:"最大サイズ",sizeL:"波のサイズ",crowdL:"混み具合",logCaught:"釣れた魚",
 addTag:"生き物を追加（例：ニモ）",addTagF:"魚を追加（例：タマン）",addTagS:"タグを追加（例：ボードを新調）",
-tg_shark:"サメ",tg_nudi:"ウミウシ",tg_octopus:"タコ",tg_aji:"アジ",tg_saba:"サバ",tg_mebaru:"メバル",tg_kasago:"カサゴ",tg_ika:"イカ",tg_seabass:"シーバス",tg_bonito:"カツオ",logTime:"時間",tm_swim:"泳いだ・潜った時間",tm_fish:"釣りをした時間",tm_surf:"波に乗った時間",depthOpt:"潜った深さ（任意）",editTags:"編集",doneEdit:"完了",restoreTags:"消した候補を戻す（{n}件）",md_dive:"ダイビング・シュノーケル",md_surf:"サーフィン",md_fish:"釣り",md_boat:"ボート・マリン",md_storm:"台風・一般気象",mds_dive:"潜る",mds_surf:"サーフ",mds_fish:"釣り",mds_boat:"ボート",mds_storm:"気象",
-swell:"うねり",current:"潮流・海流",toDir:"{d}へ流れる",clar:"透明度(推定)",cl_good:"良い",cl_ok:"ふつう",cl_poor:"にごり",bite:"次の時合",gustL:"最大瞬間風速",rainMm:"雨量",tcL:"台風まで",none:"なし",pBoat:"マリーナ・港",retry:"もう一度読み込む",prepT:"予報を準備しています",prepB:"気象データが混み合っています。{n}秒後に自動でもう一度読み込みます",retryNow:"今すぐ読み込む",staleNote:"通信が混み合っているため、少し前の予報を表示しています",login:"ログイン",acTitle2:"ログイン・データの同期",failBusy:"気象データへのアクセスが一時的に混み合っています。1分ほど待ってから、もう一度読み込んでください。",notFoundEnter:"候補がありません。Enterでさらに詳しく検索します",acTitle:"アカウント・同期（任意）",acNotSet:"ログイン機能はまだ設定されていません（管理者がSupabaseを設定すると使えます）。記録はこの端末に保存されています。",acErr:"ログイン機能に接続できませんでした",
+tg_shark:"サメ",tg_nudi:"ウミウシ",tg_octopus:"タコ",tg_aji:"アジ",tg_saba:"サバ",tg_mebaru:"メバル",tg_kasago:"カサゴ",tg_ika:"イカ",tg_seabass:"シーバス",tg_bonito:"カツオ",logTime:"時間",tm_swim:"泳いだ・潜った時間",tm_fish:"釣りをした時間",tm_surf:"波に乗った時間",depthOpt:"潜った深さ（任意）",editTags:"編集",doneEdit:"完了",restoreTags:"消した候補を戻す（{n}件）",md_dive:"ダイビング・シュノーケル",md_surf:"サーフィン",md_fish:"釣り",md_boat:"船・マリン",md_storm:"全て（すべての情報）",mds_dive:"潜る",mds_surf:"サーフ",mds_fish:"釣り",mds_boat:"船",mds_storm:"全て",
+swell:"うねり",current:"潮流・海流",toDir:"{d}へ流れる",clar:"透明度(推定)",cl_good:"良い",cl_ok:"ふつう",cl_poor:"にごり",bite:"次の時合",gustL:"最大瞬間風速",rainMm:"雨量",tcL:"台風まで",none:"なし",pBoat:"マリーナ・港",retry:"もう一度読み込む",prepT:"予報を準備しています",prepB:"気象データが混み合っています。{n}秒後に自動でもう一度読み込みます",retryNow:"今すぐ読み込む",staleNote:"通信が混み合っているため、少し前の予報を表示しています",login:"ログイン",menu:"メニュー",useNear:"近くに保存済みの「{n}」があります。そこに記録しますか？（キャンセルで新しい場所として保存）",acTitle2:"ログイン・データの同期",failBusy:"気象データへのアクセスが一時的に混み合っています。1分ほど待ってから、もう一度読み込んでください。",notFoundEnter:"候補がありません。Enterでさらに詳しく検索します",acTitle:"アカウント・同期（任意）",acNotSet:"ログイン機能はまだ設定されていません（管理者がSupabaseを設定すると使えます）。記録はこの端末に保存されています。",acErr:"ログイン機能に接続できませんでした",
 acWhy:"ログインすると、スポットと記録がクラウドに保存され、機種変更や別の端末でも同じデータが使えます。パスワードは不要です。",acSend:"ログインメールを送る",acSent:"ログインメールを送りました。このブラウザのまま、メール内のリンクを開いてください（別のアプリやブラウザで開くとログインできません）。",
 acVerify:"確認",acBadMail:"メールアドレスを確認してください",acBadCode:"コードが正しくないか、期限切れです",acSyncing:"同期中…",acSyncErr:"同期に失敗しました。通信状態を確認してください",acSynced:"同期済み",acSyncNow:"今すぐ同期",acOut:"ログアウト",acOutQ:"ログアウトしますか？（この端末の記録は残ります）",
 ts_MajorWarning:"大津波警報",ts_Warning:"津波警報",ts_Watch:"津波注意報",tsAreas:"対象地域：{a}",tsActE:"すぐに海から離れ、高い場所へ避難してください",tsActW:"海に入らず、海岸から離れてください",
@@ -693,8 +726,8 @@ sz_knee:"Knee",sz_waist:"Waist",sz_chest:"Chest",sz_head:"Head",sz_over:"Overhea
 catchN:"{n} caught",maxLen:"max {n} cm",depthN:"max {n} m",noLogs:"No logs yet. Log your next day at the sea!",
 logStarsF:"How was the fishing?",logStarsS:"How were the waves?",depth:"Max depth",catch:"Fish caught",maxL:"Biggest",sizeL:"Wave size",crowdL:"Crowd",logCaught:"Fish caught",
 addTag:"Add a creature (e.g. clownfish)",addTagF:"Add a fish",addTagS:"Add a tag (e.g. new board)",
-tg_shark:"Shark",tg_nudi:"Nudibranch",tg_octopus:"Octopus",tg_aji:"Horse mackerel",tg_saba:"Mackerel",tg_mebaru:"Rockfish",tg_kasago:"Scorpionfish",tg_ika:"Squid",tg_seabass:"Sea bass",tg_bonito:"Bonito",logTime:"Time",tm_swim:"Time in the water",tm_fish:"Fishing time",tm_surf:"Surf session",depthOpt:"Depth (optional)",editTags:"Edit",doneEdit:"Done",restoreTags:"Restore removed ({n})",md_dive:"Diving & snorkeling",md_surf:"Surfing",md_fish:"Fishing",md_boat:"Boating",md_storm:"Storms & weather",mds_dive:"Dive",mds_surf:"Surf",mds_fish:"Fish",mds_boat:"Boat",mds_storm:"Weather",
-swell:"Swell",current:"Current",toDir:"flowing {d}",clar:"Visibility (est.)",cl_good:"good",cl_ok:"fair",cl_poor:"murky",bite:"Next bite",gustL:"Gusts",rainMm:"Rain",tcL:"Nearest cyclone",none:"none",pBoat:"Marina / harbour",retry:"Try again",prepT:"Getting the forecast ready",prepB:"The weather service is busy. Retrying automatically in {n}s",retryNow:"Retry now",staleNote:"Showing a slightly older forecast while the service is busy",login:"Sign in",acTitle2:"Sign in & sync",failBusy:"The weather service is busy right now. Please wait about a minute and try again.",notFoundEnter:"No matches yet. Press Enter for a deeper search",acTitle:"Account & sync (optional)",acNotSet:"Sign-in isn't set up yet (the site owner can enable it with Supabase). Your logs are saved on this device.",acErr:"Couldn't reach the sign-in service",
+tg_shark:"Shark",tg_nudi:"Nudibranch",tg_octopus:"Octopus",tg_aji:"Horse mackerel",tg_saba:"Mackerel",tg_mebaru:"Rockfish",tg_kasago:"Scorpionfish",tg_ika:"Squid",tg_seabass:"Sea bass",tg_bonito:"Bonito",logTime:"Time",tm_swim:"Time in the water",tm_fish:"Fishing time",tm_surf:"Surf session",depthOpt:"Depth (optional)",editTags:"Edit",doneEdit:"Done",restoreTags:"Restore removed ({n})",md_dive:"Diving & snorkeling",md_surf:"Surfing",md_fish:"Fishing",md_boat:"Boating",md_storm:"Everything",mds_dive:"Dive",mds_surf:"Surf",mds_fish:"Fish",mds_boat:"Boat",mds_storm:"All",
+swell:"Swell",current:"Current",toDir:"flowing {d}",clar:"Visibility (est.)",cl_good:"good",cl_ok:"fair",cl_poor:"murky",bite:"Next bite",gustL:"Gusts",rainMm:"Rain",tcL:"Nearest cyclone",none:"none",pBoat:"Marina / harbour",retry:"Try again",prepT:"Getting the forecast ready",prepB:"The weather service is busy. Retrying automatically in {n}s",retryNow:"Retry now",staleNote:"Showing a slightly older forecast while the service is busy",login:"Sign in",menu:"Menu",useNear:"“{n}” is saved nearby. Log it there? (Cancel to save as a new spot)",acTitle2:"Sign in & sync",failBusy:"The weather service is busy right now. Please wait about a minute and try again.",notFoundEnter:"No matches yet. Press Enter for a deeper search",acTitle:"Account & sync (optional)",acNotSet:"Sign-in isn't set up yet (the site owner can enable it with Supabase). Your logs are saved on this device.",acErr:"Couldn't reach the sign-in service",
 acWhy:"Sign in to keep your spots and logs in the cloud and use them on any device. No password needed.",acSend:"Email me a sign-in link",acSent:"Sign-in email sent. Open the link in this same browser (opening it in another app or browser won't work).",
 acVerify:"Verify",acBadMail:"Please check the email address",acBadCode:"That code is wrong or expired",acSyncing:"Syncing…",acSyncErr:"Sync failed. Check your connection",acSynced:"Synced",acSyncNow:"Sync now",acOut:"Sign out",acOutQ:"Sign out? (Data on this device stays)",
 ts_MajorWarning:"Major tsunami warning",ts_Warning:"Tsunami warning",ts_Watch:"Tsunami advisory",tsAreas:"Areas: {a}",tsActE:"Leave the water now and move to high ground",tsActW:"Stay out of the water and away from the shore",
@@ -735,8 +768,8 @@ sz_knee:"Rodilla",sz_waist:"Cintura",sz_chest:"Pecho",sz_head:"Cabeza",sz_over:"
 catchN:"{n} capturas",maxLen:"máx. {n} cm",depthN:"máx. {n} m",noLogs:"Aún no hay registros. ¡Anota tu próximo día de mar!",
 logStarsF:"¿Qué tal la pesca?",logStarsS:"¿Qué tal las olas?",depth:"Profundidad máx.",catch:"Capturas",maxL:"Mayor",sizeL:"Tamaño de ola",crowdL:"Gente",logCaught:"Peces",
 addTag:"Añadir criatura",addTagF:"Añadir pez",addTagS:"Añadir etiqueta",
-tg_shark:"Tiburón",tg_nudi:"Nudibranquio",tg_octopus:"Pulpo",tg_aji:"Jurel",tg_saba:"Caballa",tg_mebaru:"Gallineta",tg_kasago:"Escorpina",tg_ika:"Calamar",tg_seabass:"Lubina",tg_bonito:"Bonito",logTime:"Hora",tm_swim:"Hora en el agua",tm_fish:"Hora de pesca",tm_surf:"Sesión de surf",depthOpt:"Profundidad (opcional)",editTags:"Editar",doneEdit:"Listo",restoreTags:"Restaurar eliminados ({n})",md_dive:"Buceo y snorkel",md_surf:"Surf",md_fish:"Pesca",md_boat:"Náutica",md_storm:"Tormentas y tiempo",mds_dive:"Buceo",mds_surf:"Surf",mds_fish:"Pesca",mds_boat:"Barco",mds_storm:"Tiempo",
-swell:"Mar de fondo",current:"Corriente",toDir:"hacia el {d}",clar:"Visibilidad (est.)",cl_good:"buena",cl_ok:"normal",cl_poor:"turbia",bite:"Próx. picada",gustL:"Ráfagas",rainMm:"Lluvia",tcL:"Ciclón más cercano",none:"ninguno",pBoat:"Puerto deportivo",retry:"Reintentar",prepT:"Preparando el pronóstico",prepB:"El servicio está saturado. Reintento automático en {n}s",retryNow:"Reintentar ya",staleNote:"Mostrando un pronóstico algo anterior",login:"Entrar",acTitle2:"Iniciar sesión y sincronizar",failBusy:"El servicio meteorológico está saturado. Espera un minuto y vuelve a intentarlo.",notFoundEnter:"Sin resultados. Pulsa Enter para buscar más",acTitle:"Cuenta y sincronización (opcional)",acNotSet:"El inicio de sesión aún no está configurado. Tus registros se guardan en este dispositivo.",acErr:"No se pudo conectar con el inicio de sesión",
+tg_shark:"Tiburón",tg_nudi:"Nudibranquio",tg_octopus:"Pulpo",tg_aji:"Jurel",tg_saba:"Caballa",tg_mebaru:"Gallineta",tg_kasago:"Escorpina",tg_ika:"Calamar",tg_seabass:"Lubina",tg_bonito:"Bonito",logTime:"Hora",tm_swim:"Hora en el agua",tm_fish:"Hora de pesca",tm_surf:"Sesión de surf",depthOpt:"Profundidad (opcional)",editTags:"Editar",doneEdit:"Listo",restoreTags:"Restaurar eliminados ({n})",md_dive:"Buceo y snorkel",md_surf:"Surf",md_fish:"Pesca",md_boat:"Náutica",md_storm:"Todo",mds_dive:"Buceo",mds_surf:"Surf",mds_fish:"Pesca",mds_boat:"Barco",mds_storm:"Todo",
+swell:"Mar de fondo",current:"Corriente",toDir:"hacia el {d}",clar:"Visibilidad (est.)",cl_good:"buena",cl_ok:"normal",cl_poor:"turbia",bite:"Próx. picada",gustL:"Ráfagas",rainMm:"Lluvia",tcL:"Ciclón más cercano",none:"ninguno",pBoat:"Puerto deportivo",retry:"Reintentar",prepT:"Preparando el pronóstico",prepB:"El servicio está saturado. Reintento automático en {n}s",retryNow:"Reintentar ya",staleNote:"Mostrando un pronóstico algo anterior",login:"Entrar",menu:"Menú",useNear:"«{n}» está guardado cerca. ¿Registrar ahí? (Cancelar para crear uno nuevo)",acTitle2:"Iniciar sesión y sincronizar",failBusy:"El servicio meteorológico está saturado. Espera un minuto y vuelve a intentarlo.",notFoundEnter:"Sin resultados. Pulsa Enter para buscar más",acTitle:"Cuenta y sincronización (opcional)",acNotSet:"El inicio de sesión aún no está configurado. Tus registros se guardan en este dispositivo.",acErr:"No se pudo conectar con el inicio de sesión",
 acWhy:"Inicia sesión para guardar spots y registros en la nube y usarlos en cualquier dispositivo. Sin contraseña.",acSend:"Enviarme un enlace",acSent:"Correo enviado. Abre el enlace en este mismo navegador.",
 acVerify:"Verificar",acBadMail:"Revisa la dirección de correo",acBadCode:"Código incorrecto o caducado",acSyncing:"Sincronizando…",acSyncErr:"Error al sincronizar",acSynced:"Sincronizado",acSyncNow:"Sincronizar",acOut:"Cerrar sesión",acOutQ:"¿Cerrar sesión? (Los datos del dispositivo se mantienen)",
 ts_MajorWarning:"Alerta de tsunami mayor",ts_Warning:"Alerta de tsunami",ts_Watch:"Aviso de tsunami",tsAreas:"Zonas: {a}",tsActE:"Sal del agua ya y sube a un lugar alto",tsActW:"No entres al agua y aléjate de la costa",
@@ -907,7 +940,7 @@ const PRESET={snorkel:["cond","tide","hourly","links"],dive:["cond","tide","hour
 const SIZE={cond:"m",tide:"m",hourly:"m",links:"m"};
 const MODES=["dive","surf","fish","boat","storm"];
 const MODE_IC={dive:"mask",surf:"surf",fish:"fish",boat:"boat",storm:"tc"};
-const PRESET2={dive:["cond","tide","hourly","links"],surf:["cond","tide","hourly","links"],fish:["cond","tide","moon","hourly","links"],boat:["cond","hourly","tide","links"],storm:["cond","hourly","links"]};
+const PRESET2={dive:["cond","tide","hourly","links"],surf:["cond","tide","hourly","links"],fish:["cond","tide","moon","hourly","links"],boat:["cond","hourly","tide","links"],storm:["cond","wave","water","rain","tcyc","sun","moon","tide","hourly","links"]};
 if(!state.mode){const a0=(state.acts||[])[0];state.mode=a0==="surf"?"surf":a0==="fish"?"fish":"dive";}
 const presetWidgets=()=>PRESET2[state.mode]||PRESET2.dive;
 const visibleWidgets=()=>state.widgets?state.widgets.map(w=>w==="fish"?"tcyc":w):presetWidgets();
@@ -980,7 +1013,8 @@ function drawTemp(){
   if(tempMarker){map.removeLayer(tempMarker);tempMarker=null;}
   if(temp&&state.cur==="temp") tempMarker=L.marker([temp.lat,temp.lon],{icon:pinIcon("temp",`${esc(temp.name)}`),zIndexOffset:1000}).addTo(map);
 }
-function drawSpots(){
+let pinLoads=0;
+function drawSpots(){ pinLoads=0;
   if(!map) return;
   spotLayer.clearLayers();
   for(const s of state.spots){
@@ -989,7 +1023,8 @@ function drawSpots(){
     const m=L.marker([s.lat,s.lon],{icon:pinIcon(sel,`<i></i>${esc(s.name)}${lvb}`)}).addTo(spotLayer);
     m.on("click",ev=>{L.DomEvent.stopPropagation(ev);state.cur=s.id;dayIdx=0;save();drawTemp();drawSpots();renderAll();focus(s.lat,s.lon);});
     s._m=m; s._sel=sel; s._lvb=lvb;
-    Promise.all([load(s),faceOf(s)]).then(([d,f])=>{s._d=d;s._F=f;pinAt(s,curUTC);renderSpots();}).catch(()=>{});
+    let near=true; try{near=map.getBounds().pad(0.5).contains([s.lat,s.lon]);}catch(e){}
+    if(near&&(++pinLoads)<=20) Promise.all([load(s),faceOf(s)]).then(([d,f])=>{s._d=d;s._F=f;pinAt(s,curUTC);renderSpots();}).catch(()=>{});
   }
 }
 let curUTC=null;
@@ -1094,7 +1129,7 @@ const Wind={
       }
       this.grid={x0,y0,dx,dy,cols,rows,U:[],V:[]};
       this.fill(this.tkey);
-      const n=Math.min(1400,Math.round(size.x*size.y/700));
+      const n=Math.min(isMobile()?500:1200,Math.round(size.x*size.y/(isMobile()?900:750)));
       this.parts=Array.from({length:n},()=>this.spawn(true));
       this.start();
     }catch(e){this.grid=null;}
@@ -1116,7 +1151,9 @@ const Wind={
     if(this.raf||!this.grid) return;
     if(matchMedia("(prefers-reduced-motion: reduce)").matches||state.calm) return;
     const cols=["rgba(255,255,255,.55)","rgba(255,255,255,.7)","rgba(255,255,255,.8)","rgba(255,255,255,.9)","rgba(255,255,255,.95)"];
-    const step=()=>{
+    let last=0;
+    const step=(ts)=>{
+      if(ts-last<32){this.raf=requestAnimationFrame(step);return;} last=ts;
       const c=this.ctx;
       c.globalCompositeOperation="destination-in"; c.fillStyle="rgba(0,0,0,.93)"; c.fillRect(0,0,this.w,this.h);
       c.globalCompositeOperation="source-over"; c.lineWidth=state.layer==="wave"?1:1.2; c.lineCap="round";
@@ -1173,8 +1210,10 @@ $("poiBtn").onclick=()=>{state.poi=!state.poi;save();applyChrome();POI.key="";PO
 const loadScript=src=>new Promise((ok,ng)=>{const e=document.createElement("script");e.src=src;e.onload=ok;e.onerror=ng;document.head.appendChild(e);});
 const Cloud={client:null,user:null,status:"",timer:0,busy:false,
   on(){return !!(SUPABASE_URL&&SUPABASE_ANON_KEY);},
-  async init(){
-    if(!this.on()) return;
+  async init(force){
+    if(!this.on()||this.client) return;
+    const has=Object.keys(localStorage).some(k=>k.startsWith("umi-check-auth"))||/[?&](code|token_hash)=|#access_token=/.test(location.href);
+    if(!has&&!force){renderAccount();return;}
     try{
       await loadScript("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js");
       this.client=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,flowType:"pkce",storageKey:"umi-check-auth"}});
@@ -1220,13 +1259,13 @@ const Cloud={client:null,user:null,status:"",timer:0,busy:false,
   }};
 let pendingEmail="";
 function renderAccount(){
-  const lb=$("acLbl"); if(lb){lb.textContent=Cloud.user?(Cloud.user.email||"").split("@")[0]:t("login");$("acBtn").classList.toggle("on",!!Cloud.user);}
+  const lb=$("acLbl"); if(lb){lb.textContent=Cloud.user?(Cloud.user.email||"").split("@")[0]:t("menu");$("acBtn").classList.toggle("on",!!Cloud.user);$("mAcctL").textContent=Cloud.user?t("acTitle2"):t("login");}
   ["acct","acct2"].forEach(id=>renderAccountIn($(id)));
 }
 function renderAccountIn(el){
   if(!el) return;
-  if(!Cloud.on()){const b=$("acBtn");if(b)b.hidden=true;el.innerHTML=`<p class="hint2">${esc(t("acNotSet"))}</p>`;return;}
-  if(!Cloud.client){el.innerHTML=`<p class="hint2">${esc(Cloud.status==="err"?t("acErr"):t("loading"))}</p>`;return;}
+  if(!Cloud.on()){const b=$("mAcct");if(b)b.hidden=true;el.innerHTML=`<p class="hint2">${esc(t("acNotSet"))}</p>`;return;}
+  if(!Cloud.client){if(Cloud.status!=="err"&&!Cloud.loading){Cloud.loading=true;Cloud.init(true).finally(()=>{Cloud.loading=false;});}el.innerHTML=`<p class="hint2">${esc(Cloud.status==="err"?t("acErr"):t("loading"))}</p>`;return;}
   if(Cloud.user){
     el.innerHTML=`<div class="acrow"><div><b>${esc(Cloud.user.email||"")}</b><span>${esc(t(Cloud.status==="sync"?"acSyncing":Cloud.status==="err"?"acSyncErr":"acSynced"))}</span></div>
       <button type="button" class="btn" id="acSync">${esc(t("acSyncNow"))}</button><button type="button" class="btn danger" id="acOut">${esc(t("acOut"))}</button></div>`;
@@ -1486,7 +1525,7 @@ function renderSpots(){
     state.cur=b.dataset.id;save();dayIdx=0;drawTemp();drawSpots();
     const s=spot(); if(s) focus(s.lat,s.lon); renderAll();
   });
-  $("addBtn").onclick=()=>{const f=$("searchForm");$("q").focus();f.classList.add("flash");setTimeout(()=>f.classList.remove("flash"),1600);$("hint").hidden=false;$("hint").textContent=t("addHint");};
+  $("addBtn").onclick=()=>{ if(temp&&state.cur==="temp"){openEditor({...temp,id:"s"+Date.now(),name:temp.custom?temp.name:"",faceMode:"auto",tide:"",cam:"",wn:"",yahoo:""},true);return;}const f=$("searchForm");$("q").focus();f.classList.add("flash");setTimeout(()=>f.classList.remove("flash"),1600);$("hint").hidden=false;$("hint").textContent=t("addHint");};
 }
 
 /* ---------- forecast ---------- */
@@ -1732,7 +1771,10 @@ function renderJournal(){
 }
 const tagLabel=g=>g.startsWith("c:")?g.slice(2):t("tg_"+g);
 $("jBtn").onclick=openJournal;
-$("acBtn").onclick=()=>{$("acdT").textContent=t("acTitle2");$("acdX").textContent=t("close");$("acdX").onclick=()=>$("acdlg").close();renderAccount();$("acdlg").showModal();};
+$("acBtn").onclick=e=>{e.stopPropagation();const m=$("menu");m.hidden=!m.hidden;};
+document.addEventListener("click",e=>{if(!e.target.closest(".menuwrap"))$("menu").hidden=true;});
+["jBtn","setBtn","mAcct"].forEach(id=>$(id).addEventListener("click",()=>{$("menu").hidden=true;}));
+$("mAcct").onclick=()=>{$("menu").hidden=true;$("acdT").textContent=t("acTitle2");$("acdX").textContent=t("close");$("acdX").onclick=()=>$("acdlg").close();renderAccount();$("acdlg").showModal();};
 function openLog(s){
   if(!s) return;
   const f=$("edform");
@@ -1777,7 +1819,9 @@ function openLog(s){
   f.onsubmit=async e=>{
     e.preventDefault();
     let sp=s;
-    if(s.temp){const nm=val("name").trim();if(!nm){f.elements.name.focus();return;}
+    const nearSp=s.temp?state.spots.map(x=>[x,km(s.lat,s.lon,x.lat,x.lon)]).filter(([,dk])=>dk<1.5).sort((a,b)=>a[1]-b[1])[0]:null;
+    if(nearSp&&confirm(t("useNear",{n:nearSp[0].name}))){sp=nearSp[0];temp=null;state.cur=sp.id;}
+    else if(s.temp){const nm=val("name").trim();if(!nm){f.elements.name.focus();return;}
       sp={id:"s"+Date.now(),name:nm,lat:s.lat,lon:s.lon,dlat:s.dlat,dlon:s.dlon,snap:s.snap,faceMode:"auto",tide:"",cam:"",wn:"",yahoo:""};state.spots.push(sp);temp=null;state.cur=sp.id;}
     sp.visits=sp.visits||[];
     const dd=val("d")||todayStr(), h1=+(val("tm")||"12:00").slice(0,2), h2=val("tm2")?+val("tm2").slice(0,2):h1, hh=Math.round((h1+Math.max(h1,h2))/2);
@@ -1812,7 +1856,7 @@ function modeStats(d,i,F,o){
     rain:()=>bx(ic("umbrella"),t("rainMm"),W.precipitation?.[i]!=null?W.precipitation[i].toFixed(1):"–","mm",`${esc(t("rainS"))} ${W.precipitation_probability[i]??"–"}%`),
     tc:()=>{const c=(CTX.tcs||[]).map(x=>({...x,dist:km(CTX.s.lat,CTX.s.lon,x.lat,x.lon)})).sort((a,b)=>a.dist-b.dist)[0];return bx(ic("tc"),t("tcL"),c?`${Math.round(c.dist/10)*10}`:esc(t("none")),c?"km":"",c?esc(c.name):"");}
   };
-  const L={dive:["swell","water","cur"],surf:["wave","swell","tide"],fish:["tide","cur","bite"],boat:["wave","cur","gust"],storm:["rain","gust","tc"]}[m]||["wave","tide","water"];
+  const L={dive:["swell","water","cur"],surf:["wave","swell","tide"],fish:["tide","cur","bite"],boat:["wave","cur","gust"],storm:["wave","tide","water"]}[m]||["wave","tide","water"];
   return L.map(k=>B[k]()).join("");
 }
 let retryN=0, retryT=0;
@@ -1870,6 +1914,19 @@ function setSel(j,from){
 }
 const utcKey=(k,off)=>new Date(Date.parse(k+":00Z")-off*1000).toISOString().slice(0,13)+":00";
 
+let sheet="h";
+function setSheet(v){sheet=v;const p=$("panel");p.dataset.sheet=v;if(v==="c")p.scrollTop=0;}
+function bindSheet(){
+  const p=$("panel"),g=$("grab"); let y0=null,h0=0,moved=false;
+  const H=()=>window.innerHeight, snap=h=>{const r=h/H();setSheet(r<.33?"c":r<.7?"h":"f");p.style.height="";};
+  const start=e=>{if(!isMobile())return;y0=e.clientY;h0=p.getBoundingClientRect().height;moved=false;p.classList.add("drag");};
+  const move=e=>{if(y0==null)return;const dy=y0-e.clientY;if(Math.abs(dy)>6)moved=true;if(moved)p.style.height=Math.max(150,Math.min(H()-70,h0+dy))+"px";};
+  const end=()=>{if(y0==null)return;p.classList.remove("drag");if(moved)snap(p.getBoundingClientRect().height);else setSheet(sheet==="c"?"h":"c");y0=null;};
+  [g,$("ph"),$("mini")].forEach(el=>el.addEventListener("pointerdown",e=>{if(e.target.closest("button"))return;start(e);el.setPointerCapture(e.pointerId);}));
+  [g,$("ph"),$("mini")].forEach(el=>{el.addEventListener("pointermove",move);el.addEventListener("pointerup",end);el.addEventListener("pointercancel",end);});
+  map&&map.on("dragstart",()=>{if(isMobile()&&sheet!=="c")setSheet("c");});
+  setSheet(isMobile()?"c":"h");
+}
 function renderWidgets(mode){
   if(!CTX) return;
   const {s,d,F}=CTX, W=d.w.hourly,M=d.m.hourly,T=W.time,i=selIdx, nowI=nowIndex(T,d.off);
@@ -1884,6 +1941,7 @@ function renderWidgets(mode){
   $("tlwhen").textContent=`${t("wk")[wdn]} ${t("date")(+mo,+da)} ${hhmm}`+(i===nowI?` · ${t("nowLbl")}`:"");
   $("tlsum").innerHTML=`<i style="background:var(--${kc})"></i>${wv(ws,0)}${wu()}${wh!=null?` · ${hv(wh)}${hu()}`:""}`;
   $("tlnow").hidden=i===nowI;
+  $("mini").innerHTML=`<span class="mk" style="--k:var(--${kc})"><i></i>${esc(kn)}</span><span>${ic("wind")}<b>${wv(ws,0)}</b>${wu()}</span>${wh!=null?`<span>${ic("wave")}<b>${hv(wh)}</b>${hu()}</span>`:""}<span>${ic(wic)}<b>${tv(W.temperature_2m[i])}°</b></span><span class="mt">${esc(t("tn_"+tn))}</span>`;
   const nowH=+hhmm.slice(0,2);
   const hm=(x,dm)=>{let m=+x.slice(0,2)*60+ +x.slice(3,5)+dm;m=(m+1440)%1440;return `${Math.floor(m/60)}:${String(m%60).padStart(2,"0")}`;};
   const exH=[];{const S=M.sea_level_height_msl,idx=T.map((x,j)=>x.startsWith(day)?j:-1).filter(j=>j>=0);idx.forEach((g,k)=>{const a=S[g-1],b=S[g],c=S[g+1];if(a==null||b==null||c==null)return;if((b>a&&b>=c)||(b<a&&b<=c))exH.push([k,b>a?"fHigh":"fLow"]);});}
@@ -1901,6 +1959,7 @@ function renderWidgets(mode){
       <div class="hinfo"><div class="hrow"><span class="status" style="--k:var(--${kc})"><i></i>${esc(kn)}</span><span class="wxchip">${ic(wic)}<b>${tv(W.temperature_2m[i])}°</b>${W.precipitation_probability[i]!=null?`<small>${ic("umbrella")}${W.precipitation_probability[i]}%</small>`:""}</span></div>
         <div class="big">${wv(ws)}<small>${wu()}</small></div>
         <div class="vsub">${esc(t("windFrom",{d:dirName(wd)}))}<span class="sep"></span>${esc(t("gust",{n:wv(gu,0)+" "+wu()}))}</div>
+        ${state.mode==="dive"||state.mode==="storm"?`<div class="tidechip">${moonIcon(dayMs,16)}<span>${esc(t("tn_"+tn))}</span><i>${esc(t("tmove",{x:t("tm"+tideStars(tn))}))}</i></div>`:""}
         ${facenote?`<div class="facenote">${esc(facenote)}</div>`:""}</div></div>
       <div class="hstats">${modeStats(d,i,F,{wh,wp,wvd,sst,tn,nextTide,nextWin,gu,ws,kc})}</div>
       <div class="hfoot"><span>${ic("sunrise")}${sr||"–"}<i>–</i>${ic("sunset")}${ss||"–"}</span>${fishOn()&&nextWin?`<span class="bite">${ic("fish")}${esc(t("nextBite",{h:Math.max(0,nextWin[0]),l:t(nextWin[1])}))}</span>`:`<span>${moonIcon(dayMs,13)}${esc(t("ph_"+pk))}</span>`}</div></div>`,
@@ -2007,7 +2066,7 @@ function openEditor(s,fromTemp){
 
 applyLook();
 applyChrome(); initMap(); drawSpots(); renderAll();
-Cloud.init(); setTimeout(()=>Quake.start(),1500);
+Cloud.init(); setTimeout(()=>Quake.start(),1500); bindSheet();
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)renderAll(true)});
 })();
 </script>
