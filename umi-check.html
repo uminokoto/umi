@@ -53,6 +53,8 @@ button{cursor:pointer}
 
 #map{position:fixed;inset:0;background:#AAD3DF}
 .leaflet-tile-pane{filter:saturate(1.08)}
+.leaflet-gl-layer{filter:saturate(1.05)}
+.maplibregl-ctrl-attrib,.maplibregl-ctrl-logo{display:none!important}
 .leaflet-container{font-family:var(--jp)}
 .windcanvas{position:absolute;pointer-events:none}
 .panel::-webkit-scrollbar{width:6px}.panel::-webkit-scrollbar-thumb{background:var(--faint);border-radius:3px}
@@ -447,13 +449,20 @@ details.risk.r2 .alertsrc,details.risk.r2 .alertsrc a{color:#fff}
 .menu button:hover{background:var(--mist)}
 .menu .ic{color:var(--aqua)}
 .mini{display:none}
+.sheetb{display:none}
+@media (max-width:760px){
+  .sheetb{display:inline-flex;align-items:center;gap:4px;margin-left:auto;border:none;border-radius:999px;padding:7px 12px 7px 9px;background:var(--mist);color:var(--ink);font-size:12.5px;font-weight:700;white-space:nowrap}
+  .sheetb .ic{width:18px;height:18px;stroke-width:2}
+  .ph{align-items:center}
+  .ph .iconb,.ph .act{margin-left:6px}
+}
 .panel > *{flex-shrink:0}
 @media (max-width:760px){
   .panel{height:var(--sh,52vh);max-height:none!important;transition:height .28s cubic-bezier(.2,.8,.2,1);overflow-y:auto}
   .panel.drag{transition:none}
   .panel[data-sheet="c"]{--sh:212px;overflow:hidden}
-  .panel[data-sheet="h"]{--sh:52vh}
-  .panel[data-sheet="f"]{--sh:calc(100vh - 80px)}
+  .panel[data-sheet="h"]{--sh:min(55dvh,calc(100dvh - var(--top,180px)))}
+  .panel[data-sheet="f"]{--sh:calc(100dvh - var(--top,180px))}
   .panel[data-sheet="c"] #modebar,.panel[data-sheet="c"] .ph small{display:none}
   .grab{padding:6px 0 4px;margin:-8px 0 0;cursor:grab;touch-action:none}
   .grab i{display:block;width:44px;height:5px;border-radius:3px;background:var(--faint);margin:0 auto}
@@ -695,7 +704,7 @@ catchN:"{n}匹",maxLen:"最大 {n}cm",depthN:"最大 {n}m",noLogs:"まだ記録�
 logStarsF:"今日の釣りはどうだった？",logStarsS:"今日の波はどうだった？",depth:"最大水深",catch:"釣れた数",maxL:"最大サイズ",sizeL:"波のサイズ",crowdL:"混み具合",logCaught:"釣れた魚",
 addTag:"生き物を追加（例：ニモ）",addTagF:"魚を追加（例：タマン）",addTagS:"タグを追加（例：ボードを新調）",
 tg_shark:"サメ",tg_nudi:"ウミウシ",tg_octopus:"タコ",tg_aji:"アジ",tg_saba:"サバ",tg_mebaru:"メバル",tg_kasago:"カサゴ",tg_ika:"イカ",tg_seabass:"シーバス",tg_bonito:"カツオ",logTime:"時間",tm_swim:"泳いだ・潜った時間",tm_fish:"釣りをした時間",tm_surf:"波に乗った時間",depthOpt:"潜った深さ（任意）",editTags:"編集",doneEdit:"完了",restoreTags:"消した候補を戻す（{n}件）",md_dive:"ダイビング・シュノーケル",md_surf:"サーフィン",md_fish:"釣り",md_boat:"船・マリン",md_storm:"全て（すべての情報）",mds_dive:"潜る",mds_surf:"サーフ",mds_fish:"釣り",mds_boat:"船",mds_storm:"全て",
-swell:"うねり",current:"潮流・海流",toDir:"{d}へ流れる",clar:"透明度",clarTip:"透明度は波・雨・川・風から推定した目安です",cwWave:"波が高め",cwRain:"48時間の雨{n}mm",cwRiverC:"すぐ近くに川",cwRiverN:"近くに川",cwOn:"オンショア",cl_good:"良い",cl_ok:"ふつう",cl_poor:"にごり",bite:"次の時合",gustL:"最大瞬間風速",rainMm:"雨量",tcL:"台風まで",none:"なし",pBoat:"マリーナ・港",retry:"もう一度読み込む",prepT:"予報を準備しています",prepB:"気象データが混み合っています。{n}秒後に自動でもう一度読み込みます",retryNow:"今すぐ読み込む",staleNote:"通信が混み合っているため、少し前の予報を表示しています",login:"ログイン",menu:"メニュー",useNear:"近くに保存済みの「{n}」があります。そこに記録しますか？（キャンセルで新しい場所として保存）",acTitle2:"ログイン・データの同期",failBusy:"気象データへのアクセスが一時的に混み合っています。1分ほど待ってから、もう一度読み込んでください。",notFoundEnter:"候補がありません。Enterでさらに詳しく検索します",acTitle:"アカウント・同期（任意）",acNotSet:"ログイン機能はまだ設定されていません（管理者がSupabaseを設定すると使えます）。記録はこの端末に保存されています。",acErr:"ログイン機能に接続できませんでした",
+swell:"うねり",current:"潮流・海流",toDir:"{d}へ流れる",clar:"透明度",clarTip:"透明度は波・雨・川・風から推定した目安です",cwWave:"波が高め",cwRain:"48時間の雨{n}mm",cwRiverC:"すぐ近くに川",cwRiverN:"近くに川",cwOn:"オンショア",cl_good:"良い",cl_ok:"ふつう",cl_poor:"にごり",bite:"次の時合",gustL:"最大瞬間風速",rainMm:"雨量",tcL:"台風まで",none:"なし",pBoat:"マリーナ・港",retry:"もう一度読み込む",sheetOpen:"詳しく",sheetClose:"閉じる",dayLimT:"今日の予報データの上限に達しました",dayLimB:"無料の気象データには1日の利用上限があります。日本時間の朝9時ごろに自動でリセットされるので、それ以降にもう一度開いてください。",prepT:"予報を準備しています",prepB:"気象データが混み合っています。{n}秒後に自動でもう一度読み込みます",retryNow:"今すぐ読み込む",staleNote:"通信が混み合っているため、少し前の予報を表示しています",login:"ログイン",menu:"メニュー",useNear:"近くに保存済みの「{n}」があります。そこに記録しますか？（キャンセルで新しい場所として保存）",acTitle2:"ログイン・データの同期",failBusy:"気象データへのアクセスが一時的に混み合っています。1分ほど待ってから、もう一度読み込んでください。",notFoundEnter:"候補がありません。Enterでさらに詳しく検索します",acTitle:"アカウント・同期（任意）",acNotSet:"ログイン機能はまだ設定されていません（管理者がSupabaseを設定すると使えます）。記録はこの端末に保存されています。",acErr:"ログイン機能に接続できませんでした",
 acWhy:"ログインすると、ポイントと記録がクラウドに保存され、機種変更や別の端末でも同じデータが使えます。パスワードは不要です。",acSend:"ログインメールを送る",acSent:"ログインメールを送りました。このブラウザのまま、メール内のリンクを開いてください（別のアプリやブラウザで開くとログインできません）。",
 acVerify:"確認",acBadMail:"メールアドレスを確認してください",acBadCode:"コードが正しくないか、期限切れです",acSyncing:"同期中…",acSyncErr:"同期に失敗しました。通信状態を確認してください",acSynced:"同期済み",acSyncNow:"今すぐ同期",acOut:"ログアウト",acOutQ:"ログアウトしますか？（この端末の記録は残ります）",
 ts_MajorWarning:"大津波警報",ts_Warning:"津波警報",ts_Watch:"津波注意報",tsAreas:"対象地域：{a}",tsActE:"すぐに海から離れ、高い場所へ避難してください",tsActW:"海に入らず、海岸から離れてください",
@@ -737,7 +746,7 @@ catchN:"{n} caught",maxLen:"max {n} cm",depthN:"max {n} m",noLogs:"No logs yet. 
 logStarsF:"How was the fishing?",logStarsS:"How were the waves?",depth:"Max depth",catch:"Fish caught",maxL:"Biggest",sizeL:"Wave size",crowdL:"Crowd",logCaught:"Fish caught",
 addTag:"Add a creature (e.g. clownfish)",addTagF:"Add a fish",addTagS:"Add a tag (e.g. new board)",
 tg_shark:"Shark",tg_nudi:"Nudibranch",tg_octopus:"Octopus",tg_aji:"Horse mackerel",tg_saba:"Mackerel",tg_mebaru:"Rockfish",tg_kasago:"Scorpionfish",tg_ika:"Squid",tg_seabass:"Sea bass",tg_bonito:"Bonito",logTime:"Time",tm_swim:"Time in the water",tm_fish:"Fishing time",tm_surf:"Surf session",depthOpt:"Depth (optional)",editTags:"Edit",doneEdit:"Done",restoreTags:"Restore removed ({n})",md_dive:"Diving & snorkeling",md_surf:"Surfing",md_fish:"Fishing",md_boat:"Boating",md_storm:"Everything",mds_dive:"Dive",mds_surf:"Surf",mds_fish:"Fish",mds_boat:"Boat",mds_storm:"All",
-swell:"Swell",current:"Current",toDir:"flowing {d}",clar:"Vis.",clarTip:"Estimated from waves, rain, rivers and wind",cwWave:"bigger waves",cwRain:"{n} mm rain in 48h",cwRiverC:"river right nearby",cwRiverN:"river nearby",cwOn:"onshore wind",cl_good:"good",cl_ok:"fair",cl_poor:"murky",bite:"Next bite",gustL:"Gusts",rainMm:"Rain",tcL:"Nearest cyclone",none:"none",pBoat:"Marina / harbour",retry:"Try again",prepT:"Getting the forecast ready",prepB:"The weather service is busy. Retrying automatically in {n}s",retryNow:"Retry now",staleNote:"Showing a slightly older forecast while the service is busy",login:"Sign in",menu:"Menu",useNear:"“{n}” is saved nearby. Log it there? (Cancel to save as a new spot)",acTitle2:"Sign in & sync",failBusy:"The weather service is busy right now. Please wait about a minute and try again.",notFoundEnter:"No matches yet. Press Enter for a deeper search",acTitle:"Account & sync (optional)",acNotSet:"Sign-in isn't set up yet (the site owner can enable it with Supabase). Your logs are saved on this device.",acErr:"Couldn't reach the sign-in service",
+swell:"Swell",current:"Current",toDir:"flowing {d}",clar:"Vis.",clarTip:"Estimated from waves, rain, rivers and wind",cwWave:"bigger waves",cwRain:"{n} mm rain in 48h",cwRiverC:"river right nearby",cwRiverN:"river nearby",cwOn:"onshore wind",cl_good:"good",cl_ok:"fair",cl_poor:"murky",bite:"Next bite",gustL:"Gusts",rainMm:"Rain",tcL:"Nearest cyclone",none:"none",pBoat:"Marina / harbour",retry:"Try again",sheetOpen:"More",sheetClose:"Close",dayLimT:"Today's forecast limit has been reached",dayLimB:"The free weather service has a daily limit. It resets at 00:00 UTC — please open the app again after that.",prepT:"Getting the forecast ready",prepB:"The weather service is busy. Retrying automatically in {n}s",retryNow:"Retry now",staleNote:"Showing a slightly older forecast while the service is busy",login:"Sign in",menu:"Menu",useNear:"“{n}” is saved nearby. Log it there? (Cancel to save as a new spot)",acTitle2:"Sign in & sync",failBusy:"The weather service is busy right now. Please wait about a minute and try again.",notFoundEnter:"No matches yet. Press Enter for a deeper search",acTitle:"Account & sync (optional)",acNotSet:"Sign-in isn't set up yet (the site owner can enable it with Supabase). Your logs are saved on this device.",acErr:"Couldn't reach the sign-in service",
 acWhy:"Sign in to keep your spots and logs in the cloud and use them on any device. No password needed.",acSend:"Email me a sign-in link",acSent:"Sign-in email sent. Open the link in this same browser (opening it in another app or browser won't work).",
 acVerify:"Verify",acBadMail:"Please check the email address",acBadCode:"That code is wrong or expired",acSyncing:"Syncing…",acSyncErr:"Sync failed. Check your connection",acSynced:"Synced",acSyncNow:"Sync now",acOut:"Sign out",acOutQ:"Sign out? (Data on this device stays)",
 ts_MajorWarning:"Major tsunami warning",ts_Warning:"Tsunami warning",ts_Watch:"Tsunami advisory",tsAreas:"Areas: {a}",tsActE:"Leave the water now and move to high ground",tsActW:"Stay out of the water and away from the shore",
@@ -779,7 +788,7 @@ catchN:"{n} capturas",maxLen:"máx. {n} cm",depthN:"máx. {n} m",noLogs:"Aún no
 logStarsF:"¿Qué tal la pesca?",logStarsS:"¿Qué tal las olas?",depth:"Profundidad máx.",catch:"Capturas",maxL:"Mayor",sizeL:"Tamaño de ola",crowdL:"Gente",logCaught:"Peces",
 addTag:"Añadir criatura",addTagF:"Añadir pez",addTagS:"Añadir etiqueta",
 tg_shark:"Tiburón",tg_nudi:"Nudibranquio",tg_octopus:"Pulpo",tg_aji:"Jurel",tg_saba:"Caballa",tg_mebaru:"Gallineta",tg_kasago:"Escorpina",tg_ika:"Calamar",tg_seabass:"Lubina",tg_bonito:"Bonito",logTime:"Hora",tm_swim:"Hora en el agua",tm_fish:"Hora de pesca",tm_surf:"Sesión de surf",depthOpt:"Profundidad (opcional)",editTags:"Editar",doneEdit:"Listo",restoreTags:"Restaurar eliminados ({n})",md_dive:"Buceo y snorkel",md_surf:"Surf",md_fish:"Pesca",md_boat:"Náutica",md_storm:"Todo",mds_dive:"Buceo",mds_surf:"Surf",mds_fish:"Pesca",mds_boat:"Barco",mds_storm:"Todo",
-swell:"Mar de fondo",current:"Corriente",toDir:"hacia el {d}",clar:"Visib.",clarTip:"Estimación según olas, lluvia, ríos y viento",cwWave:"olas altas",cwRain:"{n} mm de lluvia en 48h",cwRiverC:"río muy cerca",cwRiverN:"río cerca",cwOn:"viento hacia tierra",cl_good:"buena",cl_ok:"normal",cl_poor:"turbia",bite:"Próx. picada",gustL:"Ráfagas",rainMm:"Lluvia",tcL:"Ciclón más cercano",none:"ninguno",pBoat:"Puerto deportivo",retry:"Reintentar",prepT:"Preparando el pronóstico",prepB:"El servicio está saturado. Reintento automático en {n}s",retryNow:"Reintentar ya",staleNote:"Mostrando un pronóstico algo anterior",login:"Entrar",menu:"Menú",useNear:"«{n}» está guardado cerca. ¿Registrar ahí? (Cancelar para crear uno nuevo)",acTitle2:"Iniciar sesión y sincronizar",failBusy:"El servicio meteorológico está saturado. Espera un minuto y vuelve a intentarlo.",notFoundEnter:"Sin resultados. Pulsa Enter para buscar más",acTitle:"Cuenta y sincronización (opcional)",acNotSet:"El inicio de sesión aún no está configurado. Tus registros se guardan en este dispositivo.",acErr:"No se pudo conectar con el inicio de sesión",
+swell:"Mar de fondo",current:"Corriente",toDir:"hacia el {d}",clar:"Visib.",clarTip:"Estimación según olas, lluvia, ríos y viento",cwWave:"olas altas",cwRain:"{n} mm de lluvia en 48h",cwRiverC:"río muy cerca",cwRiverN:"río cerca",cwOn:"viento hacia tierra",cl_good:"buena",cl_ok:"normal",cl_poor:"turbia",bite:"Próx. picada",gustL:"Ráfagas",rainMm:"Lluvia",tcL:"Ciclón más cercano",none:"ninguno",pBoat:"Puerto deportivo",retry:"Reintentar",sheetOpen:"Más",sheetClose:"Cerrar",dayLimT:"Se alcanzó el límite diario",dayLimB:"El servicio gratuito tiene un límite diario. Se reinicia a las 00:00 UTC; vuelve a abrir la app después.",prepT:"Preparando el pronóstico",prepB:"El servicio está saturado. Reintento automático en {n}s",retryNow:"Reintentar ya",staleNote:"Mostrando un pronóstico algo anterior",login:"Entrar",menu:"Menú",useNear:"«{n}» está guardado cerca. ¿Registrar ahí? (Cancelar para crear uno nuevo)",acTitle2:"Iniciar sesión y sincronizar",failBusy:"El servicio meteorológico está saturado. Espera un minuto y vuelve a intentarlo.",notFoundEnter:"Sin resultados. Pulsa Enter para buscar más",acTitle:"Cuenta y sincronización (opcional)",acNotSet:"El inicio de sesión aún no está configurado. Tus registros se guardan en este dispositivo.",acErr:"No se pudo conectar con el inicio de sesión",
 acWhy:"Inicia sesión para guardar spots y registros en la nube y usarlos en cualquier dispositivo. Sin contraseña.",acSend:"Enviarme un enlace",acSent:"Correo enviado. Abre el enlace en este mismo navegador.",
 acVerify:"Verificar",acBadMail:"Revisa la dirección de correo",acBadCode:"Código incorrecto o caducado",acSyncing:"Sincronizando…",acSyncErr:"Error al sincronizar",acSynced:"Sincronizado",acSyncNow:"Sincronizar",acOut:"Cerrar sesión",acOutQ:"¿Cerrar sesión? (Los datos del dispositivo se mantienen)",
 ts_MajorWarning:"Alerta de tsunami mayor",ts_Warning:"Alerta de tsunami",ts_Watch:"Aviso de tsunami",tsAreas:"Zonas: {a}",tsActE:"Sal del agua ya y sube a un lugar alto",tsActW:"No entres al agua y aléjate de la costa",
@@ -1010,8 +1019,22 @@ function focus(lat,lon,zoom){
   map.flyTo(map.unproject(p,z),z,{duration:.8});
 }
 let baseLayer=null, baseFails=0;
-function setBase(){
-  if(!map) return;
+let vecMap=null, vecTried=false;
+const MLV="4.7.1";
+function nameExpr(){
+  const L_=state.lang;
+  return L_==="ja"?["coalesce",["get","name:ja"],["get","name:latin"],["get","name"]]
+    :["coalesce",["get","name:"+L_],["get","name:en"],["get","name_en"],["get","name:latin"],["get","name"]];
+}
+function applyVecLang(){
+  const m=vecMap; if(!m||!m.getStyle) return;
+  try{(m.getStyle().layers||[]).forEach(l=>{
+    if(l.type!=="symbol") return; const tf=l.layout&&l.layout["text-field"];
+    if(tf&&JSON.stringify(tf).includes("name")) m.setLayoutProperty(l.id,"text-field",nameExpr());
+    if(l["source-layer"]==="transportation"&&/ferry/i.test(l.id)) m.setLayoutProperty(l.id,"visibility","none");
+  });}catch(e){}
+}
+function rasterBase(){
   const st=state.lang==="ja"?"osm-bright-ja":"osm-bright-en", url=`https://tile.openstreetmap.jp/styles/${st}/{z}/{x}/{y}.png`;
   if(baseLayer&&baseLayer._url===url) return;
   if(baseLayer) map.removeLayer(baseLayer);
@@ -1019,6 +1042,26 @@ function setBase(){
   baseLayer=L.tileLayer(url,{maxZoom:18,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, OSMFJ'}).addTo(map);
   baseLayer.on("tileerror",()=>{if(++baseFails===12&&baseLayer._url===url){map.removeLayer(baseLayer);baseLayer=L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:18,attribution:"&copy; OpenStreetMap"}).addTo(map);baseLayer.bringToBack();}});
   baseLayer.bringToBack&&baseLayer.bringToBack();
+}
+async function setBase(){
+  if(!map) return;
+  if(vecMap){applyVecLang();return;}
+  if(vecTried){rasterBase();return;}
+  vecTried=true;
+  try{
+    const c=document.createElement("canvas"); if(!(c.getContext("webgl2")||c.getContext("webgl"))) throw new Error("no webgl");
+    const css=document.createElement("link");css.rel="stylesheet";css.href=`https://unpkg.com/maplibre-gl@${MLV}/dist/maplibre-gl.css`;document.head.appendChild(css);
+    await loadScript(`https://unpkg.com/maplibre-gl@${MLV}/dist/maplibre-gl.js`);
+    await loadScript("https://unpkg.com/@maplibre/maplibre-gl-leaflet@0.0.22/leaflet-maplibre-gl.js");
+    if(!window.maplibregl||!L.maplibreGL) throw new Error("vector libs missing");
+    const lay=L.maplibreGL({style:"https://tiles.openfreemap.org/styles/liberty",attribution:'<a href="https://openfreemap.org">OpenFreeMap</a> &copy; <a href="https://www.openmaptiles.org/">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'});
+    lay.addTo(map);
+    const m=lay.getMaplibreMap(); vecMap=m;
+    let ok=false;
+    m.on("styledata",()=>{ok=true;applyVecLang();});
+    m.on("error",e=>{if(!ok){console.warn("vector map failed",e);try{map.removeLayer(lay);}catch(_){}vecMap=null;rasterBase();}});
+    setTimeout(()=>{if(!ok&&vecMap===m){try{map.removeLayer(lay);}catch(_){}vecMap=null;rasterBase();}},12000);
+  }catch(e){console.warn(e);vecMap=null;rasterBase();}
 }
 function initMap(){
   if(!window.L) return;
@@ -1089,9 +1132,7 @@ const Wind={
     this.reset();
   },
   tkey:null,
-  setTime(k){const nd=k&&this.tkey&&k.slice(0,10)!==this.tkey.slice(0,10);this.tkey=k;
-    if(nd){clearTimeout(this.dayT);this.dayT=setTimeout(()=>this.reset(),600);return;}
-    if(this.grid&&this.data)this.fill(k);},
+  setTime(k){this.tkey=k; if(this.grid&&this.data)this.fill(k);},
   fill(k){
     const U=[],V=[];
     this.data.forEach(d=>{const h=d.hourly||{},tt=h.time||[];let j=k?tt.indexOf(k):-1;if(j<0){const nk=new Date().toISOString().slice(0,13)+":00";j=Math.max(0,tt.indexOf(nk));}
@@ -1125,7 +1166,6 @@ const Wind={
   stop(clear){cancelAnimationFrame(this.raf);this.raf=0;if(clear&&this.ctx){this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height);this.bgx&&this.bgx.clearRect(0,0,this.bg.width,this.bg.height);}},
   async reset(){
     this.stop(true);
-    if(busyAPI&&!this.data){clearTimeout(this.timer);this.timer=setTimeout(()=>{busyAPI=false;this.reset();},60000);return;}
     if(state.layer==="none"){this.canvas.style.display="none";this.bg.style.display="none";return;}
     this.canvas.style.display="";this.bg.style.display="";
     const size=map.getSize(), dpr=Math.min(window.devicePixelRatio||1,2);
@@ -1135,29 +1175,38 @@ const Wind={
     L.DomUtil.setPosition(this.canvas,map.containerPointToLayerPoint([0,0]));
     L.DomUtil.setPosition(this.bg,map.containerPointToLayerPoint([0,0]));
     this.ctx.setTransform(dpr,0,0,dpr,0,0); this.w=size.x; this.h=size.y;
-    const cols=isMobile()?4:6, rows=isMobile()?6:4, mx=size.x*0.08, my=size.y*0.08;
-    const x0=-mx,y0=-my,dx=(size.x+2*mx)/(cols-1),dy=(size.y+2*my)/(rows-1);
-    const pts=[];
-    for(let j=0;j<rows;j++)for(let i=0;i<cols;i++){const ll=map.containerPointToLatLng([x0+i*dx,y0+j*dy]).wrap();pts.push([Math.max(-85,Math.min(85,ll.lat)).toFixed(2),ll.lng.toFixed(2)]);}
-    const day=(this.tkey||new Date().toISOString()).slice(0,10);
-    const key=state.model+"|"+day+"|"+pts.map(p=>p.join(",")).join(";");
-    try{
-      let data;
-      if(this.key===key&&this.data) data=this.data;
+    const bnd=map.getBounds(), z=map.getZoom();
+    const S=bnd.getSouth(),N=bnd.getNorth(),Wl=bnd.getWest(),E=bnd.getEast();
+    let G=this.area;
+    const inside=G&&G.model===state.model&&S>=G.S&&N<=G.N&&Wl>=G.W&&E<=G.E&&z>=G.z-1&&z<=G.z+2;
+    if(!inside){
+      if(busyAPI||dailyLimit){ if(!G) return; }
       else{
-        const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${pts.map(p=>p[0]).join(",")}&longitude=${pts.map(p=>p[1]).join(",")}&hourly=wind_speed_10m,wind_direction_10m&start_date=${day}&end_date=${day}&timezone=GMT&wind_speed_unit=ms${mq()}`).then(r=>{if(r.status===429){busyAPI=true;}if(!r.ok)throw new Error("grid "+r.status);return r.json();});
-        data=Array.isArray(r)?r:[r]; this.key=key; this.data=data; this.wdata=null; this.wkey="";
+        const ph=(N-S)*0.5,pw=(E-Wl)*0.5, cols=6, rows=5;
+        const A={S:Math.max(-84,S-ph),N:Math.min(84,N+ph),W:Wl-pw,E:E+pw,z,model:state.model,cols,rows};
+        const lats=[],lons=[];
+        for(let j=0;j<rows;j++)for(let i=0;i<cols;i++){const la=A.N-(A.N-A.S)*j/(rows-1),lo=A.W+(A.E-A.W)*i/(cols-1);lats.push(la.toFixed(2));lons.push((((lo+540)%360)-180).toFixed(2));}
+        try{
+          const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lats.join(",")}&longitude=${lons.join(",")}&hourly=wind_speed_10m,wind_direction_10m&forecast_days=14&timezone=GMT&wind_speed_unit=ms${mq()}`);
+          if(r.status===429){busyAPI=true;try{const e=await r.json();if(/daily/i.test(e.reason||""))dailyLimit=true;}catch(_){} }
+          if(!r.ok) throw new Error("grid "+r.status);
+          const j=await r.json(); A.data=Array.isArray(j)?j:[j]; A.lats=lats; A.lons=lons;
+          this.area=G=A;
+        }catch(e){ if(!G) return; }
       }
-      if(state.layer==="wave"&&this.wkey!==key){
-        try{const r2=await fetch(`https://marine-api.open-meteo.com/v1/marine?latitude=${pts.map(p=>p[0]).join(",")}&longitude=${pts.map(p=>p[1]).join(",")}&hourly=wave_height,wave_direction&start_date=${day}&end_date=${day}&timezone=GMT`).then(r=>r.json());
-          this.wdata=Array.isArray(r2)?r2:[r2]; this.wkey=key;}catch(e){this.wdata=null;}
-      }
-      this.grid={x0,y0,dx,dy,cols,rows,U:[],V:[]};
-      this.fill(this.tkey);
-      const n=Math.min(isMobile()?500:1200,Math.round(size.x*size.y/(isMobile()?900:750)));
-      this.parts=Array.from({length:n},()=>this.spawn(true));
-      this.start();
-    }catch(e){this.grid=null;}
+    }
+    if(state.layer==="wave"&&G&&!G.wdata&&!busyAPI&&!dailyLimit){
+      try{const r2=await fetch(`https://marine-api.open-meteo.com/v1/marine?latitude=${G.lats.join(",")}&longitude=${G.lons.join(",")}&hourly=wave_height&forecast_days=8&timezone=GMT`).then(r=>r.json());
+        G.wdata=Array.isArray(r2)?r2:[r2];}catch(e){}
+    }
+    if(!G) return;
+    this.data=G.data; this.wdata=G.wdata||null;
+    const p0=map.latLngToContainerPoint([G.N,G.W]), p1=map.latLngToContainerPoint([G.S,G.E]);
+    this.grid={x0:p0.x,y0:p0.y,dx:(p1.x-p0.x)/(G.cols-1),dy:(p1.y-p0.y)/(G.rows-1),cols:G.cols,rows:G.rows,U:[],V:[]};
+    this.fill(this.tkey);
+    const n=Math.min(isMobile()?500:1200,Math.round(size.x*size.y/(isMobile()?900:750)));
+    this.parts=Array.from({length:n},()=>this.spawn(true));
+    this.start();
   },
   at(x,y){
     const g=this.grid; let fx=(x-g.x0)/g.dx, fy=(y-g.y0)/g.dy;
@@ -1560,7 +1609,7 @@ function renderSpots(){
 
 /* ---------- forecast ---------- */
 const fetchT=(u,ms=15000)=>{const c=new AbortController(),tm=setTimeout(()=>c.abort(),ms);return fetch(u,{signal:c.signal}).finally(()=>clearTimeout(tm));};
-const inflight={}; let busyAPI=false;
+const inflight={}; let busyAPI=false, dailyLimit=false;
 async function load(s,past){
   const ik=`${dLat(s)},${dLon(s)},${state.model}${past?",past":""}`;
   if(inflight[ik]) return inflight[ik];
@@ -1577,13 +1626,13 @@ async function load_(s,past){
   const b0=`latitude=${dLat(s)}&longitude=${dLon(s)}&timezone=auto&`, b=b0+(past?"past_days=10&forecast_days=1":"forecast_days=14"), bm=b0+(past?"past_days=10&forecast_days=1":"forecast_days=8");
   const [w,m]=await Promise.all([
     (async()=>{const hv_="&hourly=temperature_2m,weather_code,precipitation_probability,precipitation,wind_speed_10m,wind_direction_10m,wind_gusts_10m&daily=sunrise,sunset&wind_speed_unit=ms";
-      for(const u of [`${b}${hv_}${mq()}`,`${b}${hv_}${mq()}`,`${b0}forecast_days=7${hv_}`]){try{const r=await fetchT(`https://api.open-meteo.com/v1/forecast?${u}`);if(r.ok){const j=await r.json();if(j&&j.hourly)return j;}if(r.status===429){busyAPI=true;await new Promise(z=>setTimeout(z,2500));}}catch(e){}}
+      for(const u of [`${b}${hv_}${mq()}`,`${b}${hv_}${mq()}`,`${b0}forecast_days=7${hv_}`]){try{const r=await fetchT(`https://api.open-meteo.com/v1/forecast?${u}`);if(r.ok){const j=await r.json();if(j&&j.hourly)return j;}if(r.status===429){busyAPI=true;try{const e=await r.json();if(/daily/i.test(e.reason||"")){dailyLimit=true;break;}}catch(_){}await new Promise(z=>setTimeout(z,2500));}}catch(e){}}
       throw new Error("forecast unavailable");})(),
     (async()=>{const mv="&hourly=wave_height,wave_direction,wave_period,swell_wave_height,swell_wave_period,swell_wave_direction,sea_level_height_msl,sea_surface_temperature,ocean_current_velocity,ocean_current_direction";
       for(const u of [`${bm}${mv}`,`${bm}&hourly=wave_height,wave_direction,wave_period,swell_wave_direction,sea_level_height_msl,sea_surface_temperature`]){try{const r=await fetchT(`https://marine-api.open-meteo.com/v1/marine?${u}`);if(r.ok)return await r.json();}catch(e){}}
       return null;})()
   ]);
-  if(!past){try{const r=await fetchT(`https://api.open-meteo.com/v1/forecast?${b0}past_days=2&forecast_days=1&hourly=precipitation`,10000);if(r.ok){const j=await r.json();w.__rh=j.hourly||null;}}catch(e){}}
+  if(!past&&(state.mode==="dive"||state.mode==="storm")){try{const r=await fetchT(`https://api.open-meteo.com/v1/forecast?${b0}past_days=2&forecast_days=1&hourly=precipitation`,10000);if(r.ok){const j=await r.json();w.__rh=j.hourly||null;}}catch(e){}}
   const T=w.hourly.time, n=T.length, src=(m&&m.hourly)||{}, pos=new Map((src.time||[]).map((x,j)=>[x,j])), mh={time:T};
   ["wave_height","wave_direction","wave_period","swell_wave_height","swell_wave_period","swell_wave_direction","sea_level_height_msl","sea_surface_temperature","ocean_current_velocity","ocean_current_direction"].forEach(x=>{const a=src[x];mh[x]=T.map(tt=>{const j=pos.get(tt);return a&&j!=null?a[j]:null;});});
   const d={w,m:{hourly:mh},off:w.utc_offset_seconds||0,hasWave:mh.wave_height.some(v=>v!=null),rainHist:w.__rh||null};
@@ -1639,10 +1688,12 @@ function modeBar(){
 }
 function renderHeader(s){
   $("ph").innerHTML=`<div><h1>${esc(s.name)}</h1><small>${s.snap>0.3?esc(t("snapNote",{k:s.snap<1?s.snap.toFixed(1):Math.round(s.snap)})):`${(+s.lat).toFixed(3)}°, ${(+s.lon).toFixed(3)}°`}</small></div>`+
+    `<button class="sheetb" id="sheetBtn" type="button"></button>`+
     (s.temp?`<button class="act save" id="pact">${ic("star")}${esc(t("save"))}</button>`:`<button class="iconb" id="pact" aria-label="${esc(t("edit"))}" title="${esc(t("spotSettings"))}">${ic("more")}</button>`);
   $("fab").hidden=true;
   $("ph").insertAdjacentHTML("afterend","");
   const mb=$("modebar"); mb.innerHTML=modeBar(); mb.querySelectorAll("[data-md]").forEach(b=>b.onclick=()=>setMode(b.dataset.md));
+  $("sheetBtn").onclick=()=>setSheet(sheet==="c"?"h":"c"); updSheetBtn();
   $("pact").onclick=()=>s.temp?openEditor({...temp,id:"s"+Date.now(),name:temp.custom?temp.name:"",faceMode:"auto",tide:"",cam:"",wn:"",yahoo:""},true):openEditor(s);
 }
 function linksHtml(s){
@@ -1975,12 +2026,16 @@ function setSel(j,from){
 const utcKey=(k,off)=>new Date(Date.parse(k+":00Z")-off*1000).toISOString().slice(0,13)+":00";
 
 let sheet="h";
-function setSheet(v){sheet=v;const p=$("panel");p.dataset.sheet=v;if(v==="c")p.scrollTop=0;}
+function topLimit(){const tb=document.querySelector(".topbar");return tb?Math.round(tb.getBoundingClientRect().bottom+10):180;}
+function updSheetBtn(){const b=$("sheetBtn");if(!b)return;const open=sheet!=="c";
+  b.innerHTML=`<svg class="ic" viewBox="0 0 24 24"><path d="${open?"M6 9l6 6 6-6":"M6 15l6-6 6 6"}"/></svg><span>${esc(t(open?"sheetClose":"sheetOpen"))}</span>`;b.setAttribute("aria-expanded",open);}
+function setSheet(v){sheet=v;const p=$("panel");p.style.setProperty("--top",topLimit()+"px");p.dataset.sheet=v;if(v==="c")p.scrollTop=0;updSheetBtn();}
 function bindSheet(){
   const p=$("panel"),g=$("grab"); let y0=null,h0=0,moved=false;
-  const H=()=>window.innerHeight, snap=h=>{const r=h/H();setSheet(r<.33?"c":r<.7?"h":"f");p.style.height="";};
+  const H=()=>window.innerHeight, maxH=()=>H()-topLimit(), snap=h=>{const r=h/maxH();setSheet(r<.35?"c":r<.8?"h":"f");p.style.height="";};
+  window.addEventListener("resize",()=>p.style.setProperty("--top",topLimit()+"px"));
   const start=e=>{if(!isMobile())return;y0=e.clientY;h0=p.getBoundingClientRect().height;moved=false;p.classList.add("drag");};
-  const move=e=>{if(y0==null)return;const dy=y0-e.clientY;if(Math.abs(dy)>6)moved=true;if(moved)p.style.height=Math.max(150,Math.min(H()-70,h0+dy))+"px";};
+  const move=e=>{if(y0==null)return;const dy=y0-e.clientY;if(Math.abs(dy)>6)moved=true;if(moved)p.style.height=Math.max(150,Math.min(maxH(),h0+dy))+"px";};
   const end=()=>{if(y0==null)return;p.classList.remove("drag");if(moved)snap(p.getBoundingClientRect().height);else setSheet(sheet==="c"?"h":"c");y0=null;};
   [g,$("ph"),$("mini")].forEach(el=>el.addEventListener("pointerdown",e=>{if(e.target.closest("button"))return;start(e);el.setPointerCapture(e.pointerId);}));
   [g,$("ph"),$("mini")].forEach(el=>{el.addEventListener("pointermove",move);el.addEventListener("pointerup",end);el.addEventListener("pointercancel",end);});
@@ -2083,6 +2138,7 @@ async function renderAll(quiet){
   }catch(e){
     if(my!==reqId)return;
     console.error(e);
+    if(dailyLimit){$("body").innerHTML=`<div class="softload"><b>${esc(t("dayLimT"))}</b><span>${esc(t("dayLimB"))}</span></div>${linksHtml(s)}`;return;}
     retryN=(retryN||0)+1; const wait=Math.min(60,10*retryN);
     $("body").innerHTML=`<div class="softload"><span class="spin"></span><b>${esc(t("prepT"))}</b><span>${esc(t("prepB",{n:wait}))}</span><button class="linkbtn" id="retryB">${esc(t("retryNow"))}</button></div>${linksHtml(s)}`;
     clearTimeout(retryT); retryT=setTimeout(()=>{if(spot()===s)renderAll(true);},wait*1000);
