@@ -488,7 +488,7 @@ details.risk.r2 .alertsrc,details.risk.r2 .alertsrc a{color:#fff}
 .clrow .face{width:20px;height:20px;color:#5B6B78;stroke-width:1.7}
 .clrow .st{color:#5B6B78;font-size:13px;letter-spacing:1px}
 .clrow .st i{font-style:normal;color:var(--faint)}
-.clrow small{margin-left:auto;font-family:var(--num);font-size:11.5px;color:var(--sub)}
+.clrow small{margin-left:auto;font-family:var(--num);font-size:11.5px;color:var(--sub);text-align:right}.clrow .fbest{display:block;color:var(--aqua);font-weight:500}
 .menu .onoff{margin-left:auto;font-style:normal;font-size:11.5px;font-weight:700;color:var(--sub);background:var(--mist);border-radius:999px;padding:2px 9px}
 .menu button[aria-pressed="true"] .onoff{background:var(--aqua);color:#fff}
 .tcw h2{display:flex;align-items:center;gap:6px;white-space:nowrap}.tcw h2 .ic{width:16px;height:16px;color:var(--aqua)}.tcw h2 span{margin-left:auto}
@@ -696,7 +696,7 @@ ja:{
  windFrom:"{d}の風",swellFrom:"うねり：{d}から",off:"オフショア",cross:"サイド",on:"オンショア",open:"沖合",inland:"内陸",calc:"地形を確認中",
  faceAuto:"海の向き：{d}（地形から自動判定）",faceOpen:"周りがすべて海のため、オフ／オンの判定はしていません",faceInland:"海から離れているため、判定していません",
  sea:"海",land:"陸",tide:"潮の満ち引き",tideNote:"平均海面からの高さ・目安",noTide:"この日の潮位予測はありません（潮位は8日先まで）。潮見表で確認してください。",noTideEx:"はっきりした満潮・干潮がない日です",high:"満潮",low:"干潮",
- hourly:"時間ごと",unitsLbl:"風 {w}・波 {h}",sunrise:"日の出",sunset:"日の入り",seaSurf:"海面の温度",fTitle:"釣れやすい時間",rising:"上げ潮",on:"オン",off:"オフ",tlWind:"風（上ほど強い）",tlRisk:"注意",rWind:"強風",rWave:"高波",rThunder:"雷",rDanger:"この時間は海に入らないで",rCaution:"注意が必要",spotSettings:"このポイントの設定",ly_wind:"風",ly_wave:"波",ly_none:"オフ",nowBtn:"いまに戻る",nowLbl:"いま",tlHint:"左右にスライドして時間を選ぶ",dlWind:"最大風速 {u}",dlWave:"最大波高 {u}",wk:["日","月","火","水","木","金","土"],farNote:"1週間より先の予報は大きく変わることがあります。目安として見てください",falling:"下げ潮",tapTide:"グラフをタップ・なぞると、その時間の潮位が見られます",fHigh:"満潮前後",fLow:"干潮前後",fDawn:"朝マズメ",fDusk:"夕マズメ",tn_spring:"大潮",tn_mid:"中潮",tn_neap:"小潮",tn_long:"長潮",tn_young:"若潮",
+ hourly:"時間ごと",unitsLbl:"風 {w}・波 {h}",sunrise:"日の出",sunset:"日の入り",seaSurf:"海面の温度",fTitle:"釣れやすい時間",fishL:"釣りやすさ",fishTip:"潮回り・時合（マズメ・潮の変わり目）・波・風・雨から出した目安です",fBest:"今日のおすすめ {h}時ごろ",fbWave:"波が高い",fbWind:"風が強い",fbRain:"雨",rising:"上げ潮",on:"オン",off:"オフ",tlWind:"風（上ほど強い）",tlRisk:"注意",rWind:"強風",rWave:"高波",rThunder:"雷",rDanger:"この時間は海に入らないで",rCaution:"注意が必要",spotSettings:"このポイントの設定",ly_wind:"風",ly_wave:"波",ly_none:"オフ",nowBtn:"いまに戻る",nowLbl:"いま",tlHint:"左右にスライドして時間を選ぶ",dlWind:"最大風速 {u}",dlWave:"最大波高 {u}",wk:["日","月","火","水","木","金","土"],farNote:"1週間より先の予報は大きく変わることがあります。目安として見てください",falling:"下げ潮",tapTide:"グラフをタップ・なぞると、その時間の潮位が見られます",fHigh:"満潮前後",fLow:"干潮前後",fDawn:"朝マズメ",fDusk:"夕マズメ",tn_spring:"大潮",tn_mid:"中潮",tn_neap:"小潮",tn_long:"長潮",tn_young:"若潮",
 nFullNow:"今夜は満月",nSuperNow:"今夜はスーパームーン",nNewNow:"今日は新月",nSuperSoon:"{d}はスーパームーン。いつもより大きく明るい満月です",spFull:"満月は感謝と手放しの日といわれています",spNew:"新しいことを始めるのにいい日といわれています",
 ph_new:"新月",ph_cres:"三日月",ph_first:"上弦の月",ph_waxg:"満ちていく月",ph_full:"満月",ph_wang:"欠けていく月",ph_last:"下弦の月",ph_waning:"有明の月",
 sp_new:"はじまりの時期といわれています",sp_cres:"願いを育てる時期といわれています",sp_first:"行動に移す時期といわれています",sp_waxg:"エネルギーが満ちていく時期といわれています",sp_full:"感謝と手放しの時期といわれています",sp_wang:"ゆるめて整える時期といわれています",sp_last:"いらないものを手放す時期といわれています",sp_waning:"休んで次に備える時期といわれています",
@@ -738,7 +738,7 @@ en:{
  windFrom:"{d} wind",swellFrom:"Swell from {d}",off:"Offshore",cross:"Cross-shore",on:"Onshore",open:"Open water",inland:"Inland",calc:"Reading the coastline",
  faceAuto:"Facing {d} (auto from coastline)",faceOpen:"Water all around, so no offshore/onshore call",faceInland:"Too far from the sea to judge",
  sea:"Sea",land:"Land",tide:"Tide",tideNote:"Height vs. mean sea level",noTide:"No tide forecast for this day (tides go 8 days ahead). Check a local tide table.",noTideEx:"No clear high/low tide today",high:"High",low:"Low",
- hourly:"Hourly",unitsLbl:"Wind {w} · Waves {h}",sunrise:"Sunrise",sunset:"Sunset",seaSurf:"Sea surface",fTitle:"Best fishing times",rising:"rising",on:"On",off:"Off",tlWind:"Wind (higher = stronger)",tlRisk:"Caution",rWind:"strong wind",rWave:"big waves",rThunder:"thunder",rDanger:"Stay out of the water",rCaution:"Take care",spotSettings:"Spot settings",ly_wind:"Wind",ly_wave:"Waves",ly_none:"Off",nowBtn:"Now",nowLbl:"Now",tlHint:"Slide to pick a time",dlWind:"max wind {u}",dlWave:"max waves {u}",wk:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],farNote:"Forecasts beyond a week can change a lot. Use them as a rough guide",falling:"falling",tapTide:"Tap or drag the chart to see any time",fHigh:"around high tide",fLow:"around low tide",fDawn:"dawn",fDusk:"dusk",tn_spring:"Spring tide",tn_mid:"Mid tide",tn_neap:"Neap tide",tn_long:"Long tide",tn_young:"Young tide",
+ hourly:"Hourly",unitsLbl:"Wind {w} · Waves {h}",sunrise:"Sunrise",sunset:"Sunset",seaSurf:"Sea surface",fTitle:"Best fishing times",fishL:"Fishing",fishTip:"Estimated from tide, bite windows (dawn/dusk, tide turns), waves, wind and rain",fBest:"Best today ~{h}:00",fbWave:"big waves",fbWind:"strong wind",fbRain:"rain",rising:"rising",on:"On",off:"Off",tlWind:"Wind (higher = stronger)",tlRisk:"Caution",rWind:"strong wind",rWave:"big waves",rThunder:"thunder",rDanger:"Stay out of the water",rCaution:"Take care",spotSettings:"Spot settings",ly_wind:"Wind",ly_wave:"Waves",ly_none:"Off",nowBtn:"Now",nowLbl:"Now",tlHint:"Slide to pick a time",dlWind:"max wind {u}",dlWave:"max waves {u}",wk:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],farNote:"Forecasts beyond a week can change a lot. Use them as a rough guide",falling:"falling",tapTide:"Tap or drag the chart to see any time",fHigh:"around high tide",fLow:"around low tide",fDawn:"dawn",fDusk:"dusk",tn_spring:"Spring tide",tn_mid:"Mid tide",tn_neap:"Neap tide",tn_long:"Long tide",tn_young:"Young tide",
 nFullNow:"Full moon tonight",nSuperNow:"Supermoon tonight",nNewNow:"New moon today",nSuperSoon:"Supermoon on {d}: a bigger, brighter full moon",spFull:"Said to be a time for gratitude and letting go",spNew:"Said to be a good day to start something new",
 ph_new:"New moon",ph_cres:"Waxing crescent",ph_first:"First quarter",ph_waxg:"Waxing gibbous",ph_full:"Full moon",ph_wang:"Waning gibbous",ph_last:"Last quarter",ph_waning:"Waning crescent",
 sp_new:"Said to be a time of beginnings",sp_cres:"Said to be a time to nurture wishes",sp_first:"Said to be a time to take action",sp_waxg:"Said to be a time of rising energy",sp_full:"Said to be a time of gratitude and release",sp_wang:"Said to be a time to slow down",sp_last:"Said to be a time to let go",sp_waning:"Said to be a time to rest",
@@ -780,7 +780,7 @@ es:{
  windFrom:"Viento del {d}",swellFrom:"Mar de fondo del {d}",off:"Offshore",cross:"Cruzado",on:"Onshore",open:"Mar abierto",inland:"Interior",calc:"Analizando la costa",
  faceAuto:"Orientación {d} (auto según la costa)",faceOpen:"Agua alrededor: sin cálculo offshore/onshore",faceInland:"Demasiado lejos del mar para calcularlo",
  sea:"Mar",land:"Tierra",tide:"Marea",tideNote:"Altura sobre el nivel medio",noTide:"Sin previsión de marea para este día (hasta 8 días). Consulta una tabla de mareas.",noTideEx:"Hoy no hay pleamar/bajamar clara",high:"Pleamar",low:"Bajamar",
- hourly:"Por horas",unitsLbl:"Viento {w} · Olas {h}",sunrise:"Amanecer",sunset:"Atardecer",seaSurf:"Superficie del mar",fTitle:"Mejores horas de pesca",rising:"subiendo",on:"Sí",off:"No",tlWind:"Viento (más alto = más fuerte)",tlRisk:"Precaución",rWind:"viento fuerte",rWave:"olas grandes",rThunder:"tormenta",rDanger:"No entres al agua",rCaution:"Precaución",spotSettings:"Ajustes del spot",ly_wind:"Viento",ly_wave:"Olas",ly_none:"No",nowBtn:"Ahora",nowLbl:"Ahora",tlHint:"Desliza para elegir la hora",dlWind:"viento máx. {u}",dlWave:"olas máx. {u}",wk:["dom","lun","mar","mié","jue","vie","sáb"],farNote:"Más allá de una semana el pronóstico puede cambiar mucho. Úsalo como orientación",falling:"bajando",tapTide:"Toca o desliza en el gráfico para ver otra hora",fHigh:"cerca de la pleamar",fLow:"cerca de la bajamar",fDawn:"amanecer",fDusk:"atardecer",tn_spring:"Mareas vivas",tn_mid:"Marea media",tn_neap:"Mareas muertas",tn_long:"Marea larga",tn_young:"Marea joven",
+ hourly:"Por horas",unitsLbl:"Viento {w} · Olas {h}",sunrise:"Amanecer",sunset:"Atardecer",seaSurf:"Superficie del mar",fTitle:"Mejores horas de pesca",fishL:"Pesca",fishTip:"Estimación según marea, horas de picada, olas, viento y lluvia",fBest:"Mejor hoy ~{h}h",fbWave:"olas altas",fbWind:"viento fuerte",fbRain:"lluvia",rising:"subiendo",on:"Sí",off:"No",tlWind:"Viento (más alto = más fuerte)",tlRisk:"Precaución",rWind:"viento fuerte",rWave:"olas grandes",rThunder:"tormenta",rDanger:"No entres al agua",rCaution:"Precaución",spotSettings:"Ajustes del spot",ly_wind:"Viento",ly_wave:"Olas",ly_none:"No",nowBtn:"Ahora",nowLbl:"Ahora",tlHint:"Desliza para elegir la hora",dlWind:"viento máx. {u}",dlWave:"olas máx. {u}",wk:["dom","lun","mar","mié","jue","vie","sáb"],farNote:"Más allá de una semana el pronóstico puede cambiar mucho. Úsalo como orientación",falling:"bajando",tapTide:"Toca o desliza en el gráfico para ver otra hora",fHigh:"cerca de la pleamar",fLow:"cerca de la bajamar",fDawn:"amanecer",fDusk:"atardecer",tn_spring:"Mareas vivas",tn_mid:"Marea media",tn_neap:"Mareas muertas",tn_long:"Marea larga",tn_young:"Marea joven",
 nFullNow:"Luna llena esta noche",nSuperNow:"Superluna esta noche",nNewNow:"Hoy es luna nueva",nSuperSoon:"Superluna el {d}: una luna llena más grande y brillante",spFull:"Se dice que es momento de agradecer y soltar",spNew:"Se dice que es buen día para empezar algo nuevo",
 ph_new:"Luna nueva",ph_cres:"Creciente",ph_first:"Cuarto creciente",ph_waxg:"Gibosa creciente",ph_full:"Luna llena",ph_wang:"Gibosa menguante",ph_last:"Cuarto menguante",ph_waning:"Menguante",
 sp_new:"Se dice que es tiempo de comienzos",sp_cres:"Se dice que es tiempo de cuidar deseos",sp_first:"Se dice que es tiempo de actuar",sp_waxg:"Se dice que la energía va en aumento",sp_full:"Se dice que es tiempo de agradecer y soltar",sp_wang:"Se dice que es tiempo de bajar el ritmo",sp_last:"Se dice que es tiempo de soltar",sp_waning:"Se dice que es tiempo de descansar",
@@ -2007,6 +2007,21 @@ function clarity(d,i,kc){
   const lv=sc<=1?"hi":sc<=3?"mid":"lo";
   return {lv,stars:lv==="hi"?5:lv==="mid"?3:1,why,m:lv==="hi"?t("vmHi"):lv==="mid"?t("vmMid"):t("vmLo")};
 }
+/* 釣りやすさ（目安）：潮回り・時合（マズメ/潮の変わり目）・波・風・雨 */
+function fishScore(d,j,wins,tn){
+  const W=d.w.hourly,M=d.m.hourly,hr=+W.time[j].slice(11,13),why=[],bad=[];
+  let sc=2;
+  if(tn==="spring"){sc+=1;why.push(t("tn_spring"));}else if(tn==="mid"){sc+=.5;why.push(t("tn_mid"));}
+  const w_=wins.filter(([a])=>hr>=a&&hr<=a+2).map(x=>x[1]);
+  if(w_.some(l=>l==="fDawn"||l==="fDusk")){sc+=1.5;why.unshift(t(w_.find(l=>l==="fDawn"||l==="fDusk")));}
+  else if(w_.length){sc+=1;why.unshift(t(w_[0]));}
+  const h=M.wave_height[j], ws=W.wind_speed_10m[j]||0, pr=W.precipitation?.[j]||0;
+  if(h!=null){if(h>=2){sc-=2;bad.push(t("fbWave"));}else if(h>=1.2){sc-=1;bad.push(t("fbWave"));}else if(h>=.3){sc+=.5;}}
+  if(ws>=9){sc-=2;bad.push(t("fbWind"));}else if(ws>=6){sc-=1;bad.push(t("fbWind"));}
+  if(pr>=5){sc-=.5;bad.push(t("fbRain"));}
+  const stars=Math.max(1,Math.min(5,Math.round(sc)));
+  return {stars,lv:stars>=4?"hi":stars>=3?"mid":"lo",why:bad.length?bad:why.slice(0,2)};
+}
 const riverCache={};
 async function riverNear(s){
   const k=(+s.lat).toFixed(2)+","+(+s.lon).toFixed(2);
@@ -2145,6 +2160,8 @@ function renderWidgets(mode){
         ${state.mode==="dive"||state.mode==="storm"?`<div class="tidechip">${moonIcon(dayMs,16)}<span>${esc(t("tn_"+tn))}</span><i>${esc(t("tmove",{x:t("tm"+tideStars(tn))}))}</i></div>`:""}
         ${facenote?`<div class="facenote">${esc(facenote)}</div>`:""}</div></div>
       <div class="hstats">${modeStats(d,i,F,{wh,wp,wvd,sst,tn,nextTide,nextWin,gu,ws,kc})}</div>
+      ${state.mode==="fish"?(()=>{const c=fishScore(d,i,wins,tn);let bj=-1,bs=0;T.forEach((x,j)=>{if(x.startsWith(day)&&(day!==T[nowI].slice(0,10)||j>=nowI)){const q=fishScore(d,j,wins,tn).stars;if(q>bs){bs=q;bj=j;}}});
+        return `<div class="clrow ${c.lv}" title="${esc(t("fishTip"))}"><span class="cl">${esc(t("fishL"))}</span>${ic("face_"+c.lv,"face")}<span class="st">${"★".repeat(c.stars)}<i>${"★".repeat(5-c.stars)}</i></span><small>${esc(c.why.join("・"))}${bj>=0&&bj!==i&&bs>c.stars?`<span class="fbest">${esc(t("fBest",{h:+T[bj].slice(11,13)}))}</span>`:""}</small></div>`;})():""}
       ${(state.mode==="dive"||state.mode==="storm")?(()=>{const c=clarity(d,i,kc);return c?`<div class="clrow ${c.lv}" title="${esc(t("clarTip")+(c.why.length?"："+c.why.join("・"):""))}"><span class="cl">${esc(t("clar"))}</span>${ic("face_"+c.lv,"face")}<span class="st">${"★".repeat(c.stars)}<i>${"★".repeat(5-c.stars)}</i></span><small>${esc(c.m)}</small></div>`:"";})():""}
       <div class="hfoot"><span>${ic("sunrise")}${sr||"–"}<i>–</i>${ic("sunset")}${ss||"–"}</span>${fishOn()&&nextWin?`<span class="bite">${ic("fish")}${esc(t("nextBite",{h:Math.max(0,nextWin[0]),l:t(nextWin[1])}))}</span>`:`<span>${moonIcon(dayMs,13)}${esc(t("ph_"+pk))}</span>`}</div></div>`,
     wave:`<div class="wg wave"><div class="lb">${ic("wave")}${esc(t("wave"))}</div><div class="v">${wh!=null?hv(wh):"–"}<small>${hu()}</small></div><div class="s">${wh!=null?esc(t("period",{n:f0(wp)})):esc(t("noData"))}${wh!=null&&wvd!=null?`<br>${esc(t("swellFrom",{d:dirName(wvd)}))}`:""}</div></div>`,
