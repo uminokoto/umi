@@ -52,7 +52,7 @@ button{cursor:pointer}
 .ic{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
 
 #map{position:fixed;inset:0;background:#AAD3DF}
-.leaflet-tile-pane{filter:saturate(1.15) brightness(1.02)}
+.leaflet-tile-pane{filter:saturate(1.08)}
 .leaflet-container{font-family:var(--jp)}
 .windcanvas{position:absolute;pointer-events:none}
 .panel::-webkit-scrollbar{width:6px}.panel::-webkit-scrollbar-thumb{background:var(--faint);border-radius:3px}
@@ -1009,11 +1009,22 @@ function focus(lat,lon,zoom){
   if(isMobile()) p.y+=$("panel").offsetHeight/2-50; else p.x-=200;
   map.flyTo(map.unproject(p,z),z,{duration:.8});
 }
+let baseLayer=null, baseFails=0;
+function setBase(){
+  if(!map) return;
+  const st=state.lang==="ja"?"osm-bright-ja":"osm-bright-en", url=`https://tile.openstreetmap.jp/styles/${st}/{z}/{x}/{y}.png`;
+  if(baseLayer&&baseLayer._url===url) return;
+  if(baseLayer) map.removeLayer(baseLayer);
+  baseFails=0;
+  baseLayer=L.tileLayer(url,{maxZoom:18,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, OSMFJ'}).addTo(map);
+  baseLayer.on("tileerror",()=>{if(++baseFails===12&&baseLayer._url===url){map.removeLayer(baseLayer);baseLayer=L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:18,attribution:"&copy; OpenStreetMap"}).addTo(map);baseLayer.bringToBack();}});
+  baseLayer.bringToBack&&baseLayer.bringToBack();
+}
 function initMap(){
   if(!window.L) return;
   map=L.map("map",{zoomControl:false,worldCopyJump:true}).setView([33,135],5);
   L.control.zoom({position:"bottomright"}).addTo(map);
-  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:18,attribution:"&copy; OpenStreetMap"}).addTo(map);
+  setBase();
   spotLayer=L.layerGroup().addTo(map); tcLayer=L.layerGroup().addTo(map);
   map.on("click",e=>{
     const ll=e.latlng.wrap(); pickPlace(ll.lat,ll.lng,null,false);
@@ -1499,7 +1510,7 @@ function renderSettings(focus){ if(focus) renderSettings.focus=focus;
   $("setbody").querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>{
     const k=b.dataset.k,v=b.dataset.v;
     if(k==="lang"){state.lang=v;if(temp&&!temp.custom)temp.name=t("picked");}else state.units[k]=v;
-    save();applyChrome();drawTemp();drawSpots();renderAll(true);renderSettings();
+    save();applyChrome();setBase();drawTemp();drawSpots();renderAll(true);renderSettings();
   });
   $("setbody").querySelectorAll("[data-m]").forEach(b=>b.onclick=()=>{state.model=b.dataset.m;save();Wind.reset();drawSpots();renderAll();renderSettings();});
   const look=()=>{save();applyLook();renderAll(true);renderSettings();};
