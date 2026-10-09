@@ -246,14 +246,17 @@ dialog .ed{background:var(--base)}
 .ph .act{display:flex;align-items:center;gap:5px;border:none;border-radius:999px;padding:7px 13px;background:var(--card);box-shadow:0 2px 8px rgba(33,53,71,.06);font-weight:500;font-size:13px;white-space:nowrap}
 .ph .act .ic{width:15px;height:15px}
 .ph .act.save{background:var(--aqua);color:#fff}
+.ph #pshare{margin-left:0;flex:none}.ph #pshare .ic{width:18px;height:18px}.ph #pshare+#pact{margin-left:6px}
 
 .alerts{display:flex;flex-direction:column;gap:6px}
 .alert{display:flex;gap:9px;align-items:flex-start;background:#FCE9E3;color:#9A4F42;border-radius:16px;padding:10px 13px;font-size:13px;line-height:1.45}
 .alert.tc{background:#EEE8F7;color:#62508A}
 .alert .ic{width:16px;height:16px;margin-top:1px}
-.alert a{color:inherit;font-weight:500}
-.alertsrc{font-size:11px;color:var(--sub);display:flex;gap:10px;flex-wrap:wrap;padding:0 4px}
-.alertsrc a{color:var(--aqua);text-decoration:none;font-weight:500}
+.alert a{color:#0A5FA8;font-weight:600;font-size:14px;text-decoration:underline;text-underline-offset:2px;text-shadow:none}
+.alertsrc{font-size:13px;color:#33505E;font-weight:500;display:flex;gap:6px 8px;flex-wrap:wrap;align-items:center;padding:2px 4px;text-shadow:none}
+.alertsrc span{width:100%}
+.alertsrc a{display:inline-flex;align-items:center;min-height:32px;padding:4px 12px;border-radius:999px;background:#fff;border:1px solid #BCD6E4;color:#0A5FA8;font-size:14px;font-weight:600;line-height:1.3;text-decoration:none;text-shadow:none}
+.alertsrc a:active{background:#EAF4FA}
 
 .hero{background:var(--cardbg);border-radius:26px;padding:16px 14px 16px 10px;color:var(--ink);box-shadow:inset 0 0 0 1px var(--line)}
 .top{display:grid;grid-template-columns:128px 1fr;gap:16px;align-items:center}
@@ -350,7 +353,7 @@ dialog .ed{background:var(--base)}
 #body{padding-bottom:58px}
 .range{width:100%;margin-top:8px;accent-color:var(--aqua)}
 .rlab{display:flex;justify-content:space-between;font-size:11px;color:var(--sub)}
-.clearmode .ph h1,.clearmode .ph small,.clearmode .note,.clearmode .editw,.clearmode .alertsrc,.clearmode .dlegend{text-shadow:0 0 6px #fff,0 0 3px #fff,0 0 1px #fff}
+.clearmode .ph h1,.clearmode .ph small,.clearmode .note,.clearmode .editw,.clearmode .dlegend{text-shadow:0 0 6px #fff,0 0 3px #fff,0 0 1px #fff}
 .clearmode .panel{box-shadow:0 14px 40px rgba(33,53,71,.10),inset 0 0 0 1px rgba(255,255,255,.6)}
 .clearmode .wg,.clearmode .sec,.clearmode .hero,.clearmode .links a{box-shadow:0 4px 14px rgba(33,53,71,.08),inset 0 0 0 1px var(--line)!important}
 .wtl{display:flex;align-items:flex-start;gap:12px}
@@ -407,7 +410,7 @@ details.risk .achev{font-style:normal;transition:transform .2s}
 details.risk[open] .achev{transform:rotate(180deg)}
 details.risk .alist{display:flex;flex-direction:column;gap:5px;padding:0 8px 8px}
 details.risk.r2 .alist .alert{background:rgba(255,255,255,.92)}
-details.risk.r2 .alertsrc,details.risk.r2 .alertsrc a{color:#fff}
+details.risk.r2 .alertsrc span{color:#fff}
 .top{grid-template-columns:116px 1fr!important}
 .dial{width:116px!important;height:116px!important}
 .big{font-size:42px!important;margin-top:6px!important}
@@ -438,6 +441,9 @@ details.risk.r2 .alertsrc,details.risk.r2 .alertsrc a{color:#fff}
 .softload{display:flex;flex-direction:column;align-items:center;gap:6px;padding:34px 16px;text-align:center;color:var(--sub);font-size:12.5px}
 .softload b{color:var(--ink);font-size:14px}
 .softload .linkbtn{margin-top:4px}
+.poiload{position:fixed;z-index:650;top:calc(78px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px;background:#fff;color:#33505E;font-size:13px;font-weight:500;border-radius:999px;padding:7px 14px 7px 10px;box-shadow:0 4px 14px rgba(0,0,0,.14);pointer-events:none;white-space:nowrap}
+.poiload[hidden]{display:none}.poiload.msg .spin{display:none}.poiload.msg{padding:7px 14px}.poiload .spin{width:16px;height:16px;border-width:2px}
+@media (max-width:760px){.poiload{top:calc(176px + env(safe-area-inset-top,0px));max-width:calc(100% - 32px)}}
 .spin{width:26px;height:26px;border-radius:50%;border:3px solid var(--aqua-soft);border-top-color:var(--aqua);animation:sp 1s linear infinite}
 @keyframes sp{to{transform:rotate(360deg)}}
 .stale{font-size:11px;color:#8A5A00;background:#FFF4E0;border-radius:10px;padding:5px 10px}
@@ -666,6 +672,7 @@ dialog::backdrop{background:rgba(33,53,71,.3)}
   <nav class="spots" id="spots"></nav>
 </div>
 <div class="hint" id="hint"></div>
+<div class="poiload" id="poiLoad" hidden><span class="spin"></span><span id="poiLoadT"></span></div>
 <div id="tlhost"></div>
 <div class="windlegend" id="windLegend"><div class="bar"></div><div class="sc" id="legendSc"></div></div>
 
@@ -693,10 +700,10 @@ ja:{
  noSpotsT:"ポイントがまだありません",noSpotsB:"地図の海の近くをタップするか、地名で探してください。",
  failT:"予報データを取得できませんでした",failB:"電波の状態を確認して、少し待ってから再読み込みしてください。",
  wave:"波",period:"周期 {n}秒",noData:"データなし",water:"水温",rain:"降水 {n}%",gust:"最大 {n}",
- windFrom:"{d}の風",swellFrom:"うねり：{d}から",off:"オフショア",cross:"サイド",on:"オンショア",open:"沖合",inland:"内陸",calc:"地形を確認中",
+ windFrom:"{d}の風",swellFrom:"波向き：{d}から",waveH:"波の高さ",perS:"{n}秒",off:"オフショア",cross:"サイド",on:"オンショア",open:"沖合",inland:"内陸",calc:"地形を確認中",
  faceAuto:"海の向き：{d}（地形から自動判定）",faceOpen:"周りがすべて海のため、オフ／オンの判定はしていません",faceInland:"海から離れているため、判定していません",
  sea:"海",land:"陸",tide:"潮の満ち引き",tideNote:"平均海面からの高さ・目安",noTide:"この日の潮位予測はありません（潮位は8日先まで）。潮見表で確認してください。",noTideEx:"はっきりした満潮・干潮がない日です",high:"満潮",low:"干潮",
- hourly:"時間ごと",unitsLbl:"風 {w}・波 {h}",sunrise:"日の出",sunset:"日の入り",seaSurf:"海面の温度",fTitle:"釣れやすい時間",fishL:"釣りやすさ",fishTip:"潮回り・時合（マズメ・潮の変わり目）・波・風・雨から出した目安です",fBest:"今日のおすすめ {h}時ごろ",fbWave:"波が高い",fbWind:"風が強い",fbRain:"雨",rising:"上げ潮",on:"オン",off:"オフ",tlWind:"風（上ほど強い）",tlRisk:"注意",rWind:"強風",rWave:"高波",rThunder:"雷",rDanger:"この時間は海に入らないで",rCaution:"注意が必要",spotSettings:"このポイントの設定",ly_wind:"風",ly_wave:"波",ly_none:"オフ",nowBtn:"いまに戻る",nowLbl:"いま",tlHint:"左右にスライドして時間を選ぶ",dlWind:"最大風速 {u}",dlWave:"最大波高 {u}",wk:["日","月","火","水","木","金","土"],farNote:"1週間より先の予報は大きく変わることがあります。目安として見てください",falling:"下げ潮",tapTide:"グラフをタップ・なぞると、その時間の潮位が見られます",fHigh:"満潮前後",fLow:"干潮前後",fDawn:"朝マズメ",fDusk:"夕マズメ",tn_spring:"大潮",tn_mid:"中潮",tn_neap:"小潮",tn_long:"長潮",tn_young:"若潮",
+ hourly:"時間ごと",unitsLbl:"風 {w}・波 {h}",sunrise:"日の出",sunset:"日の入り",seaSurf:"海面の温度",fTitle:"釣れやすい時間",fishL:"釣りやすさ",fishTip:"潮回り・時合・波・風・雨から出した目安です。風5m/s以上で★3まで、6m/s以上で★2まで、8m/s以上は★1になります",fBest:"今日のおすすめ {h}時ごろ",fbWave:"波が高い",fbWind:"風が強め",fbWindS:"強風で釣りは困難",fbChop:"風波で荒れ",fbSwell:"周期の長い高波",fbRain:"雨",rising:"上げ潮",on:"オン",off:"オフ",tlWind:"風（上ほど強い）",tlRisk:"注意",rWind:"強風",rWave:"高波",rThunder:"雷",rDanger:"この時間は海に入らないで",rCaution:"注意が必要",spotSettings:"このポイントの設定",share:"共有",shareText:"📍{n}（海チェックで共有）",shareCopied:"Googleマップのリンクをコピーしました。LINEなどに貼り付けて送れます",shareCopyManual:"このリンクをコピーして送ってください",ly_wind:"風",ly_wave:"波",ly_none:"オフ",nowBtn:"いまに戻る",nowLbl:"いま",tlHint:"左右にスライドして時間を選ぶ",dlWind:"最大風速 {u}",dlWave:"最大波高 {u}",wk:["日","月","火","水","木","金","土"],farNote:"1週間より先の予報は大きく変わることがあります。目安として見てください",falling:"下げ潮",tapTide:"グラフをタップ・なぞると、その時間の潮位が見られます",fHigh:"満潮前後",fLow:"干潮前後",fDawn:"朝マズメ",fDusk:"夕マズメ",tn_spring:"大潮",tn_mid:"中潮",tn_neap:"小潮",tn_long:"長潮",tn_young:"若潮",
 nFullNow:"今夜は満月",nSuperNow:"今夜はスーパームーン",nNewNow:"今日は新月",nSuperSoon:"{d}はスーパームーン。いつもより大きく明るい満月です",spFull:"満月は感謝と手放しの日といわれています",spNew:"新しいことを始めるのにいい日といわれています",
 ph_new:"新月",ph_cres:"三日月",ph_first:"上弦の月",ph_waxg:"満ちていく月",ph_full:"満月",ph_wang:"欠けていく月",ph_last:"下弦の月",ph_waning:"有明の月",
 sp_new:"はじまりの時期といわれています",sp_cres:"願いを育てる時期といわれています",sp_first:"行動に移す時期といわれています",sp_waxg:"エネルギーが満ちていく時期といわれています",sp_full:"感謝と手放しの時期といわれています",sp_wang:"ゆるめて整える時期といわれています",sp_last:"いらないものを手放す時期といわれています",sp_waning:"休んで次に備える時期といわれています",
@@ -704,9 +711,9 @@ moonAge:"月齢 {n}",nextFull:"次の満月",nextNew:"次の新月",superTag:"�
 myLog:"わたしの記録",lv0:"まだ記録なし",lv1:"はじめまして",lv2:"おなじみ",lv3:"ホームビーチ",lv4:"マイ・オーシャン",timesHere:"この場所",thisMonth:"今月",streak:"連続日数",logSwim:"今日ここで泳いだ！",swam:"泳いだ",
 logTitle:"今日の海を記録",logNew:"この場所を保存して記録します",logDate:"日付",logStars:"今日の海はどうだった？",logVis:"透明度",vis_great:"最高",vis_good:"ふつう",vis_poor:"にごり",logSaw:"会えた生き物",
 tg_turtle:"ウミガメ",tg_fish:"熱帯魚",tg_coral:"サンゴ",tg_dolphin:"イルカ",tg_ray:"エイ",tg_jelly:"クラゲ注意",logNote:"メモ",logNotePh:"例：右の岩の先がきれいだった",delVisit:"この記録を削除しますか？",
-poiBtn:"スポット",poiZoom:"もう少しズームすると{m}が表示されます",poiShowing:"{m}を表示しています",sp_dive:"ダイビング・シュノーケルスポット",sp_surf:"サーフスポット",sp_fish:"釣りスポット",sp_boat:"マリーナ・港",sp_storm:"海のスポット",vmHi:"見通し 15m〜",vmMid:"見通し 5〜15m",vmLo:"見通し 〜5m",pMask:"ダイビングスポット",pSwim:"遊泳スポット",pBeach:"ビーチ",pSurf:"サーフスポット",pFish:"釣りスポット",tmove:"潮の動き {x}",tm3:"大",tm2:"中",tm1:"小",airT:"気温 {n}",wFish:"釣り",wTcyc:"潮回り",nextHigh:"次の満潮 {h}時ごろ",nextHighS:"満潮 {h}時",nextLowS:"干潮 {h}時",nextLow:"次の干潮 {h}時ごろ",nextBite:"次の時合 {h}時ごろ（{l}）",wSun:"日の出・日の入り",wMoon:"月",editWidgets:"表示する情報を編集",addLog:"記録",journal:"ログ",close:"閉じる",
+poiBtn:"スポット",poiLoading:"スポットを探しています…",poiZoom:"もう少しズームすると{m}が表示されます",poiShowing:"{m}を表示しています",sp_dive:"ダイビング・シュノーケルスポット",sp_surf:"サーフスポット",sp_fish:"釣りスポット",sp_boat:"マリーナ・港",sp_storm:"海のスポット",vmHi:"見通し 15m〜",vmMid:"見通し 5〜15m",vmLo:"見通し 〜5m",pMask:"ダイビングスポット",pSwim:"遊泳スポット",pBeach:"ビーチ",pSurf:"サーフスポット",pFish:"釣りスポット",tmove:"潮の動き {x}",tm3:"大",tm2:"中",tm1:"小",airT:"気温 {n}",wFish:"釣り",wTcyc:"潮回り",nextHigh:"次の満潮 {h}時ごろ",nextHighS:"満潮 {h}時",nextLowS:"干潮 {h}時",nextLow:"次の干潮 {h}時ごろ",nextBite:"次の時合 {h}時ごろ（{l}）",wSun:"日の出・日の入り",wMoon:"月",editWidgets:"表示する情報を編集",addLog:"記録",journal:"ログ",close:"閉じる",
 sActs:"表示モード",sActsHint:"モードに合わせて、優先して表示する情報が変わります",act_snorkel:"泳ぐ・シュノーケル",act_dive:"ダイビング",act_fish:"釣り",act_surf:"サーフィン",
-sWidgets:"表示する情報と順番",w_cond:"風とコンディション",w_wave:"波",w_water:"水温",w_rain:"雨",w_tcyc:"潮回り（大潮・小潮など）",w_sun:"日の出・日の入り",w_moon:"月",w_tide:"潮の満ち引き",w_hourly:"時間ごと",w_links:"他のサイト",wReset:"楽しみ方に合わせた初期設定に戻す",
+sWidgets:"表示する情報と順番",w_cond:"風とコンディション",w_wave:"波の高さ",w_water:"水温",w_rain:"雨",w_tcyc:"潮回り（大潮・小潮など）",w_sun:"日の出・日の入り",w_moon:"月",w_tide:"潮の満ち引き",w_hourly:"時間ごと",w_links:"他のサイト",wReset:"楽しみ方に合わせた初期設定に戻す",
 total:"合計",addLogHere:"「{n}」の記録をつける",lt_all:"すべて",lt_swim:"泳いだ・潜った",lt_dive:"潜った",lt_fish:"釣れた",lt_surf:"波乗り",
 sz_knee:"ひざ",sz_waist:"腰",sz_chest:"胸",sz_head:"頭",sz_over:"頭オーバー",cr_empty:"空いてた",cr_normal:"ふつう",cr_busy:"混んでた",
 catchN:"{n}匹",maxLen:"最大 {n}cm",depthN:"最大 {n}m",noLogs:"まだ記録がありません。海に行ったら記録してみよう",
@@ -735,10 +742,10 @@ en:{
  noSpotsT:"No spots yet",noSpotsB:"Tap near the coast on the map, or use “Add”.",
  failT:"Couldn't load the forecast",failB:"Check your connection and reload in a moment.",
  wave:"Waves",period:"Period {n}s",noData:"No data",water:"Water",rain:"Rain {n}%",gust:"Gusts {n}",
- windFrom:"{d} wind",swellFrom:"Swell from {d}",off:"Offshore",cross:"Cross-shore",on:"Onshore",open:"Open water",inland:"Inland",calc:"Reading the coastline",
+ windFrom:"{d} wind",swellFrom:"Waves from {d}",waveH:"Wave height",perS:"{n}s",off:"Offshore",cross:"Cross-shore",on:"Onshore",open:"Open water",inland:"Inland",calc:"Reading the coastline",
  faceAuto:"Facing {d} (auto from coastline)",faceOpen:"Water all around, so no offshore/onshore call",faceInland:"Too far from the sea to judge",
  sea:"Sea",land:"Land",tide:"Tide",tideNote:"Height vs. mean sea level",noTide:"No tide forecast for this day (tides go 8 days ahead). Check a local tide table.",noTideEx:"No clear high/low tide today",high:"High",low:"Low",
- hourly:"Hourly",unitsLbl:"Wind {w} · Waves {h}",sunrise:"Sunrise",sunset:"Sunset",seaSurf:"Sea surface",fTitle:"Best fishing times",fishL:"Fishing",fishTip:"Estimated from tide, bite windows (dawn/dusk, tide turns), waves, wind and rain",fBest:"Best today ~{h}:00",fbWave:"big waves",fbWind:"strong wind",fbRain:"rain",rising:"rising",on:"On",off:"Off",tlWind:"Wind (higher = stronger)",tlRisk:"Caution",rWind:"strong wind",rWave:"big waves",rThunder:"thunder",rDanger:"Stay out of the water",rCaution:"Take care",spotSettings:"Spot settings",ly_wind:"Wind",ly_wave:"Waves",ly_none:"Off",nowBtn:"Now",nowLbl:"Now",tlHint:"Slide to pick a time",dlWind:"max wind {u}",dlWave:"max waves {u}",wk:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],farNote:"Forecasts beyond a week can change a lot. Use them as a rough guide",falling:"falling",tapTide:"Tap or drag the chart to see any time",fHigh:"around high tide",fLow:"around low tide",fDawn:"dawn",fDusk:"dusk",tn_spring:"Spring tide",tn_mid:"Mid tide",tn_neap:"Neap tide",tn_long:"Long tide",tn_young:"Young tide",
+ hourly:"Hourly",unitsLbl:"Wind {w} · Waves {h}",sunrise:"Sunrise",sunset:"Sunset",seaSurf:"Sea surface",fTitle:"Best fishing times",fishL:"Fishing",fishTip:"Estimated from tide, bite windows (dawn/dusk, tide turns), waves, wind and rain",fBest:"Best today ~{h}:00",fbWave:"big waves",fbWind:"windy",fbWindS:"too windy to fish",fbChop:"choppy",fbSwell:"long-period waves",fbRain:"rain",rising:"rising",on:"On",off:"Off",tlWind:"Wind (higher = stronger)",tlRisk:"Caution",rWind:"strong wind",rWave:"big waves",rThunder:"thunder",rDanger:"Stay out of the water",rCaution:"Take care",spotSettings:"Spot settings",share:"Share",shareText:"📍{n} (shared from Umi Check)",shareCopied:"Google Maps link copied — paste it into any chat app",shareCopyManual:"Copy this link to share it",ly_wind:"Wind",ly_wave:"Waves",ly_none:"Off",nowBtn:"Now",nowLbl:"Now",tlHint:"Slide to pick a time",dlWind:"max wind {u}",dlWave:"max waves {u}",wk:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],farNote:"Forecasts beyond a week can change a lot. Use them as a rough guide",falling:"falling",tapTide:"Tap or drag the chart to see any time",fHigh:"around high tide",fLow:"around low tide",fDawn:"dawn",fDusk:"dusk",tn_spring:"Spring tide",tn_mid:"Mid tide",tn_neap:"Neap tide",tn_long:"Long tide",tn_young:"Young tide",
 nFullNow:"Full moon tonight",nSuperNow:"Supermoon tonight",nNewNow:"New moon today",nSuperSoon:"Supermoon on {d}: a bigger, brighter full moon",spFull:"Said to be a time for gratitude and letting go",spNew:"Said to be a good day to start something new",
 ph_new:"New moon",ph_cres:"Waxing crescent",ph_first:"First quarter",ph_waxg:"Waxing gibbous",ph_full:"Full moon",ph_wang:"Waning gibbous",ph_last:"Last quarter",ph_waning:"Waning crescent",
 sp_new:"Said to be a time of beginnings",sp_cres:"Said to be a time to nurture wishes",sp_first:"Said to be a time to take action",sp_waxg:"Said to be a time of rising energy",sp_full:"Said to be a time of gratitude and release",sp_wang:"Said to be a time to slow down",sp_last:"Said to be a time to let go",sp_waning:"Said to be a time to rest",
@@ -746,9 +753,9 @@ moonAge:"Moon age {n} days",nextFull:"Next full moon",nextNew:"Next new moon",su
 myLog:"My swims",lv0:"No swims yet",lv1:"First visit",lv2:"Regular",lv3:"Home beach",lv4:"My ocean",timesHere:"here",thisMonth:"this month",streak:"day streak",logSwim:"I swam here today!",swam:"Swam",
 logTitle:"Log today's sea",logNew:"This spot will be saved with your log",logDate:"Date",logStars:"How was the sea?",logVis:"Visibility",vis_great:"Crystal",vis_good:"OK",vis_poor:"Murky",logSaw:"What did you see?",
 tg_turtle:"Turtle",tg_fish:"Tropical fish",tg_coral:"Coral",tg_dolphin:"Dolphin",tg_ray:"Ray",tg_jelly:"Jellyfish!",logNote:"Note",logNotePh:"e.g. clear water past the right rocks",delVisit:"Delete this entry?",
-poiBtn:"Spots",poiZoom:"Zoom in to see {m}",poiShowing:"Showing {m}",sp_dive:"dive & snorkel spots",sp_surf:"surf spots",sp_fish:"fishing spots",sp_boat:"marinas & harbours",sp_storm:"sea spots",vmHi:"15 m+",vmMid:"5–15 m",vmLo:"under 5 m",pMask:"Dive spot",pSwim:"Swimming area",pBeach:"Beach",pSurf:"Surf spot",pFish:"Fishing spot",tmove:"tidal range {x}",tm3:"large",tm2:"medium",tm1:"small",airT:"Air {n}",wFish:"Fishing",wTcyc:"Tide cycle",nextHigh:"Next high ~{h}:00",nextHighS:"High {h}:00",nextLowS:"Low {h}:00",nextLow:"Next low ~{h}:00",nextBite:"Next bite window ~{h}:00 ({l})",wSun:"Sunrise & sunset",wMoon:"Moon",editWidgets:"Edit what's shown",addLog:"Log",journal:"Log",close:"Close",
+poiBtn:"Spots",poiLoading:"Finding spots…",poiZoom:"Zoom in to see {m}",poiShowing:"Showing {m}",sp_dive:"dive & snorkel spots",sp_surf:"surf spots",sp_fish:"fishing spots",sp_boat:"marinas & harbours",sp_storm:"sea spots",vmHi:"15 m+",vmMid:"5–15 m",vmLo:"under 5 m",pMask:"Dive spot",pSwim:"Swimming area",pBeach:"Beach",pSurf:"Surf spot",pFish:"Fishing spot",tmove:"tidal range {x}",tm3:"large",tm2:"medium",tm1:"small",airT:"Air {n}",wFish:"Fishing",wTcyc:"Tide cycle",nextHigh:"Next high ~{h}:00",nextHighS:"High {h}:00",nextLowS:"Low {h}:00",nextLow:"Next low ~{h}:00",nextBite:"Next bite window ~{h}:00 ({l})",wSun:"Sunrise & sunset",wMoon:"Moon",editWidgets:"Edit what's shown",addLog:"Log",journal:"Log",close:"Close",
 sActs:"Mode",sActsHint:"Each mode puts different data first",act_snorkel:"Swim / snorkel",act_dive:"Diving",act_fish:"Fishing",act_surf:"Surfing",
-sWidgets:"What's shown, and in what order",w_cond:"Wind & conditions",w_wave:"Waves",w_water:"Water temp",w_rain:"Rain",w_tcyc:"Tide cycle",w_sun:"Sunrise & sunset",w_moon:"Moon",w_tide:"Tide",w_hourly:"Hourly",w_links:"Other sites",wReset:"Reset to match my activities",
+sWidgets:"What's shown, and in what order",w_cond:"Wind & conditions",w_wave:"Wave height",w_water:"Water temp",w_rain:"Rain",w_tcyc:"Tide cycle",w_sun:"Sunrise & sunset",w_moon:"Moon",w_tide:"Tide",w_hourly:"Hourly",w_links:"Other sites",wReset:"Reset to match my activities",
 total:"total",addLogHere:"Log at “{n}”",lt_all:"All",lt_swim:"Swim / dive",lt_dive:"Dive",lt_fish:"Catch",lt_surf:"Surf",
 sz_knee:"Knee",sz_waist:"Waist",sz_chest:"Chest",sz_head:"Head",sz_over:"Overhead",cr_empty:"Empty",cr_normal:"OK",cr_busy:"Crowded",
 catchN:"{n} caught",maxLen:"max {n} cm",depthN:"max {n} m",noLogs:"No logs yet. Log your next day at the sea!",
@@ -777,10 +784,10 @@ es:{
  noSpotsT:"Aún no hay spots",noSpotsB:"Toca cerca de la costa en el mapa o usa «Añadir».",
  failT:"No se pudo cargar el pronóstico",failB:"Revisa la conexión y vuelve a cargar en un momento.",
  wave:"Olas",period:"Periodo {n}s",noData:"Sin datos",water:"Agua",rain:"Lluvia {n}%",gust:"Ráfagas {n}",
- windFrom:"Viento del {d}",swellFrom:"Mar de fondo del {d}",off:"Offshore",cross:"Cruzado",on:"Onshore",open:"Mar abierto",inland:"Interior",calc:"Analizando la costa",
+ windFrom:"Viento del {d}",swellFrom:"Olas del {d}",waveH:"Altura de ola",perS:"{n}s",off:"Offshore",cross:"Cruzado",on:"Onshore",open:"Mar abierto",inland:"Interior",calc:"Analizando la costa",
  faceAuto:"Orientación {d} (auto según la costa)",faceOpen:"Agua alrededor: sin cálculo offshore/onshore",faceInland:"Demasiado lejos del mar para calcularlo",
  sea:"Mar",land:"Tierra",tide:"Marea",tideNote:"Altura sobre el nivel medio",noTide:"Sin previsión de marea para este día (hasta 8 días). Consulta una tabla de mareas.",noTideEx:"Hoy no hay pleamar/bajamar clara",high:"Pleamar",low:"Bajamar",
- hourly:"Por horas",unitsLbl:"Viento {w} · Olas {h}",sunrise:"Amanecer",sunset:"Atardecer",seaSurf:"Superficie del mar",fTitle:"Mejores horas de pesca",fishL:"Pesca",fishTip:"Estimación según marea, horas de picada, olas, viento y lluvia",fBest:"Mejor hoy ~{h}h",fbWave:"olas altas",fbWind:"viento fuerte",fbRain:"lluvia",rising:"subiendo",on:"Sí",off:"No",tlWind:"Viento (más alto = más fuerte)",tlRisk:"Precaución",rWind:"viento fuerte",rWave:"olas grandes",rThunder:"tormenta",rDanger:"No entres al agua",rCaution:"Precaución",spotSettings:"Ajustes del spot",ly_wind:"Viento",ly_wave:"Olas",ly_none:"No",nowBtn:"Ahora",nowLbl:"Ahora",tlHint:"Desliza para elegir la hora",dlWind:"viento máx. {u}",dlWave:"olas máx. {u}",wk:["dom","lun","mar","mié","jue","vie","sáb"],farNote:"Más allá de una semana el pronóstico puede cambiar mucho. Úsalo como orientación",falling:"bajando",tapTide:"Toca o desliza en el gráfico para ver otra hora",fHigh:"cerca de la pleamar",fLow:"cerca de la bajamar",fDawn:"amanecer",fDusk:"atardecer",tn_spring:"Mareas vivas",tn_mid:"Marea media",tn_neap:"Mareas muertas",tn_long:"Marea larga",tn_young:"Marea joven",
+ hourly:"Por horas",unitsLbl:"Viento {w} · Olas {h}",sunrise:"Amanecer",sunset:"Atardecer",seaSurf:"Superficie del mar",fTitle:"Mejores horas de pesca",fishL:"Pesca",fishTip:"Estimación según marea, horas de picada, olas, viento y lluvia",fBest:"Mejor hoy ~{h}h",fbWave:"olas altas",fbWind:"viento",fbWindS:"demasiado viento",fbChop:"mar picado",fbSwell:"olas largas",fbRain:"lluvia",rising:"subiendo",on:"Sí",off:"No",tlWind:"Viento (más alto = más fuerte)",tlRisk:"Precaución",rWind:"viento fuerte",rWave:"olas grandes",rThunder:"tormenta",rDanger:"No entres al agua",rCaution:"Precaución",spotSettings:"Ajustes del spot",share:"Compartir",shareText:"📍{n} (compartido desde Umi Check)",shareCopied:"Enlace de Google Maps copiado: pégalo en tu app de mensajes",shareCopyManual:"Copia este enlace para compartirlo",ly_wind:"Viento",ly_wave:"Olas",ly_none:"No",nowBtn:"Ahora",nowLbl:"Ahora",tlHint:"Desliza para elegir la hora",dlWind:"viento máx. {u}",dlWave:"olas máx. {u}",wk:["dom","lun","mar","mié","jue","vie","sáb"],farNote:"Más allá de una semana el pronóstico puede cambiar mucho. Úsalo como orientación",falling:"bajando",tapTide:"Toca o desliza en el gráfico para ver otra hora",fHigh:"cerca de la pleamar",fLow:"cerca de la bajamar",fDawn:"amanecer",fDusk:"atardecer",tn_spring:"Mareas vivas",tn_mid:"Marea media",tn_neap:"Mareas muertas",tn_long:"Marea larga",tn_young:"Marea joven",
 nFullNow:"Luna llena esta noche",nSuperNow:"Superluna esta noche",nNewNow:"Hoy es luna nueva",nSuperSoon:"Superluna el {d}: una luna llena más grande y brillante",spFull:"Se dice que es momento de agradecer y soltar",spNew:"Se dice que es buen día para empezar algo nuevo",
 ph_new:"Luna nueva",ph_cres:"Creciente",ph_first:"Cuarto creciente",ph_waxg:"Gibosa creciente",ph_full:"Luna llena",ph_wang:"Gibosa menguante",ph_last:"Cuarto menguante",ph_waning:"Menguante",
 sp_new:"Se dice que es tiempo de comienzos",sp_cres:"Se dice que es tiempo de cuidar deseos",sp_first:"Se dice que es tiempo de actuar",sp_waxg:"Se dice que la energía va en aumento",sp_full:"Se dice que es tiempo de agradecer y soltar",sp_wang:"Se dice que es tiempo de bajar el ritmo",sp_last:"Se dice que es tiempo de soltar",sp_waning:"Se dice que es tiempo de descansar",
@@ -788,9 +795,9 @@ moonAge:"Edad lunar {n} días",nextFull:"Próxima luna llena",nextNew:"Próxima 
 myLog:"Mis baños",lv0:"Aún sin registros",lv1:"Primera visita",lv2:"Habitual",lv3:"Playa de casa",lv4:"Mi océano",timesHere:"aquí",thisMonth:"este mes",streak:"días seguidos",logSwim:"¡Hoy me bañé aquí!",swam:"Me bañé",
 logTitle:"Registrar el día",logNew:"Este lugar se guardará con tu registro",logDate:"Fecha",logStars:"¿Qué tal el mar?",logVis:"Visibilidad",vis_great:"Cristalina",vis_good:"Normal",vis_poor:"Turbia",logSaw:"¿Qué viste?",
 tg_turtle:"Tortuga",tg_fish:"Peces tropicales",tg_coral:"Coral",tg_dolphin:"Delfín",tg_ray:"Raya",tg_jelly:"¡Medusas!",logNote:"Nota",logNotePh:"p. ej. agua clara tras las rocas",delVisit:"¿Eliminar este registro?",
-poiBtn:"Spots",poiZoom:"Acerca el mapa para ver {m}",poiShowing:"Mostrando {m}",sp_dive:"spots de buceo y snorkel",sp_surf:"spots de surf",sp_fish:"spots de pesca",sp_boat:"puertos deportivos",sp_storm:"spots de mar",vmHi:"15 m+",vmMid:"5–15 m",vmLo:"menos de 5 m",pMask:"Snorkel / buceo",pSwim:"Zona de baño",pBeach:"Playa",pSurf:"Spot de surf",pFish:"Zona de pesca",tmove:"marea {x}",tm3:"grande",tm2:"media",tm1:"pequeña",airT:"Aire {n}",wFish:"Pesca",wTcyc:"Ciclo de marea",nextHigh:"Próx. pleamar ~{h}h",nextHighS:"Pleamar {h}h",nextLowS:"Bajamar {h}h",nextLow:"Próx. bajamar ~{h}h",nextBite:"Próxima picada ~{h}h ({l})",wSun:"Amanecer y atardecer",wMoon:"Luna",editWidgets:"Editar lo que se muestra",addLog:"Registrar",journal:"Bitácora",close:"Cerrar",
+poiBtn:"Spots",poiLoading:"Buscando spots…",poiZoom:"Acerca el mapa para ver {m}",poiShowing:"Mostrando {m}",sp_dive:"spots de buceo y snorkel",sp_surf:"spots de surf",sp_fish:"spots de pesca",sp_boat:"puertos deportivos",sp_storm:"spots de mar",vmHi:"15 m+",vmMid:"5–15 m",vmLo:"menos de 5 m",pMask:"Snorkel / buceo",pSwim:"Zona de baño",pBeach:"Playa",pSurf:"Spot de surf",pFish:"Zona de pesca",tmove:"marea {x}",tm3:"grande",tm2:"media",tm1:"pequeña",airT:"Aire {n}",wFish:"Pesca",wTcyc:"Ciclo de marea",nextHigh:"Próx. pleamar ~{h}h",nextHighS:"Pleamar {h}h",nextLowS:"Bajamar {h}h",nextLow:"Próx. bajamar ~{h}h",nextBite:"Próxima picada ~{h}h ({l})",wSun:"Amanecer y atardecer",wMoon:"Luna",editWidgets:"Editar lo que se muestra",addLog:"Registrar",journal:"Bitácora",close:"Cerrar",
 sActs:"Modo",sActsHint:"Cada modo prioriza datos distintos",act_snorkel:"Nadar / snorkel",act_dive:"Buceo",act_fish:"Pesca",act_surf:"Surf",
-sWidgets:"Qué se muestra y en qué orden",w_cond:"Viento y condiciones",w_wave:"Olas",w_water:"Temp. del agua",w_rain:"Lluvia",w_tcyc:"Ciclo de marea",w_sun:"Amanecer y atardecer",w_moon:"Luna",w_tide:"Marea",w_hourly:"Por horas",w_links:"Otras webs",wReset:"Volver a lo recomendado",
+sWidgets:"Qué se muestra y en qué orden",w_cond:"Viento y condiciones",w_wave:"Altura de ola",w_water:"Temp. del agua",w_rain:"Lluvia",w_tcyc:"Ciclo de marea",w_sun:"Amanecer y atardecer",w_moon:"Luna",w_tide:"Marea",w_hourly:"Por horas",w_links:"Otras webs",wReset:"Volver a lo recomendado",
 total:"total",addLogHere:"Registrar en «{n}»",lt_all:"Todo",lt_swim:"Nadar / bucear",lt_dive:"Buceo",lt_fish:"Pesca",lt_surf:"Surf",
 sz_knee:"Rodilla",sz_waist:"Cintura",sz_chest:"Pecho",sz_head:"Cabeza",sz_over:"Más alto",cr_empty:"Vacío",cr_normal:"Normal",cr_busy:"Lleno",
 catchN:"{n} capturas",maxLen:"máx. {n} cm",depthN:"máx. {n} m",noLogs:"Aún no hay registros. ¡Anota tu próximo día de mar!",
@@ -919,6 +926,7 @@ const P={
  beach:'<path d="M4 20h16M12 20l-4-11"/><path d="M3.5 10.5a8 8 0 0 1 14.5-4.4z"/>',
  swim:'<circle cx="16.5" cy="6" r="2"/><path d="M3 16c1.5 0 1.5-1 3-1s1.5 1 3 1 1.5-1 3-1 1.5 1 3 1 1.5-1 3-1 1.5 1 3 1M5 12.5l4-3.5 3 2.5 3-3"/><path d="M3 20c1.5 0 1.5-1 3-1s1.5 1 3 1 1.5-1 3-1 1.5 1 3 1 1.5-1 3-1 1.5 1 3 1"/>',
  sparkle:'<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z"/>',
+ share:'<path d="M12 3v12"/><path d="M7.5 7.5 12 3l4.5 4.5"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/>',
  more:'<circle cx="5.5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="18.5" cy="12" r="1.2"/>',
  sunset:'<path d="M4 18h16M7 14.5a5 5 0 0 1 10 0M12 4v4M9.5 5.5L12 8l2.5-2.5"/>'
 };
@@ -1268,38 +1276,91 @@ const Wind={
   }
 };
 
-/* ---------- swim / snorkel spots from OpenStreetMap ---------- */
-const POI={layer:null,timer:0,key:"",
-  init(){this.layer=L.layerGroup().addTo(map);map.on("moveend",()=>{clearTimeout(this.timer);this.timer=setTimeout(()=>this.load(),700);});this.load();},
+/* ---------- swim / snorkel spots from OpenStreetMap ----------
+   高速化のポイント
+   - 地図を0.5°のマスに分け、マスごとに結果を端末へ7日保存（OSMの海スポットはほぼ変わらない）
+   - 表示中の範囲で「まだ持っていないマス」だけを1回の問い合わせでまとめて取得
+   - キャッシュがあれば即表示 → 足りない分だけ後から追加（読み込み中は小さな表示を出す）
+   - 応答の遅いサーバーは10秒で打ち切り、予備サーバーへ切り替え
+   - マーカーは差分だけ追加・削除（毎回全部作り直さない） */
+const POI_SRV=["https://overpass-api.de/api/interpreter","https://overpass.kumi.systems/api/interpreter","https://maps.mail.ru/osm/tools/overpass/api/interpreter"];
+const POI_CELL=.5, POI_TTL=7*864e5;
+const POI={layer:null,timer:0,key:"",mem:{},shown:new Map(),busy:0,seq:0,
+  init(){this.layer=L.layerGroup().addTo(map);map.on("moveend",()=>{clearTimeout(this.timer);this.timer=setTimeout(()=>this.load(),350);});
+    try{this.mem=JSON.parse(localStorage.getItem("umi-poi")||"{}")||{};}catch(e){this.mem={};}
+    const now=Date.now();Object.keys(this.mem).forEach(k=>{if(!this.mem[k]||now-this.mem[k].t>POI_TTL)delete this.mem[k];});
+    this.load();},
+  group(){return state.mode==="dive"?"dive":state.mode;},
+  persist(){try{const ks=Object.keys(this.mem).sort((a,b)=>this.mem[b].t-this.mem[a].t);ks.slice(250).forEach(k=>delete this.mem[k]);localStorage.setItem("umi-poi",JSON.stringify(this.mem));}catch(e){try{localStorage.removeItem("umi-poi");}catch(_){}}},
+  loading(on,msg){this.busy=on&&!msg?1:0;const el=$("poiLoad");if(!el)return;clearTimeout(this.mt);el.classList.toggle("msg",!!msg);if(on)$("poiLoadT").textContent=msg||t("poiLoading",{m:t("sp_"+state.mode)});el.hidden=!on;if(msg)this.mt=setTimeout(()=>{el.hidden=true;},3000);},
+  clear(){this.layer.clearLayers();this.shown.clear();},
+  parts(g,bb){
+    const P=[];
+    if(g==="boat") P.push(`nw["leisure"="marina"](${bb});nw["leisure"="slipway"](${bb});nw["harbour"="yes"](${bb});`);
+    if(g==="dive") P.push(`nw["natural"="beach"]["name"](${bb});nw["leisure"="swimming_area"](${bb});nw["sport"~"snorkeling|swimming|free_diving|scuba_diving"](${bb});node["shop"="scuba_diving"](${bb});nw["name"~"シュノーケル|ダイビング|[Ss]norkel|[Dd]ive (site|point)"](${bb});`);
+    if(g==="surf") P.push(`nw["sport"="surfing"](${bb});nw["name"~"サーフ|[Ss]urf"]["natural"~"beach|bay|cape"](${bb});nw["name"~"サーフポイント|サーフスポット|[Ss]urf (break|spot)"](${bb});`);
+    if(g==="fish") P.push(`nw["leisure"="fishing"](${bb});nw["man_made"="pier"]["name"](${bb});nw["name"~"釣り|釣場|[Ff]ishing"](${bb});`);
+    return P.join("");
+  },
+  draw(g,S,W,N,E){
+    const items=[];const seen=new Set();
+    for(let la=Math.floor(S/POI_CELL);la<=Math.floor(N/POI_CELL);la++)for(let lo=Math.floor(W/POI_CELL);lo<=Math.floor(E/POI_CELL);lo++){
+      const c=this.mem[`${g}:${la}:${lo}`];if(!c)continue;
+      c.e.forEach(x=>{if(x[0]>=S&&x[0]<=N&&x[1]>=W&&x[1]<=E&&!seen.has(x[5])){seen.add(x[5]);items.push(x);}});
+    }
+    items.sort((a,b)=>b[4]-a[4]);const pick=items.slice(0,isMobile()?25:45), want=new Set(pick.map(x=>x[5]+"|"+state.lang));
+    this.shown.forEach((mk,id)=>{if(!want.has(id)){this.layer.removeLayer(mk);this.shown.delete(id);}});
+    pick.forEach(([lat,lon,kind,names,,id])=>{
+      const key=id+"|"+state.lang;if(this.shown.has(key))return;
+      const nm=names[state.lang]||names._||t({mask:"pMask",swim:"pSwim",beach:"pBeach",surf:"pSurf",fish:"pFish",boat:"pBoat"}[kind]);
+      const mk=L.marker([lat,lon],{icon:L.divIcon({className:"",html:`<div class="poi ${kind}">${ic(kind==="surf"?"surf":kind)}<span>${esc(nm)}</span></div>`,iconSize:[0,0]})}).addTo(this.layer);
+      mk.on("click",ev=>{L.DomEvent.stopPropagation(ev);pickPlace(lat,lon,nm,false);});
+      this.shown.set(key,mk);
+    });
+  },
+  async fetchQ(q){
+    for(const u of POI_SRV){
+      try{const c=new AbortController(),tm=setTimeout(()=>c.abort(),10000);const r=await fetch(u+"?data="+encodeURIComponent(q),{signal:c.signal}).finally(()=>clearTimeout(tm));if(r.ok){const j=await r.json();if(j&&j.elements)return j;}}catch(e){}
+    }
+    return null;
+  },
   async load(){
-    if(!state.poi){this.layer.clearLayers();this.key="";return;}
-    if(map.getZoom()<9){this.layer.clearLayers();this.key="";showHint(t("poiZoom",{m:t("sp_"+state.mode)}));return;}
-    const b=map.getBounds(),bb=[b.getSouth(),b.getWest(),b.getNorth(),b.getEast()].map(x=>x.toFixed(2)).join(","),key=bb;
-    if(key===this.key) return; this.key=key;
-    const A=new Set(state.mode==="dive"?["snorkel","dive"]:[state.mode]), parts=[];
-    if(A.has("boat")) parts.push(`nwr["leisure"="marina"](${bb});nwr["leisure"="slipway"](${bb});nwr["harbour"="yes"](${bb});`);
-    if(A.has("snorkel")) parts.push(`nwr["natural"="beach"](${bb});nwr["leisure"="swimming_area"](${bb});nwr["sport"~"snorkeling|swimming|free_diving"](${bb});nwr["name"~"シュノーケル|snorkel",i](${bb});`);
-    if(A.has("dive")) parts.push(`nwr["sport"="scuba_diving"](${bb});nwr["shop"="scuba_diving"](${bb});nwr["name"~"ダイビング|dive point|dive site",i](${bb});`);
-    if(A.has("surf")) parts.push(`nwr["sport"="surfing"](${bb});nwr["name"~"サーフ|surf",i]["natural"~"beach|bay|cape"](${bb});nwr["name"~"サーフポイント|サーフスポット|surf break|surf spot",i](${bb});`);
-    if(A.has("fish")) parts.push(`nwr["leisure"="fishing"](${bb});nwr["man_made"="pier"](${bb});nwr["name"~"釣り|釣場|海釣り|fishing",i](${bb});`);
-    if(!parts.length){this.layer.clearLayers();return;}
-    const q=`[out:json][timeout:20];(${parts.join("")});out center 150;`;
-    try{
-      const r=await fetch("https://overpass-api.de/api/interpreter?data="+encodeURIComponent(q)).then(r=>r.json());
-      if(key!==this.key) return; this.layer.clearLayers();
-      const els=(r.elements||[]).filter(e=>e.tags&&(e.tags.name||e.tags["name:"+state.lang]))
-        .map(e=>({e,score:(e.tags.wikidata?3:0)+(e.tags.wikipedia?3:0)+(e.tags.website?1:0)+(e.tags.tourism?1:0)}))
-        .sort((a,b)=>b.score-a.score).slice(0,isMobile()?25:45).map(x=>x.e);
-      els.forEach(e=>{
-        const lat=e.lat??e.center?.lat,lon=e.lon??e.center?.lon; if(lat==null) return;
-        const tg=e.tags||{}, nmr=tg.name||"";
+    if(!state.poi){this.clear();this.key="";this.loading(false);return;}
+    if(map.getZoom()<9){this.clear();this.key="";this.loading(true,t("poiZoom",{m:t("sp_"+state.mode)}));return;}
+    const g=this.group(); if(!this.parts(g,"0,0,0,0")){this.clear();this.loading(false);return;}
+    const b=map.getBounds(),S=b.getSouth(),N=b.getNorth(),W=b.getWest(),E=b.getEast();
+    const key=`${g}:${state.lang}:${[S,W,N,E].map(x=>x.toFixed(3)).join(",")}`; if(key===this.key&&!this.busy) return; this.key=key;
+    if(this.lastG!==g){this.clear();this.lastG=g;}
+    this.draw(g,S,W,N,E);                          // ① キャッシュ分を即表示
+    const miss=[];
+    for(let la=Math.floor(S/POI_CELL);la<=Math.floor(N/POI_CELL);la++)for(let lo=Math.floor(W/POI_CELL);lo<=Math.floor(E/POI_CELL);lo++){
+      if(!this.mem[`${g}:${la}:${lo}`]) miss.push([la,lo]);
+    }
+    if(!miss.length){this.loading(false);return;}
+    const my=++this.seq; this.loading(true);
+    const cells=miss.slice(0,12);                  // 一度に問い合わせる上限
+    const q=`[out:json][timeout:15];${cells.map(([la,lo],n)=>{const bb=[la*POI_CELL,lo*POI_CELL,(la+1)*POI_CELL,(lo+1)*POI_CELL].map(x=>x.toFixed(2)).join(",");return `(${this.parts(g,bb)})->.c${n};.c${n} out center 120;`;}).join("")}`;
+    const r=await this.fetchQ(q);
+    if(r){
+      const now=Date.now(), bucket={};cells.forEach(([la,lo])=>bucket[`${g}:${la}:${lo}`]={t:now,e:[]});
+      (r.elements||[]).forEach(e=>{
+        const tg=e.tags||{};if(!(tg.name||tg["name:"+state.lang]))return;
+        const lat=e.lat??e.center?.lat,lon=e.lon??e.center?.lon;if(lat==null)return;
+        const ck=`${g}:${Math.floor(lat/POI_CELL)}:${Math.floor(lon/POI_CELL)}`;if(!bucket[ck])return;
+        const nmr=tg.name||"";
         const kind=(tg.leisure==="marina"||tg.leisure==="slipway"||tg.harbour==="yes")?"boat":(tg.sport==="surfing"||/サーフ|surf/i.test(nmr))?"surf":(tg.leisure==="fishing"||tg.man_made==="pier"||/釣|fishing/i.test(nmr))?"fish":
           (/scuba|snorkel|free_diving/.test(tg.sport||"")||tg.shop==="scuba_diving"||/シュノーケル|ダイビング|snorkel|dive/i.test(nmr))?"mask":tg.leisure==="swimming_area"?"swim":"beach";
-        const nm=tg["name:"+state.lang]||tg.name||t({mask:"pMask",swim:"pSwim",beach:"pBeach",surf:"pSurf",fish:"pFish",boat:"pBoat"}[kind]);
-        const mk=L.marker([lat,lon],{icon:L.divIcon({className:"",html:`<div class="poi ${kind}">${ic(kind==="surf"?"surf":kind)}<span>${esc(nm)}</span></div>`,iconSize:[0,0]})}).addTo(this.layer);
-        mk.on("click",ev=>{L.DomEvent.stopPropagation(ev);pickPlace(lat,lon,nm,false);});
+        const names={_:tg.name||""};["ja","en","es"].forEach(l=>{if(tg["name:"+l])names[l]=tg["name:"+l];});
+        const score=(tg.wikidata?3:0)+(tg.wikipedia?3:0)+(tg.website?1:0)+(tg.tourism?1:0);
+        const id=e.id!=null?e.type[0]+e.id:`${(+lat).toFixed(5)},${(+lon).toFixed(5)}`;
+        if(!bucket[ck].e.some(x=>x[5]===id)) bucket[ck].e.push([+lat.toFixed(5),+lon.toFixed(5),kind,names,score,id]);
       });
-    }catch(e){this.key="";}
+      Object.assign(this.mem,bucket); this.persist();
+    }else{ this.key=""; }                         // 失敗したら次の移動で再試行
+    if(my!==this.seq) return;
+    this.loading(false);
+    const b2=map.getBounds(); this.draw(g,b2.getSouth(),b2.getWest(),b2.getNorth(),b2.getEast());   // ② 追加分を表示
+    if(miss.length>cells.length){this.key="";this.load();}
   }};
 function showHint(txt){const h=$("hint");h.textContent=txt;h.hidden=false;clearTimeout(showHint.t);showHint.t=setTimeout(()=>{h.hidden=true;},3500);}
 $("poiBtn").onclick=()=>{state.poi=!state.poi;save();applyChrome();POI.key="";
@@ -1577,7 +1638,7 @@ async function search(full){
 }
 $("locBtn").onclick=()=>{
   if(!navigator.geolocation||!map) return;
-  navigator.geolocation.getCurrentPosition(p=>focus(p.coords.latitude,p.coords.longitude,11),()=>alert(t("locFail")));
+  navigator.geolocation.getCurrentPosition(p=>focus(p.coords.latitude,p.coords.longitude,11),()=>alert(t("locFail")),{enableHighAccuracy:false,timeout:8000,maximumAge:5*60e3});
 };
 $("layerSeg").querySelectorAll("[data-ly]").forEach(b=>b.onclick=()=>{state.layer=b.dataset.ly;state.wind=state.layer!=="none";save();applyChrome();Wind.reset();});
 $("setBtn").onclick=()=>{renderSettings();$("setdlg").showModal();};
@@ -1697,13 +1758,13 @@ async function load_(s,past){
     (async()=>{const hv_="&hourly=temperature_2m,weather_code,precipitation_probability,precipitation,wind_speed_10m,wind_direction_10m,wind_gusts_10m&daily=sunrise,sunset&wind_speed_unit=ms";
       for(const u of [`${b}${hv_}${mq()}`,`${b}${hv_}${mq()}`,`${b0}forecast_days=7${hv_}`]){try{const r=await fetchT(`https://api.open-meteo.com/v1/forecast?${u}`);if(r.ok){const j=await r.json();if(j&&j.hourly)return j;}if(r.status===429){busyAPI=true;try{const e=await r.json();if(/daily/i.test(e.reason||"")){dailyLimit=true;break;}}catch(_){}await new Promise(z=>setTimeout(z,2500));}}catch(e){}}
       throw new Error("forecast unavailable");})(),
-    (async()=>{const mv="&hourly=wave_height,wave_direction,wave_period,swell_wave_height,swell_wave_period,swell_wave_direction,sea_level_height_msl,sea_surface_temperature,ocean_current_velocity,ocean_current_direction";
-      for(const u of [`${bm}${mv}`,`${bm}&hourly=wave_height,wave_direction,wave_period,swell_wave_direction,sea_level_height_msl,sea_surface_temperature`]){try{const r=await fetchT(`https://marine-api.open-meteo.com/v1/marine?${u}`);if(r.ok)return await r.json();}catch(e){}}
+    (async()=>{const mv="&hourly=wave_height,wave_direction,wave_period,sea_level_height_msl,sea_surface_temperature,ocean_current_velocity,ocean_current_direction";
+      for(const u of [`${bm}${mv}`,`${bm}&hourly=wave_height,wave_direction,wave_period,sea_level_height_msl,sea_surface_temperature`]){try{const r=await fetchT(`https://marine-api.open-meteo.com/v1/marine?${u}`);if(r.ok)return await r.json();}catch(e){}}
       return null;})()
   ]);
   if(!past&&(state.mode==="dive"||state.mode==="storm")){try{const r=await fetchT(`https://api.open-meteo.com/v1/forecast?${b0}past_days=2&forecast_days=1&hourly=precipitation`,10000);if(r.ok){const j=await r.json();w.__rh=j.hourly||null;}}catch(e){}}
   const T=w.hourly.time, n=T.length, src=(m&&m.hourly)||{}, pos=new Map((src.time||[]).map((x,j)=>[x,j])), mh={time:T};
-  ["wave_height","wave_direction","wave_period","swell_wave_height","swell_wave_period","swell_wave_direction","sea_level_height_msl","sea_surface_temperature","ocean_current_velocity","ocean_current_direction"].forEach(x=>{const a=src[x];mh[x]=T.map(tt=>{const j=pos.get(tt);return a&&j!=null?a[j]:null;});});
+  ["wave_height","wave_direction","wave_period","sea_level_height_msl","sea_surface_temperature","ocean_current_velocity","ocean_current_direction"].forEach(x=>{const a=src[x];mh[x]=T.map(tt=>{const j=pos.get(tt);return a&&j!=null?a[j]:null;});});
   const d={w,m:{hourly:mh},off:w.utc_offset_seconds||0,hasWave:mh.wave_height.some(v=>v!=null),rainHist:w.__rh||null};
   cache[k]={t:Date.now(),d};
   try{const ks=Object.keys(localStorage).filter(x=>x.startsWith("umi-fc:"));if(ks.length>12)ks.slice(0,ks.length-12).forEach(x=>localStorage.removeItem(x));localStorage.setItem(pk,JSON.stringify(cache[k]));}catch(e){}
@@ -1758,12 +1819,26 @@ function modeBar(){
 function renderHeader(s){
   $("ph").innerHTML=`<div><h1>${esc(s.name)}</h1><small>${s.snap>0.3?esc(t("snapNote",{k:s.snap<1?s.snap.toFixed(1):Math.round(s.snap)})):`${(+s.lat).toFixed(3)}°, ${(+s.lon).toFixed(3)}°`}</small></div>`+
 
+    `<button class="iconb" id="pshare" aria-label="${esc(t("share"))}" title="${esc(t("share"))}">${ic("share")}</button>`+
     (s.temp?`<button class="act save" id="pact">${ic("star")}${esc(t("save"))}</button>`:`<button class="iconb" id="pact" aria-label="${esc(t("edit"))}" title="${esc(t("spotSettings"))}">${ic("more")}</button>`);
   $("fab").hidden=true;
   $("ph").insertAdjacentHTML("afterend","");
   const mb=$("modebar"); mb.innerHTML=modeBar(); mb.querySelectorAll("[data-md]").forEach(b=>b.onclick=()=>setMode(b.dataset.md));
 
+  $("pshare").onclick=()=>shareSpot(s);
   $("pact").onclick=()=>s.temp?openEditor({...temp,id:"s"+Date.now(),name:temp.custom?temp.name:"",faceMode:"auto",tide:"",cam:"",wn:"",yahoo:""},true):openEditor(s);
+}
+/* スポット共有：Googleマップの検索URL（APIキー不要・無料）をOSの共有メニューで送る */
+function mapsUrl(s){return `https://www.google.com/maps/search/?api=1&query=${(+s.lat).toFixed(5)},${(+s.lon).toFixed(5)}`;}
+async function shareSpot(s){
+  const url=mapsUrl(s), name=s.name||t("picked"), text=t("shareText",{n:name});
+  if(navigator.share){
+    try{await navigator.share({title:name,text,url});return;}
+    catch(e){if(e&&e.name==="AbortError")return;}
+  }
+  const all=`${text}\n${url}`;
+  try{await navigator.clipboard.writeText(all);showHint(t("shareCopied"));}
+  catch(e){window.prompt(t("shareCopyManual"),url);}
 }
 function linksHtml(s){
   const q=encodeURIComponent(s.name),ja=state.lang==="ja",G=x=>`https://www.google.com/search?q=${q}+${encodeURIComponent(x)}`;
@@ -1880,7 +1955,7 @@ async function condAt(s,date,h){
   const key=`${date}T${String(h).padStart(2,"0")}:00`;
   const pick=d=>{const j=d.w.hourly.time.indexOf(key);if(j<0)return null;const W=d.w.hourly,M=d.m.hourly;
     return {at:key,ws:W.wind_speed_10m[j],wd:W.wind_direction_10m[j],gu:W.wind_gusts_10m[j],temp:W.temperature_2m[j],code:W.weather_code[j],
-      wh:M.wave_height[j],wp:M.wave_period[j],wvd:M.swell_wave_direction[j]??M.wave_direction[j],sst:M.sea_surface_temperature[j]};};
+      wh:M.wave_height[j],wp:M.wave_period[j],wvd:M.wave_direction[j],sst:M.sea_surface_temperature[j]};};
   let c=null;
   try{c=pick(await load(s));}catch(e){}
   if(!c){try{c=pick(await load(s,true));}catch(e){}}
@@ -2007,20 +2082,38 @@ function clarity(d,i,kc){
   const lv=sc<=1?"hi":sc<=3?"mid":"lo";
   return {lv,stars:lv==="hi"?5:lv==="mid"?3:1,why,m:lv==="hi"?t("vmHi"):lv==="mid"?t("vmMid"):t("vmLo")};
 }
-/* 釣りやすさ（目安）：潮回り・時合（マズメ/潮の変わり目）・波・風・雨 */
+/* 釣りやすさ（目安）
+   1) 良い条件で加点：潮回り・時合（マズメ/潮の変わり目）・ほどよい波っ気
+   2) 風・波で減点
+   3) 上限（キャップ）：風や波が強いときは、他の条件が良くても星の上限を下げる
+      風 8m/s以上 or 突風13m/s以上 → ★1 ／ 風 6m/s以上 or 突風10m/s以上 → ★2まで ／ 風 5m/s以上 → ★3まで
+      波 2m以上 → ★1 ／ 波 1.5m以上 → ★2まで ／ 波1m以上 → ★4まで（周期6秒未満の風波・10秒以上の周期の長い高波は★3まで）
+      風5m/s以上かつ波1m以上 → ★2まで */
 function fishScore(d,j,wins,tn){
   const W=d.w.hourly,M=d.m.hourly,hr=+W.time[j].slice(11,13),why=[],bad=[];
-  let sc=2;
+  const h=M.wave_height[j], per=M.wave_period?.[j], ws=W.wind_speed_10m[j]||0, gu=W.wind_gusts_10m?.[j]||0, pr=W.precipitation?.[j]||0;
+  let sc=2, cap=5;
   if(tn==="spring"){sc+=1;why.push(t("tn_spring"));}else if(tn==="mid"){sc+=.5;why.push(t("tn_mid"));}
   const w_=wins.filter(([a])=>hr>=a&&hr<=a+2).map(x=>x[1]);
   if(w_.some(l=>l==="fDawn"||l==="fDusk")){sc+=1.5;why.unshift(t(w_.find(l=>l==="fDawn"||l==="fDusk")));}
   else if(w_.length){sc+=1;why.unshift(t(w_[0]));}
-  const h=M.wave_height[j], ws=W.wind_speed_10m[j]||0, pr=W.precipitation?.[j]||0;
-  if(h!=null){if(h>=2){sc-=2;bad.push(t("fbWave"));}else if(h>=1.2){sc-=1;bad.push(t("fbWave"));}else if(h>=.3){sc+=.5;}}
-  if(ws>=9){sc-=2;bad.push(t("fbWind"));}else if(ws>=6){sc-=1;bad.push(t("fbWind"));}
+  /* 風 */
+  if(ws>=8||gu>=13){cap=1;bad.push(t("fbWindS"));}
+  else if(ws>=6||gu>=10){cap=Math.min(cap,2);sc-=1.5;bad.push(t("fbWind"));}
+  else if(ws>=5){cap=Math.min(cap,3);sc-=1;bad.push(t("fbWind"));}
+  else if(ws>=4){sc-=.5;}
+  /* 波（高さ＋周期） */
+  if(h!=null){
+    if(h>=2){cap=1;bad.push(t("fbWave"));}
+    else if(h>=1.5){cap=Math.min(cap,2);sc-=1;bad.push(t("fbWave"));}
+    else if(h>=1){sc-=.5;cap=Math.min(cap,4);if(per!=null&&per<6){sc-=.5;cap=Math.min(cap,3);bad.push(t("fbChop"));}else if(per!=null&&per>=10){sc-=.5;cap=Math.min(cap,3);bad.push(t("fbSwell"));}}
+    else if(h>=.3&&ws<4){sc+=.5;}
+  }
+  /* 風と波の組み合わせ */
+  if(ws>=5&&h!=null&&h>=1){cap=Math.min(cap,2);}
   if(pr>=5){sc-=.5;bad.push(t("fbRain"));}
-  const stars=Math.max(1,Math.min(5,Math.round(sc)));
-  return {stars,lv:stars>=4?"hi":stars>=3?"mid":"lo",why:bad.length?bad:why.slice(0,2)};
+  const stars=Math.max(1,Math.min(cap,5,Math.round(sc)));
+  return {stars,lv:stars>=4?"hi":stars>=3?"mid":"lo",why:bad.length?[...new Set(bad)].slice(0,2):why.slice(0,2)};
 }
 const riverCache={};
 async function riverNear(s){
@@ -2039,10 +2132,8 @@ async function riverNear(s){
 function bx(icn,label,val,unit,sub,cls){return `<div class="hs ${cls||""}"><span class="hl">${icn}${esc(label)}</span><b class="${/[^\d.\-–]/.test(String(val))&&!unit?"jp":""}">${val}${unit?`<small>${unit}</small>`:""}</b><em>${sub||""}</em></div>`;}
 function modeStats(d,i,F,o){
   const W=d.w.hourly,M=d.m.hourly,m=state.mode,cur=curTxt(M,i);
-  const swH=M.swell_wave_height[i]??o.wh, swP=M.swell_wave_period[i]??o.wp;
   const B={
-    wave:()=>bx(ic("wave"),t("wave"),o.wh!=null?hv(o.wh):"–",o.wh!=null?hu():"",o.wh!=null?`${f0(o.wp)}s · ${esc(dirName(o.wvd))}`:esc(t("noData")),"hs-w"),
-    swell:()=>bx(ic("wave"),t("swell"),swH!=null?hv(swH):"–",swH!=null?hu():"",swH!=null?`${f0(swP)}s · ${esc(dirName(o.wvd))}`:esc(t("noData")),"hs-w"),
+    wave:()=>bx(ic("wave"),t("waveH"),o.wh!=null?hv(o.wh):"–",o.wh!=null?hu():"",o.wh!=null?`${esc(t("perS",{n:f0(o.wp)}))}・${esc(dirName(o.wvd))}`:esc(t("noData")),"hs-w"),
     tide:()=>bx(moonIcon(Date.parse(W.time[i].slice(0,10)+"T12:00:00"),14),t("wTcyc"),esc(t("tn_"+o.tn)),"",o.nextTide?esc(t(o.nextTide[1]==="fHigh"?"nextHighS":"nextLowS",{h:o.nextTide[0]})):esc(t("tmove",{x:t("tm"+tideStars(o.tn))}))),
     water:()=>bx(ic("thermo"),t("water"),tv(o.sst),tu(),esc(t("airT",{n:tv(W.temperature_2m[i])+"°"}))),
     cur:()=>bx(ic("current"),t("current"),cur?cur[0]:"–",cur?"kt":"",cur?esc(t("toDir",{d:dirName(cur[1])})):esc(t("noData"))),
@@ -2051,7 +2142,7 @@ function modeStats(d,i,F,o){
     rain:()=>bx(ic("umbrella"),t("rainMm"),W.precipitation?.[i]!=null?W.precipitation[i].toFixed(1):"–","mm",`${esc(t("rainS"))} ${W.precipitation_probability[i]??"–"}%`),
     tc:()=>{const c=(CTX.tcs||[]).map(x=>({...x,dist:km(CTX.s.lat,CTX.s.lon,x.lat,x.lon)})).sort((a,b)=>a.dist-b.dist)[0];return bx(ic("tc"),t("tcL"),c?`${Math.round(c.dist/10)*10}`:esc(t("none")),c?"km":"",c?esc(c.name):"");}
   };
-  const L={dive:["swell","water","cur"],surf:["wave","swell","tide"],fish:["tide","cur","bite"],boat:["wave","cur","gust"],storm:["wave","tide","water"]}[m]||["wave","tide","water"];
+  const L={dive:["wave","water","cur"],surf:["wave","tide","water"],fish:["tide","cur","bite"],boat:["wave","cur","gust"],storm:["wave","tide","water"]}[m]||["wave","tide","water"];
   return L.map(k=>B[k]()).join("");
 }
 let retryN=0, retryT=0;
@@ -2129,7 +2220,7 @@ function renderWidgets(mode){
   if(!CTX) return;
   const {s,d,F}=CTX, W=d.w.hourly,M=d.m.hourly,T=W.time,i=selIdx, nowI=nowIndex(T,d.off);
   const ws=W.wind_speed_10m[i],wd=W.wind_direction_10m[i],gu=W.wind_gusts_10m[i];
-  const wh=M.wave_height[i],wp=M.wave_period[i],wvd=M.swell_wave_direction[i]??M.wave_direction[i];
+  const wh=M.wave_height[i],wp=M.wave_period[i],wvd=M.wave_direction[i];
   const [kc,kn]=windKind(wd,F.face,F.mode==="coast"?null:F.mode), [wic,wn]=wxOf(W.weather_code[i]), sst=M.sea_surface_temperature[i];
   const days=[...new Set(T.map(x=>x.slice(0,10)))], day=T[i].slice(0,10); dayIdx=days.indexOf(day);
   const sr=d.w.daily.sunrise[dayIdx]?.slice(11)||"",ss=d.w.daily.sunset[dayIdx]?.slice(11)||"";
@@ -2164,7 +2255,7 @@ function renderWidgets(mode){
         return `<div class="clrow ${c.lv}" title="${esc(t("fishTip"))}"><span class="cl">${esc(t("fishL"))}</span>${ic("face_"+c.lv,"face")}<span class="st">${"★".repeat(c.stars)}<i>${"★".repeat(5-c.stars)}</i></span><small>${esc(c.why.join("・"))}${bj>=0&&bj!==i&&bs>c.stars?`<span class="fbest">${esc(t("fBest",{h:+T[bj].slice(11,13)}))}</span>`:""}</small></div>`;})():""}
       ${(state.mode==="dive"||state.mode==="storm")?(()=>{const c=clarity(d,i,kc);return c?`<div class="clrow ${c.lv}" title="${esc(t("clarTip")+(c.why.length?"："+c.why.join("・"):""))}"><span class="cl">${esc(t("clar"))}</span>${ic("face_"+c.lv,"face")}<span class="st">${"★".repeat(c.stars)}<i>${"★".repeat(5-c.stars)}</i></span><small>${esc(c.m)}</small></div>`:"";})():""}
       <div class="hfoot"><span>${ic("sunrise")}${sr||"–"}<i>–</i>${ic("sunset")}${ss||"–"}</span>${fishOn()&&nextWin?`<span class="bite">${ic("fish")}${esc(t("nextBite",{h:Math.max(0,nextWin[0]),l:t(nextWin[1])}))}</span>`:`<span>${moonIcon(dayMs,13)}${esc(t("ph_"+pk))}</span>`}</div></div>`,
-    wave:`<div class="wg wave"><div class="lb">${ic("wave")}${esc(t("wave"))}</div><div class="v">${wh!=null?hv(wh):"–"}<small>${hu()}</small></div><div class="s">${wh!=null?esc(t("period",{n:f0(wp)})):esc(t("noData"))}${wh!=null&&wvd!=null?`<br>${esc(t("swellFrom",{d:dirName(wvd)}))}`:""}</div></div>`,
+    wave:`<div class="wg wave"><div class="lb">${ic("wave")}${esc(t("waveH"))}</div><div class="v">${wh!=null?hv(wh):"–"}<small>${hu()}</small></div><div class="s">${wh!=null?esc(t("period",{n:f0(wp)})):esc(t("noData"))}${wh!=null&&wvd!=null?`<br>${esc(t("swellFrom",{d:dirName(wvd)}))}`:""}</div></div>`,
     water:`<div class="wg"><div class="lb">${ic("thermo")}${esc(t("water"))}</div><div class="v">${tv(sst)}<small>${tu()}</small></div><div class="s">${esc(t("airT",{n:tv(W.temperature_2m[i])+tu()}))}</div></div>`,
     rain:`<div class="wg"><div class="lb">${ic("umbrella")}${esc(t("rainT"))}</div><div class="v">${W.precipitation_probability[i]??"–"}<small>%</small></div><div class="s">${esc(t("rainS"))}</div></div>`,
     tcyc:`<div class="wg fishw"><div class="lb">${ic("moon")}${esc(t("wTcyc"))}</div><div class="v jp">${esc(t("tn_"+tn))}</div><div class="dots">${esc(t("tmove",{x:t("tm"+tideStars(tn))}))}</div><div class="s">${nextTide?esc(t(nextTide[1]==="fHigh"?"nextHigh":"nextLow",{h:nextTide[0]})):""}${fishOn()&&nextWin?`<span class="bite">${ic("fish")}${esc(t("nextBite",{h:Math.max(0,nextWin[0]),l:t(nextWin[1])}))}</span>`:""}</div></div>`,
