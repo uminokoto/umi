@@ -1161,14 +1161,50 @@ const Wind={
   },
   tkey:null,
   setTime(k){this.tkey=k; if(this.grid&&this.data)this.fill(k);},
-  fill(k){
-    const U=[],V=[];
-    this.data.forEach(d=>{const h=d.hourly||{},tt=h.time||[];let j=k?tt.indexOf(k):-1;if(j<0){const nk=new Date().toISOString().slice(0,13)+":00";j=Math.max(0,tt.indexOf(nk));}
+  uvOf(data,k){
+    const U=[],V=[],nk=new Date().toISOString().slice(0,13)+":00";
+    (data||[]).forEach(d=>{const h=d.hourly||{},tt=h.time||[];let j=k?tt.indexOf(k):-1;if(j<0)j=Math.max(0,tt.indexOf(nk));
       const sp=h.wind_speed_10m?.[j]??0,dir=((h.wind_direction_10m?.[j]??0)+180)*Math.PI/180;U.push(sp*Math.sin(dir));V.push(sp*Math.cos(dir));});
-    this.grid.U=U;this.grid.V=V;
-    const H=[];
-    (this.wdata||[]).forEach(d=>{const h=d.hourly||{},tt=h.time||[];let j=k?tt.indexOf(k):-1;if(j<0)j=Math.max(0,tt.indexOf(new Date().toISOString().slice(0,13)+":00"));H.push(h.wave_height?.[j]??null);});
-    this.grid.H=H; this.drawBg();
+    return [U,V];
+  },
+  hOf(wdata,k){
+    const H=[],nk=new Date().toISOString().slice(0,13)+":00";
+    (wdata||[]).forEach(d=>{const h=d.hourly||{},tt=h.time||[];let j=k?tt.indexOf(k):-1;if(j<0)j=Math.max(0,tt.indexOf(nk));H.push(h.wave_height?.[j]??null);});
+    return H;
+  },
+  fill(k){
+    [this.grid.U,this.grid.V]=this.uvOf(this.data,k);
+    this.grid.H=this.hOf(this.wdata,k);
+    (this.grid.fine||[]).forEach(f=>{[f.U,f.V]=this.uvOf(f.src.data,k);f.H=this.hOf(f.src.wdata,k);});
+    this.drawBg();
+  },
+  /* 台風のまわりだけ細かいグリッドを追加取得（粗いグリッドだと台風の強風域が平均化されて消えるため） */
+  fine:[],
+  fineLoad(){try{const L_=JSON.parse(localStorage.getItem("umi-tcgrid")||"[]");this.fine=L_.filter(x=>x&&Date.now()-x.t<3*36e5).map(o=>({...o,data:gridUnpack(o.d,GK1),wdata:gridUnpack(o.w,GK2)}));}catch(e){this.fine=[];}},
+  fineSave(){try{localStorage.setItem("umi-tcgrid",JSON.stringify(this.fine.slice(0,3).map(f=>({t:f.t,model:f.model,cLat:f.cLat,cLon:f.cLon,S:f.S,N:f.N,W:f.W,E:f.E,cols:f.cols,rows:f.rows,lats:f.lats,lons:f.lons,d:gridPack(f.data,GK1),w:gridPack(f.wdata,GK2)}))));}catch(e){}},
+  async fineFetch(G){
+    if(busyAPI||dailyLimit||!tcList||!tcList.length) return false;
+    const mid=(G.W+G.E)/2, near=lo=>lo+Math.round((mid-lo)/360)*360;
+    const tcs=tcList.map(c=>({...c,lon:near(c.lon)})).filter(c=>c.lat>=G.S-4&&c.lat<=G.N+4&&c.lon>=G.W-4&&c.lon<=G.E+4).slice(0,2);
+    let changed=false;
+    for(const c of tcs){
+      let f=this.fine.find(x=>x.model===state.model&&Math.abs(x.cLat-c.lat)<1.5&&Math.abs(near(x.cLon)-c.lon)<1.5);
+      if(!f){
+        const R_=7,Rl=Math.min(14,R_/Math.cos(c.lat*Math.PI/180)),n=11;
+        f={t:Date.now(),model:state.model,cLat:c.lat,cLon:c.lon,S:Math.max(-84,c.lat-R_),N:Math.min(84,c.lat+R_),W:c.lon-Rl,E:c.lon+Rl,cols:n,rows:n,lats:[],lons:[]};
+        for(let j=0;j<n;j++)for(let i=0;i<n;i++){f.lats.push((f.N-(f.N-f.S)*j/(n-1)).toFixed(2));f.lons.push(((((f.W+(f.E-f.W)*i/(n-1))+540)%360)-180).toFixed(2));}
+        try{const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${f.lats.join(",")}&longitude=${f.lons.join(",")}&hourly=wind_speed_10m,wind_direction_10m&forecast_days=7&timezone=GMT&wind_speed_unit=ms${mq()}`);
+          if(r.status===429){busyAPI=true;try{const e=await r.json();if(/daily/i.test(e.reason||""))dailyLimit=true;}catch(_){}}
+          if(!r.ok) continue; const j=await r.json(); f.data=Array.isArray(j)?j:[j];
+        }catch(e){continue;}
+        this.fine.unshift(f); changed=true;
+      }
+      if(state.layer==="wave"&&!f.wdata&&!busyAPI&&!dailyLimit){
+        try{const r2=await fetch(`https://marine-api.open-meteo.com/v1/marine?latitude=${f.lats.join(",")}&longitude=${f.lons.join(",")}&hourly=wave_height&forecast_days=7&timezone=GMT`).then(r=>r.json());f.wdata=Array.isArray(r2)?r2:[r2];changed=true;}catch(e){}
+      }
+    }
+    if(changed){this.fine=this.fine.slice(0,3);this.fineSave();}
+    return changed;
   },
   drawBg(){
     const g=this.grid,c=this.bgx; if(!g||!c) return;
@@ -1189,10 +1225,18 @@ const Wind={
     const g=this.grid; if(!g.H||!g.H.length) return null; let fx=(x-g.x0)/g.dx, fy=(y-g.y0)/g.dy;
     fx=Math.max(0,Math.min(g.cols-1.001,fx)); fy=Math.max(0,Math.min(g.rows-1.001,fy));
     const i=Math.floor(fx),j=Math.floor(fy),a=fx-i,b=fy-j,k=j*g.cols+i,P=[[g.H[k],(1-a)*(1-b)],[g.H[k+1],a*(1-b)],[g.H[k+g.cols],(1-a)*b],[g.H[k+g.cols+1],a*b]];
-    let sw=0,sv=0;P.forEach(([v,w])=>{if(v!=null){sw+=w;sv+=v*w;}});return sw>0.35?sv/sw:null;
+    let sw=0,sv=0;P.forEach(([v,w])=>{if(v!=null){sw+=w;sv+=v*w;}});let r=sw>0.35?sv/sw:null;
+    for(const f of g.fine||[]){if(!f.H||!f.H.length)continue;const gx=(x-f.x0)/f.dx,gy=(y-f.y0)/f.dy;if(gx<0||gy<0||gx>f.cols-1||gy>f.rows-1)continue;
+      const w=Math.min(1,Math.min(gx,gy,f.cols-1-gx,f.rows-1-gy)/2);if(w<=0||r==null)continue;
+      const ii=Math.min(f.cols-2,Math.floor(gx)),jj=Math.min(f.rows-2,Math.floor(gy)),aa=gx-ii,bb=gy-jj,kk=jj*f.cols+ii;
+      let s2=0,v2=0;[[f.H[kk],(1-aa)*(1-bb)],[f.H[kk+1],aa*(1-bb)],[f.H[kk+f.cols],(1-aa)*bb],[f.H[kk+f.cols+1],aa*bb]].forEach(([q,z])=>{if(q!=null){s2+=z;v2+=q*z;}});
+      if(s2>0.35)r=r*(1-w)+(v2/s2)*w;}
+    return r;
   },
   stop(clear){cancelAnimationFrame(this.raf);this.raf=0;if(clear&&this.ctx){this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height);this.bgx&&this.bgx.clearRect(0,0,this.bg.width,this.bg.height);}},
   async reset(){
+    const my=this.rs=(this.rs||0)+1;
+    if(!this.fineInit){this.fineInit=1;this.fineLoad();}
     this.stop(true);
     if(state.layer==="none"){this.canvas.style.display="none";this.bg.style.display="none";return;}
     this.canvas.style.display="";this.bg.style.display="";
@@ -1232,7 +1276,13 @@ const Wind={
     this.data=G.data; this.wdata=G.wdata||null;
     const p0=map.latLngToContainerPoint([G.N,G.W]), p1=map.latLngToContainerPoint([G.S,G.E]);
     this.grid={x0:p0.x,y0:p0.y,dx:(p1.x-p0.x)/(G.cols-1),dy:(p1.y-p0.y)/(G.rows-1),cols:G.cols,rows:G.rows,U:[],V:[]};
+    const mid=(G.W+G.E)/2;
+    this.grid.fine=this.fine.filter(f=>f.model===state.model&&f.data).map(f=>{const sh=Math.round((mid-(f.W+f.E)/2)/360)*360;
+      if(f.N<G.S||f.S>G.N||f.E+sh<G.W||f.W+sh>G.E) return null;
+      const q0=map.latLngToContainerPoint([f.N,f.W+sh]),q1=map.latLngToContainerPoint([f.S,f.E+sh]);
+      return {x0:q0.x,y0:q0.y,dx:(q1.x-q0.x)/(f.cols-1),dy:(q1.y-q0.y)/(f.rows-1),cols:f.cols,rows:f.rows,src:f,U:[],V:[],H:[]};}).filter(Boolean);
     this.fill(this.tkey);
+    this.fineFetch(G).then(ch=>{if(ch&&my===this.rs)this.reset();});
     const n=Math.min(isMobile()?500:1200,Math.round(size.x*size.y/(isMobile()?900:750)));
     this.parts=Array.from({length:n},()=>this.spawn(true));
     this.start();
@@ -1242,7 +1292,13 @@ const Wind={
     fx=Math.max(0,Math.min(g.cols-1.001,fx)); fy=Math.max(0,Math.min(g.rows-1.001,fy));
     const i=Math.floor(fx),j=Math.floor(fy),a=fx-i,b=fy-j,k=j*g.cols+i;
     const lerp=(A)=>A[k]*(1-a)*(1-b)+A[k+1]*a*(1-b)+A[k+g.cols]*(1-a)*b+A[k+g.cols+1]*a*b;
-    return [lerp(g.U),lerp(g.V)];
+    let u=lerp(g.U),v=lerp(g.V);
+    for(const f of g.fine||[]){if(!f.U.length)continue;const gx=(x-f.x0)/f.dx,gy=(y-f.y0)/f.dy;if(gx<0||gy<0||gx>f.cols-1||gy>f.rows-1)continue;
+      const w=Math.min(1,Math.min(gx,gy,f.cols-1-gx,f.rows-1-gy)/2);if(w<=0)continue;
+      const ii=Math.min(f.cols-2,Math.floor(gx)),jj=Math.min(f.rows-2,Math.floor(gy)),aa=gx-ii,bb=gy-jj,kk=jj*f.cols+ii;
+      const fl=A=>A[kk]*(1-aa)*(1-bb)+A[kk+1]*aa*(1-bb)+A[kk+f.cols]*(1-aa)*bb+A[kk+f.cols+1]*aa*bb;
+      u=u*(1-w)+fl(f.U)*w;v=v*(1-w)+fl(f.V)*w;}
+    return [u,v];
   },
   mask(){
     const p=$("panel"); if(!p||!map) return null;
@@ -1500,6 +1556,7 @@ async function loadTC(){
       level:f.properties.alertlevel,url:f.properties.url?.report||"https://www.gdacs.org/",
       sev:+(f.properties.severitydata?.severity||0),sevu:String(f.properties.severitydata?.severityunit||""),sevt:String(f.properties.severitydata?.severitytext||"")}));
   }catch(e){tcList=[];}
+  if(tcList.length&&typeof Wind!=="undefined"&&Wind.grid) Wind.reset();
   return tcList;
 }
 /* typhoon forecast track (GDACS geometry) */
@@ -2147,7 +2204,7 @@ function modeStats(d,i,F,o){
 }
 let retryN=0, retryT=0;
 let reqId=0, CTX=null, selIdx=null, selSpot=null;
-const WCOL=[[0,"#5B6FB5"],[3,"#3E6FA8"],[5,"#3B93AA"],[7,"#3E9A78"],[9,"#4DA64D"],[11,"#8FA83E"],[13,"#C9A33A"],[15,"#D27F34"],[18,"#C9523E"],[21,"#A8344F"],[25,"#8E3B85"],[30,"#6A3F9E"]];
+const WCOL=[[0,"#6271B7"],[1,"#39619F"],[3,"#4A94A9"],[5,"#4D8D7B"],[7,"#53A553"],[9,"#359F35"],[11,"#A79D51"],[13,"#C08A3A"],[15,"#B9674F"],[17,"#A23A55"],[19,"#AF5088"],[21,"#8E4B9E"],[25,"#6A3F9E"],[30,"#4B2A7A"]];
 const HCOL=[[0,"#E8F6FB"],[.5,"#B3E1F2"],[1,"#6CC3E8"],[2,"#2A93D0"],[3,"#0D5C9C"]];
 function scaleCol(S,v){if(v==null||isNaN(v))return "#EEF1F3";for(let k=1;k<S.length;k++){if(v<=S[k][0]){const [a,ca]=S[k-1],[b,cb]=S[k],f=(v-a)/(b-a),h=x=>parseInt(x,16),A=[1,3,5].map(o=>h(ca.substr(o,2))),B=[1,3,5].map(o=>h(cb.substr(o,2)));return `rgb(${A.map((x,q)=>Math.round(x+(B[q]-x)*f)).join(",")})`;}}return S[S.length-1][1];}
 const HW=10;
