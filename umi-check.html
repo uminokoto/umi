@@ -1146,6 +1146,50 @@ function gridSave(A){try{const o={t:Date.now(),S:A.S,N:A.N,W:A.W,E:A.E,z:A.z,mod
 function gridLoad(model,S,N,W,E,z){try{const L_=JSON.parse(localStorage.getItem("umi-grid")||"[]");
   const o=L_.find(x=>x&&x.model===model&&Date.now()-x.t<(dailyLimit?24:3)*36e5&&S>=x.S&&N<=x.N&&W>=x.W&&E<=x.E&&z>=x.z-1&&z<=x.z+2);
   if(!o)return null;return{S:o.S,N:o.N,W:o.W,E:o.E,z:o.z,model:o.model,cols:o.cols,rows:o.rows,lats:o.lats,lons:o.lons,data:gridUnpack(o.d,GK1),wdata:gridUnpack(o.w,GK2)};}catch(e){return null;}}
+/* ---------- 世界の風・波データ（GitHub Actionsが6時間ごとに作る wind/ フォルダ） ----------
+   NOAA GFS 0.5°の画像（R=東西風, G=南北風, B=波高）を読む。無い・古いときは従来のOpen-Meteo方式に戻る */
+const GFSW={meta:null,tried:0,cache:new Map(),pend:new Map(),
+  use(){return state.model==="best_match"||state.model==="gfs_seamless";},
+  async ready(){
+    if(this.meta&&Date.now()-this.tried<30*60e3) return true;
+    if(!this.meta&&Date.now()-this.tried<10*60e3) return false;
+    this.tried=Date.now();
+    try{const r=await fetch("wind/meta.json?t="+Math.floor(Date.now()/6e5),{cache:"no-cache"});if(!r.ok)throw 0;const m=await r.json();
+      if(!m||!m.hours||!m.hours.length||Date.now()-Date.parse(m.run)>36*36e5) throw 0;
+      if(!this.meta||this.meta.dir!==m.dir){this.cache.clear();this.pend.clear();}
+      this.meta=m;m.t0=Date.parse(m.run);}catch(e){this.meta=null;}
+    return !!this.meta;
+  },
+  hourFor(k){const m=this.meta,t=k?Date.parse(k+":00Z"):Date.now(),h=(t-m.t0)/36e5;let b=m.hours[0];for(const x of m.hours)if(Math.abs(x-h)<Math.abs(b-h))b=x;return b;},
+  get(h){
+    if(this.cache.has(h)) return Promise.resolve(this.cache.get(h));
+    if(this.pend.has(h)) return this.pend.get(h);
+    const m=this.meta,url=`wind/${m.dir}/f${String(h).padStart(3,"0")}.png`;
+    const p=(async()=>{
+      const blob=await fetch(url).then(r=>{if(!r.ok)throw new Error("wind "+r.status);return r.blob();});
+      let img;try{img=await createImageBitmap(blob,{premultiplyAlpha:"none",colorSpaceConversion:"none"});}
+      catch(e){img=await new Promise((ok,ng)=>{const im=new Image();im.onload=()=>ok(im);im.onerror=ng;im.src=URL.createObjectURL(blob);});}
+      const c=document.createElement("canvas");c.width=m.nx;c.height=m.ny;const x=c.getContext("2d",{willReadFrequently:true});x.drawImage(img,0,0);
+      const d=x.getImageData(0,0,m.nx,m.ny).data;
+      this.cache.set(h,d);if(this.cache.size>10)this.cache.delete(this.cache.keys().next().value);
+      this.pend.delete(h);return d;
+    })().catch(e=>{this.pend.delete(h);throw e;});
+    this.pend.set(h,p);return p;
+  },
+  sample(d,lat,lon,out){
+    const m=this.meta,nx=m.nx,ny=m.ny;
+    let y=(m.lat0-lat)/m.res;y=Math.max(0,Math.min(ny-1.001,y));
+    const x=((((lon-m.lon0)%360)+360)%360)/m.res;
+    const i=Math.floor(x)%nx,j=Math.floor(y),a=x-Math.floor(x),b=y-j,i1=(i+1)%nx;
+    const k00=(j*nx+i)*4,k10=(j*nx+i1)*4,k01=((j+1)*nx+i)*4,k11=((j+1)*nx+i1)*4;
+    const w00=(1-a)*(1-b),w10=a*(1-b),w01=(1-a)*b,w11=a*b,sc=m.uvScale,of=m.uvOffset;
+    out[0]=((d[k00]-of)*w00+(d[k10]-of)*w10+(d[k01]-of)*w01+(d[k11]-of)*w11)*sc;
+    out[1]=((d[k00+1]-of)*w00+(d[k10+1]-of)*w10+(d[k01+1]-of)*w01+(d[k11+1]-of)*w11)*sc;
+    let sw=0,sv=0;[[k00,w00],[k10,w10],[k01,w01],[k11,w11]].forEach(([k,w])=>{const q=d[k+2];if(q!==m.missing){sw+=w;sv+=q*w;}});
+    out[2]=sw>0.35?sv/sw*m.waveScale:null;
+    return out;
+  }
+};
 const Wind={
   canvas:null,ctx:null,grid:null,parts:[],raf:0,timer:0,key:"",
   init(){
@@ -1160,7 +1204,7 @@ const Wind={
     this.reset();
   },
   tkey:null,
-  setTime(k){this.tkey=k; if(this.grid&&this.data)this.fill(k);},
+  setTime(k){this.tkey=k; if(this.grid&&(this.data||this.grid.gfs))this.fill(k);},
   uvOf(data,k){
     const U=[],V=[],nk=new Date().toISOString().slice(0,13)+":00";
     (data||[]).forEach(d=>{const h=d.hourly||{},tt=h.time||[];let j=k?tt.indexOf(k):-1;if(j<0)j=Math.max(0,tt.indexOf(nk));
@@ -1173,10 +1217,18 @@ const Wind={
     return H;
   },
   fill(k){
+    if(this.grid&&this.grid.gfs){this.fillGfs(k);return;}
     [this.grid.U,this.grid.V]=this.uvOf(this.data,k);
     this.grid.H=this.hOf(this.wdata,k);
     (this.grid.fine||[]).forEach(f=>{[f.U,f.V]=this.uvOf(f.src.data,k);f.H=this.hOf(f.src.wdata,k);});
     this.drawBg();
+  },
+  fillGfs(k){
+    const g=this.grid,h=GFSW.hourFor(k),d=GFSW.cache.get(h);
+    if(!d){GFSW.get(h).then(()=>{if(this.grid===g&&GFSW.hourFor(this.tkey)===h)this.fillGfs(this.tkey);}).catch(()=>{});return;}
+    const n=g.lat.length,U=new Array(n),V=new Array(n),H=new Array(n),o=[0,0,0];
+    for(let q=0;q<n;q++){GFSW.sample(d,g.lat[q],g.lon[q],o);U[q]=o[0];V[q]=o[1];H[q]=o[2];}
+    g.U=U;g.V=V;g.H=H;g.hour=h;this.drawBg();
   },
   /* 台風のまわりだけ細かいグリッドを追加取得（粗いグリッドだと台風の強風域が平均化されて消えるため） */
   fine:[],
@@ -1247,6 +1299,20 @@ const Wind={
     L.DomUtil.setPosition(this.canvas,map.containerPointToLayerPoint([0,0]));
     L.DomUtil.setPosition(this.bg,map.containerPointToLayerPoint([0,0]));
     this.ctx.setTransform(dpr,0,0,dpr,0,0); this.w=size.x; this.h=size.y;
+    if(GFSW.use()&&await GFSW.ready()){
+      if(my!==this.rs) return;
+      const st=isMobile()?12:14, cols=Math.ceil(size.x/st)+2, rows=Math.ceil(size.y/st)+2, lat=[], lon=[];
+      for(let j=0;j<rows;j++)for(let i=0;i<cols;i++){const ll=map.containerPointToLatLng([i*st,j*st]);lat.push(ll.lat);lon.push(ll.lng);}
+      const g={gfs:true,x0:0,y0:0,dx:st,dy:st,cols,rows,lat,lon,U:[],V:[],H:[],fine:[]};
+      try{await GFSW.get(GFSW.hourFor(this.tkey));}catch(e){}
+      if(my!==this.rs) return;
+      if(GFSW.cache.has(GFSW.hourFor(this.tkey))){
+        this.grid=g; this.data=null; this.fillGfs(this.tkey);
+        const n=Math.min(isMobile()?500:1200,Math.round(size.x*size.y/(isMobile()?900:750)));
+        this.parts=Array.from({length:n},()=>this.spawn(true));
+        this.start(); return;
+      }
+    }
     const bnd=map.getBounds(), z=map.getZoom();
     const S=bnd.getSouth(),N=bnd.getNorth(),Wl=bnd.getWest(),E=bnd.getEast();
     let G=this.area;
@@ -1778,7 +1844,7 @@ function applyChrome(){
   $("windLegend").hidden=state.layer==="none";
   $("windLegend").querySelector(".bar").style.background=state.layer==="wave"?`linear-gradient(90deg,${HCOL.map(x=>x[1]).join(",")})`:`linear-gradient(90deg,${WCOL.map(x=>x[1]).join(",")})`;
   $("setLbl").textContent=t("settings"); $("jLbl").textContent=t("journal"); $("poiLbl").textContent=t("poiBtn"); $("poiBtn").setAttribute("aria-pressed",!!state.poi); $("poiState").textContent=t(state.poi?"on":"off");
-  $("legendSc").innerHTML=state.layer==="wave"?[0,1,2].map(v=>`<span>${hv(v)}</span>`).join("")+`<span>${hv(3)}+ ${hu()}</span>`:[0,5,10,15,20].map(v=>`<span>${wv(v,0)}</span>`).join("")+`<span>${wv(25,0)}+ ${wu()}</span>`;
+  $("legendSc").innerHTML=state.layer==="wave"?[0,1,2,3,5].map(v=>`<span>${hv(v)}</span>`).join("")+`<span>${hv(8)}+ ${hu()}</span>`:[0,5,10,15,20].map(v=>`<span>${wv(v,0)}</span>`).join("")+`<span>${wv(25,0)}+ ${wu()}</span>`;
 }
 
 function renderSpots(){
@@ -2205,7 +2271,7 @@ function modeStats(d,i,F,o){
 let retryN=0, retryT=0;
 let reqId=0, CTX=null, selIdx=null, selSpot=null;
 const WCOL=[[0,"#6271B7"],[1,"#39619F"],[3,"#4A94A9"],[5,"#4D8D7B"],[7,"#53A553"],[9,"#359F35"],[11,"#A79D51"],[13,"#C08A3A"],[15,"#B9674F"],[17,"#A23A55"],[19,"#AF5088"],[21,"#8E4B9E"],[25,"#6A3F9E"],[30,"#4B2A7A"]];
-const HCOL=[[0,"#E8F6FB"],[.5,"#B3E1F2"],[1,"#6CC3E8"],[2,"#2A93D0"],[3,"#0D5C9C"]];
+const HCOL=[[0,"#E8F6FB"],[1,"#8FD2EE"],[2,"#3FA3D9"],[3,"#1A6FB0"],[5,"#4B3F9E"],[8,"#9B2F72"]];
 function scaleCol(S,v){if(v==null||isNaN(v))return "#EEF1F3";for(let k=1;k<S.length;k++){if(v<=S[k][0]){const [a,ca]=S[k-1],[b,cb]=S[k],f=(v-a)/(b-a),h=x=>parseInt(x,16),A=[1,3,5].map(o=>h(ca.substr(o,2))),B=[1,3,5].map(o=>h(cb.substr(o,2)));return `rgb(${A.map((x,q)=>Math.round(x+(B[q]-x)*f)).join(",")})`;}}return S[S.length-1][1];}
 const HW=10;
 function timelineHtml(d){
