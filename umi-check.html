@@ -1614,16 +1614,21 @@ const scaleName=v=>({10:"1",20:"2",30:"3",40:"4",45:"5弱",50:"5強",55:"6弱",6
 let tcList=null;
 async function loadTC(){
   if(tcList) return tcList;
+  if(loadTC.p) return loadTC.p;
+  try{const c=JSON.parse(localStorage.getItem("umi-tc")||"null");if(c&&Date.now()-c.t<60*60e3&&Array.isArray(c.l)){tcList=c.l;return tcList;}}catch(e){}
+  return loadTC.p=(async()=>{
   try{
     const to=new Date(),from=new Date(Date.now()-10*864e5),d=x=>x.toISOString().slice(0,10);
-    const r=await fetch(`https://www.gdacs.org/gdacsapi/api/events/geteventlist/SEARCH?eventlist=TC&fromdate=${d(from)}&todate=${d(to)}&alertlevel=Green;Orange;Red`).then(r=>r.json());
+    const r=await fetchT(`https://www.gdacs.org/gdacsapi/api/events/geteventlist/SEARCH?eventlist=TC&fromdate=${d(from)}&todate=${d(to)}&alertlevel=Green;Orange;Red`,9000).then(r=>r.json());
     tcList=(r.features||[]).filter(f=>String(f.properties?.iscurrent).toLowerCase()==="true"&&f.geometry?.type==="Point").map(f=>({
       name:f.properties.eventname||f.properties.name||"TC",lat:f.geometry.coordinates[1],lon:f.geometry.coordinates[0],
       level:f.properties.alertlevel,url:f.properties.url?.report||"https://www.gdacs.org/",
       sev:+(f.properties.severitydata?.severity||0),sevu:String(f.properties.severitydata?.severityunit||""),sevt:String(f.properties.severitydata?.severitytext||"")}));
+    try{localStorage.setItem("umi-tc",JSON.stringify({t:Date.now(),l:tcList}));}catch(e){}
   }catch(e){tcList=[];}
-  if(tcList.length&&typeof Wind!=="undefined"&&Wind.grid) Wind.reset();
+  if(tcList.length&&typeof Wind!=="undefined"&&Wind.grid&&!Wind.grid.gfs) Wind.reset();
   return tcList;
+  })();
 }
 /* typhoon forecast track (GDACS geometry) */
 function parseWhen(v){
@@ -1674,7 +1679,7 @@ function tcAt(u){
 const km=(a,b,c,d)=>{const R=6371,r=Math.PI/180,x=Math.sin((c-a)*r/2)**2+Math.cos(a*r)*Math.cos(c*r)*Math.sin((d-b)*r/2)**2;return 2*R*Math.asin(Math.sqrt(x));};
 async function loadNWS(s){
   if(!(s.lat>18&&s.lat<72&&s.lon>-180&&s.lon<-60)) return [];
-  try{const r=await fetch(`https://api.weather.gov/alerts/active?point=${s.lat},${s.lon}`).then(r=>r.json());return (r.features||[]).map(f=>f.properties.headline||f.properties.event).slice(0,3);}catch(e){return [];}
+  try{const r=await fetchT(`https://api.weather.gov/alerts/active?point=${s.lat},${s.lon}`,6000).then(r=>r.json());return (r.features||[]).map(f=>f.properties.headline||f.properties.event).slice(0,3);}catch(e){return [];}
 }
 function officialLinks(s){
   const inJP=s.lat>20&&s.lat<46.5&&s.lon>122&&s.lon<154;
@@ -1865,6 +1870,16 @@ Object.defineProperty(window,"busyAPI",{get:()=>busyAPI_,set:v=>{busyAPI_=v;if(v
 Object.defineProperty(window,"dailyLimit",{get:()=>dailyLimit_,set:v=>{dailyLimit_=v;if(v){clearTimeout(dayT);const n=new Date(),nx=Date.UTC(n.getUTCFullYear(),n.getUTCMonth(),n.getUTCDate()+1,0,2);dayT=setTimeout(()=>{dailyLimit_=false;busyAPI_=false;try{renderAll(true);Wind.reset();}catch(e){}},Math.max(60e3,nx-Date.now()));}}});
 async function load(s,past){
   const ik=`${dLat(s)},${dLon(s)},${state.model}${past?",past":""}`;
+  /* 前に読んだ予報（24時間以内）があれば先にそれを表示し、裏で最新を取りに行く */
+  if(!past&&!(cache[ik]&&Date.now()-cache[ik].t<60*60e3)){
+    let st=null;try{st=JSON.parse(localStorage.getItem("umi-fc:"+ik)||"null");}catch(e){}
+    const age=st?Date.now()-st.t:1e15;
+    if(st&&st.d&&age>=90*60e3&&age<24*36e5){
+      if(!inflight[ik]){const pr=inflight[ik]=load_(s,past).finally(()=>{delete inflight[ik];});pr.then(()=>{const c=spot();if(c&&`${dLat(c)},${dLon(c)},${state.model}`===ik)renderAll(true);}).catch(()=>{});}
+      if(age>3*36e5)st.d.stale=true;
+      return st.d;
+    }
+  }
   if(inflight[ik]) return inflight[ik];
   inflight[ik]=load_(s,past).finally(()=>{delete inflight[ik];});
   return inflight[ik];
@@ -1877,6 +1892,7 @@ async function load_(s,past){
   if(stored&&Date.now()-stored.t<(dailyLimit?7*864e5:90*60e3)){cache[k]=stored;if(Date.now()-stored.t>3*36e5)stored.d.stale=true;return stored.d;}
   try{
   const b0=`latitude=${dLat(s)}&longitude=${dLon(s)}&timezone=auto&`, b=b0+(past?"past_days=10&forecast_days=1":"forecast_days=7"), bm=b0+(past?"past_days=10&forecast_days=1":"forecast_days=7");
+  const rhP=(!past&&(state.mode==="dive"||state.mode==="storm"))?fetchT(`https://api.open-meteo.com/v1/forecast?${b0}past_days=2&forecast_days=1&hourly=precipitation`,10000).then(r=>r.ok?r.json():null).then(j=>j&&j.hourly||null).catch(()=>null):null;
   const [w,m]=await Promise.all([
     (async()=>{const hv_="&hourly=temperature_2m,weather_code,precipitation_probability,precipitation,wind_speed_10m,wind_direction_10m,wind_gusts_10m&daily=sunrise,sunset&wind_speed_unit=ms";
       for(const u of [`${b}${hv_}${mq()}`,`${b}${hv_}${mq()}`,`${b0}forecast_days=7${hv_}`]){try{const r=await fetchT(`https://api.open-meteo.com/v1/forecast?${u}`);if(r.ok){const j=await r.json();if(j&&j.hourly)return j;}if(r.status===429){busyAPI=true;try{const e=await r.json();if(/daily/i.test(e.reason||"")){dailyLimit=true;break;}}catch(_){}await new Promise(z=>setTimeout(z,2500));}}catch(e){}}
@@ -1885,7 +1901,7 @@ async function load_(s,past){
       for(const u of [`${bm}${mv}`,`${bm}&hourly=wave_height,wave_direction,wave_period,sea_level_height_msl,sea_surface_temperature`]){try{const r=await fetchT(`https://marine-api.open-meteo.com/v1/marine?${u}`);if(r.ok)return await r.json();}catch(e){}}
       return null;})()
   ]);
-  if(!past&&(state.mode==="dive"||state.mode==="storm")){try{const r=await fetchT(`https://api.open-meteo.com/v1/forecast?${b0}past_days=2&forecast_days=1&hourly=precipitation`,10000);if(r.ok){const j=await r.json();w.__rh=j.hourly||null;}}catch(e){}}
+  if(rhP){const rh=await rhP;if(rh)w.__rh=rh;}
   const T=w.hourly.time, n=T.length, src=(m&&m.hourly)||{}, pos=new Map((src.time||[]).map((x,j)=>[x,j])), mh={time:T};
   ["wave_height","wave_direction","wave_period","sea_level_height_msl","sea_surface_temperature","ocean_current_velocity","ocean_current_direction"].forEach(x=>{const a=src[x];mh[x]=T.map(tt=>{const j=pos.get(tt);return a&&j!=null?a[j]:null;});});
   const d={w,m:{hourly:mh},off:w.utc_offset_seconds||0,hasWave:mh.wave_height.some(v=>v!=null),rainHist:w.__rh||null};
@@ -2340,7 +2356,7 @@ function bindSheet(){
   setSheet(isMobile()?"c":"h");
 }
 function renderWidgets(mode){
-  if(!CTX) return;
+  if(!CTX||!$("wbody")||!$("tlsum")) return;
   const {s,d,F}=CTX, W=d.w.hourly,M=d.m.hourly,T=W.time,i=selIdx, nowI=nowIndex(T,d.off);
   const ws=W.wind_speed_10m[i],wd=W.wind_direction_10m[i],gu=W.wind_gusts_10m[i];
   const wh=M.wave_height[i],wp=M.wave_period[i],wvd=M.wave_direction[i];
@@ -2417,7 +2433,10 @@ async function renderAll(quiet){
   const my=++reqId;
   if(!quiet) $("body").innerHTML=`<div class="softload"><span class="spin"></span><b>${esc(t("loading"))}</b></div>`;
   try{
-    const [d,F,tcs,nws]=await Promise.all([load(s),faceOf(s),loadTC(),loadNWS(s)]); if(my!==reqId)return;
+    const quick=(p,ms,def)=>Promise.race([p.catch(()=>def),new Promise(r=>setTimeout(()=>r(def),ms))]);
+    const tcHad=!!tcList, tcP=loadTC();
+    const [d,F,tcs,nws]=await Promise.all([load(s),quick(faceOf(s),4000,{mode:"coast",face:null}),quick(tcP,1200,tcList||[]),quick(loadNWS(s),1500,[])]); if(my!==reqId)return;
+    if(!tcHad) tcP.then(l=>{if(l&&l.length&&my===reqId)renderAll(true);});
     const key=s.id+"|"+s.lat+","+s.lon;
     if(selSpot!==key||selIdx==null||selIdx>=d.w.hourly.time.length){const changed=selSpot!==key;selIdx=nowIndex(d.w.hourly.time,d.off);selSpot=key;if(changed&&Quake.timer){Quake.list=[];setTimeout(()=>Quake.poll(),300);}}
     CTX={s,d,F,al:[],tcs,river:riverCache[(+s.lat).toFixed(2)+","+(+s.lon).toFixed(2)]||null}; retryN=0;
