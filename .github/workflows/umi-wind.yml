@@ -1,0 +1,207 @@
+# 海チェック：風・波データの自動更新 ＋ サイトの公開
+# 6時間ごとにNOAA（アメリカ海洋大気庁）の無料公開データから世界の風・波の予報（7日分）を作り、
+# umi-check.html などのファイルと一緒にGitHub Pagesへ公開します。
+# ファイルをアップロードしたとき（mainへのpush）にも、自動で公開し直します。
+name: 風・波データ更新と公開
+
+on:
+  schedule:
+    - cron: "35 4,10,16,22 * * *"   # 日本時間 13:35 / 19:35 / 1:35 / 7:35
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: pages
+        uses: actions/configure-pages@v5
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 必要な部品を入れる
+        run: pip install pygrib numpy pillow requests
+
+      - name: サイトのファイルをコピー
+        run: |
+          mkdir -p _site
+          rsync -a --exclude '.git' --exclude '.github' --exclude '_site' ./ _site/
+
+      - name: 風・波データを作る
+        env:
+          SITE_URL: ${{ steps.pages.outputs.base_url }}
+          PREFER_MIRROR: ${{ github.event_name == 'push' && '1' || '0' }}
+        run: |
+          python - _site/wind <<'PY'
+          # 海チェック：世界の風・波データ（NOAA GFS / GFS-Wave）を画像ファイルに変換する
+          # 出力: OUT/meta.json, OUT/<run>/fNNN.png  （R=東西風, G=南北風, B=波の高さ）
+          import os, sys, json, time, datetime as dt, concurrent.futures as cf
+          import numpy as np, requests
+          from PIL import Image
+
+          BASE = "https://noaa-gfs-bdp-pds.s3.amazonaws.com"
+          HOURS = list(range(0, 121, 3)) + list(range(126, 169, 6))
+          NX, NY, RES = 720, 361, 0.5
+          S = requests.Session()
+          S.headers["User-Agent"] = "umi-check-wind/1.0 (github actions)"
+
+          def get(url, rng=None, tries=4):
+              for k in range(tries):
+                  try:
+                      r = S.get(url, headers={"Range": f"bytes={rng[0]}-{rng[1] if rng[1] is not None else ''}"} if rng else None, timeout=60)
+                      if r.status_code in (200, 206): return r
+                      if r.status_code == 404: return None
+                  except requests.RequestException:
+                      pass
+                  time.sleep(2 + 3 * k)
+              return None
+
+          def atmos_url(run, h): return f"{BASE}/gfs.{run:%Y%m%d}/{run:%H}/atmos/gfs.t{run:%H}z.pgrb2.0p50.f{h:03d}"
+          def wave_url(run, h):  return f"{BASE}/gfs.{run:%Y%m%d}/{run:%H}/wave/gridded/gfswave.t{run:%H}z.global.0p25.f{h:03d}.grib2"
+
+          def read_idx(url):
+              r = get(url + ".idx")
+              if r is None: return None
+              lines = [l for l in r.text.strip().split("\n") if l.count(":") >= 4]
+              out = []
+              for i, l in enumerate(lines):
+                  p = l.split(":")
+                  end = int(lines[i + 1].split(":")[1]) - 1 if i + 1 < len(lines) else None
+                  out.append((p[3], p[4], int(p[1]), end))
+              return out
+
+          def decode(b):
+              import pygrib
+              m = pygrib.fromstring(b)
+              v = m.values
+              v = np.ma.filled(v.astype("f4"), np.nan) if np.ma.isMaskedArray(v) else np.asarray(v, "f4")
+              lats, lons = m.latlons()
+              if lats[0, 0] < lats[-1, 0]: v = v[::-1]            # 北→南の順にそろえる
+              if lons[0, 0] < -1: v = np.roll(v, -np.argmin(np.abs(lons[0] - 0)), axis=1)  # 経度0°から始める
+              return v
+
+          def field(url, var, lev, ix):
+              for (vv, ll, a, e) in ix:
+                  if vv == var and ll == lev:
+                      r = get(url, (a, e))
+                      return decode(r.content) if r is not None else None
+              return None
+
+          def to_half_degree(v):
+              if v is None: return None
+              ny, nx = v.shape
+              if (ny, nx) == (NY, NX): return v
+              sy, sx = (ny - 1) // (NY - 1), nx // NX
+              return v[::sy, ::sx][:NY, :NX]
+
+          def get_fields(run, h):
+              """1つの時刻の u, v, 波高（0.5°格子, 北→南, 経度0°〜）"""
+              au, wu = atmos_url(run, h), wave_url(run, h)
+              ix = read_idx(au)
+              if not ix: return None
+              u = field(au, "UGRD", "10 m above ground", ix)
+              v = field(au, "VGRD", "10 m above ground", ix)
+              if u is None or v is None: return None
+              w = None
+              wix = read_idx(wu)
+              if wix: w = field(wu, "HTSGW", "surface", wix)
+              return to_half_degree(u), to_half_degree(v), to_half_degree(w)
+
+          def latest_run(now=None):
+              now = now or dt.datetime.now(dt.timezone.utc)
+              c = now.replace(minute=0, second=0, microsecond=0, hour=now.hour // 6 * 6)
+              first = None
+              for k in range(6):
+                  run = c - dt.timedelta(hours=6 * k)
+                  if get(atmos_url(run, 168) + ".idx", tries=2) is not None:
+                      if get(wave_url(run, 168) + ".idx", tries=2) is not None:
+                          return run                      # 風も波もそろっている最新の回
+                      first = first or run
+              return first
+
+          def encode(u, v, w):
+              R = np.clip(np.rint(np.nan_to_num(u) * 2) + 128, 0, 255)
+              G = np.clip(np.rint(np.nan_to_num(v) * 2) + 128, 0, 255)
+              if w is None: B = np.full(u.shape, 255)
+              else: B = np.where(np.isnan(w) | (w > 1e3) | (w < 0), 255, np.clip(np.rint(np.nan_to_num(w) * 10), 0, 254))
+              return Image.fromarray(np.dstack([R, G, B]).astype(np.uint8), "RGB")
+
+          def mirror(out, site):
+              """作れなかったときは、公開中の前回データをそのまま引き継ぐ"""
+              if not site: return False
+              site = site.rstrip("/") + "/wind/"
+              r = get(site + "meta.json", tries=2)
+              if r is None: return False
+              m = r.json()
+              os.makedirs(os.path.join(out, m["dir"]), exist_ok=True)
+              for h in m["hours"]:
+                  f = get(f"{site}{m['dir']}/f{h:03d}.png", tries=2)
+                  if f is None: return False
+                  open(os.path.join(out, m["dir"], f"f{h:03d}.png"), "wb").write(f.content)
+              json.dump(m, open(os.path.join(out, "meta.json"), "w"))
+              print("前回のデータを引き継ぎました:", m["run"])
+              return True
+
+          def main(out, site=None, prefer_mirror=False):
+              os.makedirs(out, exist_ok=True)
+              if prefer_mirror and mirror(out, site):
+                  m = json.load(open(os.path.join(out, "meta.json")))
+                  if time.time() - dt.datetime.fromisoformat(m["run"].replace("Z", "+00:00")).timestamp() < 9 * 3600:
+                      return 0
+              run = latest_run()
+              if run is None:
+                  print("NOAAの最新データが見つかりません"); return 0 if mirror(out, site) else 1
+              d = f"{run:%Y%m%d%H}"
+              os.makedirs(os.path.join(out, d), exist_ok=True)
+              ok = []
+              def job(h):
+                  f = get_fields(run, h)
+                  if f is None: return None
+                  encode(*f).save(os.path.join(out, d, f"f{h:03d}.png"), optimize=True)
+                  return h
+              with cf.ThreadPoolExecutor(6) as ex:
+                  for h in ex.map(job, HOURS):
+                      if h is not None: ok.append(h)
+              ok.sort()
+              print(f"run {d}: {len(ok)}/{len(HOURS)} 時刻を作成")
+              if len(ok) < 10:
+                  return 0 if mirror(out, site) else 1
+              meta = {"run": f"{run:%Y-%m-%dT%H:00:00Z}", "dir": d, "hours": ok, "nx": NX, "ny": NY, "res": RES,
+                      "lat0": 90, "lon0": 0, "uvScale": 0.5, "uvOffset": 128, "waveScale": 0.1, "missing": 255,
+                      "made": dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                      "source": "NOAA GFS 0.5° / GFS-Wave (public domain)"}
+              json.dump(meta, open(os.path.join(out, "meta.json"), "w"))
+              return 0
+
+          if __name__ == "__main__":
+              sys.exit(main(sys.argv[1], os.environ.get("SITE_URL"), os.environ.get("PREFER_MIRROR") == "1"))
+          PY
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
